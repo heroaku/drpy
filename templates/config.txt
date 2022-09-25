@@ -52,6 +52,22 @@
             "User-Agent": "Mozilla/5.0"
         }
 	},
+	{
+		"name": "轮询",
+		"type": 2,
+		"url": "Sequence",
+		"header": {
+            "User-Agent": "Mozilla/5.0"
+        }
+	},
+	{
+		"name": "并发",
+		"type": 2,
+		"url": "Parallel",
+		"header": {
+            "User-Agent": "Mozilla/5.0"
+        }
+	},
 	 {% for jx in jxs %}
 {
     "name": "{{ jx.name }}",

@@ -80,11 +80,13 @@ def parse_home(filename):
             return R.failed(f'解析失败:{realUrl}')
         if isinstance(realUrl, PyJsString):
             realUrl = parseText(str(realUrl))
+        if not realUrl or realUrl == url:
+            return R.failed(f'解析失败',extra={'from':realUrl})
         # print(realUrl)
         if str(realUrl).startswith('redirect://'):
             return redirect(realUrl.split('redirect://')[1])
-        return R.success(f'{filename}解析成功',realUrl,{'time':f'{get_interval(t1)}毫秒'})
+        return R.success(f'{filename}解析成功',realUrl,{'time':f'{get_interval(t1)}毫秒','from':url})
     except Exception as e:
         msg = f'{filename}解析出错:{e}'
         logger.info(msg)
-        return R.failed(msg,extra={'time':f'{get_interval(t1)}毫秒'})
+        return R.failed(msg,extra={'time':f'{get_interval(t1)}毫秒','from':url})

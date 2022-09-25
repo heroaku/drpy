@@ -102,8 +102,8 @@ def jxTxt2Json(text:str,host:str):
                 jxs.append({
                     'name':dt[0],
                     'url':dt[1],
-                    'type':dt[2] if len(dt) > 2 else 0,
-                    'ua':dt[3] if len(dt) > 3 else UA,
+                    'type':dt[2] if len(dt) > 2 and dt[2] else 0,
+                    'ua':dt[3] if len(dt) > 3 and dt[3] else UA,
                 })
             except Exception as e:
                 logger.info(f'解析行有错误:{e}')
@@ -120,9 +120,20 @@ def getJxs(path='js',host=None):
 虾米,https://dm.xmflv.com:4433/?url=
             """
             f1.write(msg)
+    base_path = 'jiexi'  # 自建解析目录
+    os.makedirs(base_path, exist_ok=True)
+    file_name = os.listdir(base_path)
+    file_name = list(filter(lambda x: str(x).endswith('.js') and str(x).find('模板') < 0, file_name))
+    # print(file_name)
+    jx_list = [file.replace('.js', '') for file in file_name]
+    # print(file_name)
+    # print(jx_list)
+    jx_str = '\n'.join([jx+',{{host}}'+f'/parse/api/{jx}.js?url=,1' for jx in jx_list])
+    # print(jx_str)
 
     with open(f'{path}/解析.conf',encoding='utf-8') as f:
         text = f.read()
+    text = jx_str + '\n' + text
     jxs = jxTxt2Json(text,host)
     with open(custom_jx,encoding='utf-8') as f2:
         text = f2.read()
