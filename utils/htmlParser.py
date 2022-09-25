@@ -104,6 +104,7 @@ class jsoup:
                 ret = urljoin(self.MY_URL, ret)
             if ret:
                 break
+        # print(ret)
         return ret
 
     def pj(self, html, parse:str):
@@ -119,6 +120,7 @@ class jsoup:
                 return ''
         if not parse.startswith('$.'):
             parse = f'$.{parse}'
+        # print(html)
         # print(parse)
         ret = jsonpath(html,parse)
         # print(ret)

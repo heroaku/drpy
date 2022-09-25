@@ -75,7 +75,7 @@ py_ctx = {
 'requests':requests,'print':print,'base64Encode':base64Encode,'baseDecode':baseDecode,
 'log':logger.info,'fetch':fetch,'post':post,'request':request,'getCryptoJS':getCryptoJS,
 'buildUrl':buildUrl,'getHome':getHome,'setDetail':setDetail,'join':join,'urljoin2':urljoin2,
-'PC_UA':PC_UA,'MOBILE_UA':MOBILE_UA,'UC_UA':UC_UA,'IOS_UA':IOS_UA,
+'PC_UA':PC_UA,'MOBILE_UA':MOBILE_UA,'UC_UA':UC_UA,'UA':UA,'IOS_UA':IOS_UA,
 'setItem':setItem,'getItem':getItem,'clearItem':clearItem,'stringify':stringify,'encodeUrl':encodeUrl,
 'requireObj':requireObj,'md5':md5
 }
@@ -737,6 +737,7 @@ class CMS:
 
         else:
             p = p.split(';')  # 解析
+            # print(len(p))
             if len(p) < 5:
                 return self.blank()
 
@@ -962,8 +963,10 @@ class CMS:
     def detailOneVod(self,id,fyclass='',show_name=False):
         vod = self.blank_vod()
         detailUrl = str(id)
+        # print(detailUrl)
         if not detailUrl.startswith('http') and not '/' in detailUrl:
             url = self.detailUrl.replace('fyid', detailUrl).replace('fyclass',fyclass)
+            # print(url)
         elif '/' in detailUrl:
             url = urljoin(self.homeUrl,detailUrl)
         else:
