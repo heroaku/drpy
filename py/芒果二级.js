@@ -41,8 +41,9 @@ try{
     let JJ = pdfh(html,'.desc&&Text').split("简介：")[1];//简介
     let _desc = time;//更新，时间
 
-     // vod.vod_name = name;
+     vod.vod_name = pdfh(html, '.vt-txt&&Text');
      vod.type_name = pdfh(html, 'p:eq(0)&&Text').substr(0,6);
+     vod.vod_area = pdfh(html, 'p:eq(1)&&Text');
      vod.vod_actor = actor;
      vod.vod_director = director;
      vod.vod_remarks = _desc;
