@@ -1101,7 +1101,8 @@ class CMS:
                     html = self.dealJson(html)
                     html = json.loads(html)
 
-                if not is_json and html.find('输入验证码') > -1:
+                # if not is_json and html.find('输入验证码') > -1:
+                if not is_json and re.search('系统安全验证|输入验证码',html,re.M|re.S):
                     cookie = verifyCode(url,self.headers,self.timeout,self.retry_count,self.ocr_api)
                     # cookie = ''
                     if not cookie:
