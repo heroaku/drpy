@@ -83,7 +83,7 @@ def copytree(src, dst, ignore=None):
     if ignore is None:
         ignore = []
     dirs = os.listdir(src)  # 获取目录下的所有文件包括文件夹
-    # print(dirs)
+    print(dirs)
     for dir in dirs:  # 遍历文件或文件夹
         from_dir = os.path.join(src, dir)  # 将要复制的文件夹或文件路径
         to_dir = os.path.join(dst, dir)  # 将要复制到的文件夹或文件路径
