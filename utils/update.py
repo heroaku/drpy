@@ -84,7 +84,6 @@ def copytree(src, dst, ignore=None):
         ignore = []
     dirs = os.listdir(src)  # 获取目录下的所有文件包括文件夹
     logger.info(f'{dirs}')
-    print(dirs)
     for dir in dirs:  # 遍历文件或文件夹
         from_dir = os.path.join(src, dir)  # 将要复制的文件夹或文件路径
         to_dir = os.path.join(dst, dir)  # 将要复制到的文件夹或文件路径
@@ -130,7 +129,7 @@ def copy_to_update():
         logger.info(f'升级失败,找不到目录{dr_path}')
         return False
     # 千万不能覆盖super，base
-    paths = ['js','models','controllers','libs','static','templates','utils','txt','jiexi']
+    paths = ['js','models','controllers','libs','static','templates','utils','txt','jiexi','py']
     exclude_files = ['txt/pycms0.json','txt/pycms1.json','txt/pycms2.json','base/rules.db']
     for path in paths:
         force_copy_files(os.path.join(dr_path, path),os.path.join(base_path, path),exclude_files)
@@ -138,6 +137,7 @@ def copy_to_update():
         shutil.copy(os.path.join(dr_path, 'app.py'), os.path.join(base_path, 'app.py'))  # 复制文件
     except Exception as e:
         logger.info(f'更新app.py发生错误:{e}')
+    logger.info(f'升级程序执行完毕,全部文件已拷贝覆盖')
     return True
 
 def download_new_version():
