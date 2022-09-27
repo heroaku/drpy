@@ -1,5 +1,7 @@
 from quickjs import Function,Context
 import requests
+from time import time
+import js2py
 import json
 ctx = Context()
 ctx.add_callable("print", print)
@@ -85,4 +87,40 @@ def request(url):
 ctx.add_callable('request',request)
 ctx.eval('bd()')
 
+t1 = time()
+with open('../../js/兔小贝.js',encoding='utf-8') as f1:
+    jscode = f1.read()
+    print(jscode)
+
+ctx1 = Context()
+ctx1.eval(jscode)
+ret = ctx1.get('rule')
+print(type(ret.json()),ret.json())
+print(json.loads(ret.json()))
+t2 = time()
+print(f'quickjs耗时:{round((t2-t1)*1000,2)}毫秒')
+tt1 = time()
+ctx1.eval(jscode)
+ret = ctx1.get('rule')
+print(type(ret.json()),ret.json())
+print(json.loads(ret.json()))
+tt2 = time()
+print(f'quickjs第2次耗时:{round((tt2-tt1)*1000,2)}毫秒')
+
+t3 = time()
+with open('../../js/兔小贝.js',encoding='utf-8') as f1:
+    jscode = f1.read()
+    print(jscode)
+ctx2 = js2py.EvalJs({},enable_require=False) # enable_require启用require关键字,会自动获取系统nodejs环境
+ctx2.execute(jscode)
+ret = ctx2.rule.to_dict()
+print(type(ret),ret)
+t4 = time()
+print(f'js2py耗时:{round((t4-t3)*1000,2)}毫秒')
+t5 = time()
+ctx2.execute(jscode)
+ret = ctx2.rule.to_dict()
+print(type(ret),ret)
+t6 = time()
+print(f'js2py第2次耗时:{round((t6-t5)*1000,2)}毫秒')
 # 报错提示:(没法把python对象给qkjs,基础数据类型字典也不行,json等包更不行了)  Unsupported type when converting a Python object to quickjs: dict.
