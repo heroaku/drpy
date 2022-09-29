@@ -6,6 +6,17 @@ import ch from './cheerio.min.js';
 // host: 'https://www.zbkk.net',
 // });
 
+function readFile(filePath){
+    filePath = filePath||'./uri.min.js';
+    var fd = os.open(filePath);
+    var buffer = new ArrayBuffer(1024);
+    var len = os.read(fd, buffer, 0, 1024);
+    console.log(len);
+    let text = String.fromCharCode.apply(null, new Uint8Array(buffer));
+    console.log(text);
+    return text
+}
+
 const key = 'drpy_zbk';
 
 let rule = {
