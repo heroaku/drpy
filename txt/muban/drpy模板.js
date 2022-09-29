@@ -5,18 +5,6 @@ import ch from './cheerio.min.js';
 // var rule = Object.assign(模板.首图2,{
 // host: 'https://www.zbkk.net',
 // });
-
-function readFile(filePath){
-    filePath = filePath||'./uri.min.js';
-    var fd = os.open(filePath);
-    var buffer = new ArrayBuffer(1024);
-    var len = os.read(fd, buffer, 0, 1024);
-    console.log(len);
-    let text = String.fromCharCode.apply(null, new Uint8Array(buffer));
-    console.log(text);
-    return text
-}
-
 const key = 'drpy_zbk';
 
 let rule = {
@@ -72,6 +60,8 @@ const RULE_CK = 'cookie'; // 源cookie的key值
 const KEY = typeof(key)!=='undefined'&&key?key:'drpy_'+rule.title; // 源的唯一标识
 const CATE_EXCLUDE = '首页|留言|APP|下载|资讯|新闻|动态';
 const TAB_EXCLUDE = '猜你|喜欢|APP|下载|剧情|热播';
+const OCR_RETRY = 3;//ocr验证重试次数
+const OCR_API = 'http://dm.mudery.com:10000';//ocr在线识别接口
 var MY_URL; // 全局注入变量,pd函数需要
 
 /** 处理一下 rule规则关键字段没传递的情况 **/
@@ -85,12 +75,61 @@ rule.searchUrl = rule.searchUrl||'';
 /*** 后台需要实现的java方法并注入到js中 ***/
 
 /**
+ * 读取本地文件->应用程序目录
+ * @param filePath
+ * @returns {string}
+ */
+function readFile(filePath){
+    filePath = filePath||'./uri.min.js';
+    var fd = os.open(filePath);
+    var buffer = new ArrayBuffer(1024);
+    var len = os.read(fd, buffer, 0, 1024);
+    console.log(len);
+    let text = String.fromCharCode.apply(null, new Uint8Array(buffer));
+    console.log(text);
+    return text
+}
+
+/**
+ * 验证码识别逻辑,需要java实现(js没有bytes类型,无法调用后端的传递图片二进制获取验证码文本的接口)
+ * @type {{api: string, classification: (function(*=): string)}}
+ */
+var OcrApi={
+    api:OCR_API,
+    classification:function (img){ // img是byte类型,这里不方便搞啊
+        let code = '';
+        try {
+            code = request(this.api,{data:img,headers:{'user-agent':PC_UA},'method':'POST'});
+        }catch (e) {}
+        return code
+    }
+};
+/**
  * 验证码识别,暂未实现
  * @param url 验证码图片链接
  * @returns {string} 验证成功后的cookie
  */
 function verifyCode(url){
+    let cnt = 0;
+    let host = getHome(url);
     let cookie = '';
+    while (cnt < OCR_RETRY){
+        try{
+            // let obj = {headers:headers,timeout:timeout};
+            let img = request(`${host}/index.php/verify/index.html`);
+            let code = OcrApi.classification(img);
+            console.log(`第${cnt+1}次验证码识别结果:${code}`);
+            let html = request(`${host}/index.php/ajax/verify_check?type=search&verify=${code}`,{'method':'POST'});
+            html = JSON.parse(html);
+            if(html.msg === 'ok'){
+                cookie = '';
+                return cookie // 需要返回cookie
+            }
+        }catch (e) {
+            console.log(`第${cnt+1}次验证码提交失败`)
+        }
+        cnt+=1
+    }
     return cookie
 }
 
@@ -522,7 +561,12 @@ function searchParse(searchObj) {
         if (html) {
             if(/系统安全验证|输入验证码/.test(html)){
                 let cookie = verifyCode(MY_URL);
-                setItem(RULE_CK,cookie);
+                if(cookie){
+                    console.log(`本次成功过验证,cookie:${cookie}`);
+                    setItem(RULE_CK,cookie);
+                }else{
+                    console.log(`本次自动过搜索验证失败,cookie:${cookie}`);
+                }
                 // obj.headers['Cookie'] = cookie;
                 html = getHtml(MY_URL);
             }
