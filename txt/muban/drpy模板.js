@@ -1,6 +1,8 @@
 // import ch from './cheerio.min.js';
+import Uri from './uri.min.js';
+// var URI = require('urijs');
 // import 模板 from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js'
-// var rule =Object.assign(模板.首图2,{
+// var rule = Object.assign(模板.首图2,{
 // host: 'https://www.zbkk.net',
 // });
 
@@ -114,9 +116,26 @@ function clearItem(k){
  * @returns {*}
  */
 function urljoin(fromPath, nowPath) {
-    return fromPath + nowPath
+    let new_uri = Uri(nowPath, fromPath);
+    new_uri = new_uri.toString();
+    // console.log(new_uri);
+    // return fromPath + nowPath
+    return new_uri
 }
 
+/**
+ * 重写pd方法-增加自动urljoin
+ * @param html
+ * @param parse
+ * @returns {*}
+ */
+function pd(html,parse){
+    let ret = pdfh(html,parse);
+    if(typeof(MY_URL)==='undefined'||!MY_URL){
+        var MY_URL = '';
+    }
+    return urljoin(MY_URL,ret)
+}
 
 /*** js自封装的方法 ***/
 
@@ -317,8 +336,9 @@ function homeVodParse(homeVodObj){
         return '{}'
     }
     let d = [];
-    console.log(homeVodObj.homeUrl);
-    let html = getHtml(homeVodObj.homeUrl);
+    MY_URL = homeVodObj.homeUrl;
+    console.log(MY_URL);
+    let html = getHtml(MY_URL);
     try {
         console.log('double:'+homeVodObj.double);
         if(homeVodObj.double){
@@ -417,9 +437,10 @@ function categoryParse(cateObj) {
     }
     let d = [];
     let url = cateObj.url.replaceAll('fyclass', cateObj.tid).replaceAll('fypage', cateObj.pg);
-    console.log(url);
+    MY_URL = url;
+    console.log(MY_URL);
     try {
-        let html = getHtml(url);
+        let html = getHtml(MY_URL);
         if (html) {
             let list = pdfa(html, p[0]);
             list.forEach(it => {
@@ -457,15 +478,16 @@ function searchParse(searchObj) {
     }
     let d = [];
     let url = searchObj.searchUrl.replaceAll('**', searchObj.wd).replaceAll('fypage', searchObj.pg);
-    console.log(url);
+    MY_URL = url;
+    console.log(MY_URL);
     try {
-        let html = getHtml(url);
+        let html = getHtml(MY_URL);
         if (html) {
             if(/系统安全验证|输入验证码/.test(html)){
-                let cookie = verifyCode(url);
+                let cookie = verifyCode(MY_URL);
                 setItem(RULE_CK,cookie);
                 // obj.headers['Cookie'] = cookie;
-                html = getHtml(url);
+                html = getHtml(MY_URL);
             }
             if(!html.includes(searchObj.wd)){
                 console.log('搜索结果源码未包含关键字,疑似搜索失败,正为您打印结果源码');
@@ -521,16 +543,17 @@ function detailParse(detailObj){
     let fyclass = detailObj.fyclass;
     let tab_exclude = detailObj.tab_exclude;
     let html = detailObj.html||'';
-    console.log(url);
+    MY_URL = url;
+    console.log(MY_URL);
     if(p==='*'){
         vod.vod_play_from = '道长在线';
         vod.vod_remarks = detailUrl;
         vod.vod_actor = '没有二级,只有一级链接直接嗅探播放';
-        vod.vod_content = url;
-        vod.vod_play_url = '嗅探播放$' + url;
+        vod.vod_content = MY_URL;
+        vod.vod_play_url = '嗅探播放$' + MY_URL;
     }else if(p&&typeof(p)==='object'){
         if(!html){
-            html = getHtml(url);
+            html = getHtml(MY_URL);
         }
         if(p.title){
             let p1 = p.title.split(';');
@@ -628,9 +651,11 @@ console.log(JSON.stringify(vod));
  * @returns {string}
  */
 function playParse(playObj){
+    MY_URL = playObj.url;
+    input = MY_URL;
     let common_play = {
         parse:1,
-        url:playObj.url
+        url:MY_URL
     };
     let lazy_play;
     if(!rule.play_parse||!rule.lazy){
@@ -756,7 +781,6 @@ function detail(vod_url) {
  * @returns {string}
  */
 function play(flag, id, flags) {
-    id = id.startsWith('http')?id:urljoin(rule.host,id);
     let playObj = {
         url:id,
         flag:flag,
