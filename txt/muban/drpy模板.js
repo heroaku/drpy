@@ -1,5 +1,5 @@
 import ch from './cheerio.min.js';
-// import Uri from './uri.min.js';
+import './uri.min.js';
 // var URI = require('urijs');
 // import 模板 from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js'
 // var rule = Object.assign(模板.首图2,{

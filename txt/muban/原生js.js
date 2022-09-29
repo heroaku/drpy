@@ -1,6 +1,3 @@
-// import URI from './uri.min.js';
-// import URI from './uri.min.js';
-// var URI = require('./uri.min.js');
 // npm install urijs
 var URI = require('urijs');
 var uri = new URI("/relative/path");
