@@ -1,5 +1,5 @@
-// import ch from './cheerio.min.js';
-import Uri from './uri.min.js';
+import ch from './cheerio.min.js';
+// import Uri from './uri.min.js';
 // var URI = require('urijs');
 // import 模板 from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js'
 // var rule = Object.assign(模板.首图2,{
@@ -60,7 +60,8 @@ const IOS_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWe
 const RULE_CK = 'cookie'; // 源cookie的key值
 const KEY = typeof(key)!=='undefined'&&key?key:'drpy_'+rule.title; // 源的唯一标识
 const CATE_EXCLUDE = '首页|留言|APP|下载|资讯|新闻|动态';
-const TAB_EXCLUDE = '猜你|喜欢|APP|下载|剧情';
+const TAB_EXCLUDE = '猜你|喜欢|APP|下载|剧情|热播';
+var MY_URL; // 全局注入变量,pd函数需要
 
 /** 处理一下 rule规则关键字段没传递的情况 **/
 rule.cate_exclude = (rule.cate_exclude||'')+CATE_EXCLUDE;
@@ -89,6 +90,7 @@ function verifyCode(url){
  */
 function setItem(k,v){
     local.set(KEY,k,v);
+    console.log(`规则${KEY}设置${k} => ${v}`)
 }
 
 /**
@@ -116,24 +118,45 @@ function clearItem(k){
  * @returns {*}
  */
 function urljoin(fromPath, nowPath) {
-    let new_uri = Uri(nowPath, fromPath);
-    new_uri = new_uri.toString();
-    // console.log(new_uri);
-    // return fromPath + nowPath
-    return new_uri
+    fromPath = fromPath||'';
+    nowPath = nowPath||'';
+    try {
+        // import Uri from './uri.min.js';
+        // var Uri = require('./uri.min.js');
+        // eval(request('https://cdn.bootcdn.net/ajax/libs/URI.js/1.19.11/URI.min.js'));
+        // let new_uri = URI(nowPath, fromPath);
+
+        let new_uri = Uri(nowPath, fromPath);
+        new_uri = new_uri.toString();
+        // console.log(new_uri);
+        // return fromPath + nowPath
+        return new_uri
+    }
+    catch (e) {
+        console.log('urljoin发生错误:'+e.message);
+        if(nowPath.startsWith('http')){
+            return nowPath
+        }if(nowPath.startsWith('/')){
+            return getHome(fromPath)+nowPath
+        }
+        return fromPath+nowPath
+    }
 }
 
 /**
- * 重写pd方法-增加自动urljoin
+ * 重写pd方法-增加自动urljoin(没法重写,改个名继续骗)
  * @param html
  * @param parse
+ * @param uri
  * @returns {*}
  */
-function pd(html,parse){
+function pD(html,parse,uri){
     let ret = pdfh(html,parse);
-    if(typeof(MY_URL)==='undefined'||!MY_URL){
-        var MY_URL = '';
+    if(typeof(uri)==='undefined'||!uri){
+        uri = '';
     }
+    // MY_URL = getItem('MY_URL',MY_URL);
+    console.log(`规则${KEY}打印MY_URL:${MY_URL},uri:${uri}`);
     return urljoin(MY_URL,ret)
 }
 
@@ -337,6 +360,7 @@ function homeVodParse(homeVodObj){
     }
     let d = [];
     MY_URL = homeVodObj.homeUrl;
+    // setItem('MY_URL',MY_URL);
     console.log(MY_URL);
     let html = getHtml(MY_URL);
     try {
@@ -355,12 +379,12 @@ function homeVodParse(homeVodObj){
                         let title = pdfh(item2, p[2]);
                         let img = '';
                         try{
-                            img = pd(item2, p[3])
+                            img = pD(item2, p[3])
                         }catch (e) {}
                         let desc = pdfh(item2, p[4]);
                         let links = [];
                         for(let p5 of p[5].split('+')){
-                            let link = !homeVodObj.detailUrl?pd(item2, p5):pdfh(item2, p5);
+                            let link = !homeVodObj.detailUrl?pD(item2, p5,MY_URL):pdfh(item2, p5);
                             links.push(link);
                         }
                         let vod = {
@@ -389,14 +413,14 @@ function homeVodParse(homeVodObj){
                     let title = pdfh(item, p[1]);
                     let img = '';
                     try {
-                        img = pd(item, p[2]);
+                        img = pD(item, p[2],MY_URL);
                     }catch (e) {
                         
                     }
                     let desc = pdfh(item, p[3]);
                     let links = [];
                     for(let p5 of p[4].split('+')){
-                        let link = !homeVodObj.detailUrl?pd(item, p5):pdfh(item, p5);
+                        let link = !homeVodObj.detailUrl?pD(item, p5,MY_URL):pdfh(item, p5);
                         links.push(link);
                     }
                     let vod = {
@@ -438,6 +462,7 @@ function categoryParse(cateObj) {
     let d = [];
     let url = cateObj.url.replaceAll('fyclass', cateObj.tid).replaceAll('fypage', cateObj.pg);
     MY_URL = url;
+    // setItem('MY_URL',MY_URL);
     console.log(MY_URL);
     try {
         let html = getHtml(MY_URL);
@@ -445,9 +470,9 @@ function categoryParse(cateObj) {
             let list = pdfa(html, p[0]);
             list.forEach(it => {
                 d.push({
-                    'vod_id': pd(it, p[4]),
+                    'vod_id': pD(it, p[4],MY_URL),
                     'vod_name': pdfh(it, p[1]),
-                    'vod_pic': pd(it, p[2]),
+                    'vod_pic': pD(it, p[2],MY_URL),
                     'vod_remarks': pdfh(it, p[3]),
                 });
             });
@@ -479,6 +504,7 @@ function searchParse(searchObj) {
     let d = [];
     let url = searchObj.searchUrl.replaceAll('**', searchObj.wd).replaceAll('fypage', searchObj.pg);
     MY_URL = url;
+    // setItem('MY_URL',MY_URL);
     console.log(MY_URL);
     try {
         let html = getHtml(MY_URL);
@@ -496,9 +522,9 @@ function searchParse(searchObj) {
             let list = pdfa(html, p[0]);
             list.forEach(it => {
                 let ob = {
-                    'vod_id': pd(it, p[4]),
+                    'vod_id': pD(it, p[4],MY_URL),
                     'vod_name': pdfh(it, p[1]),
-                    'vod_pic': pd(it, p[2]),
+                    'vod_pic': pD(it, p[2],MY_URL),
                     'vod_remarks': pdfh(it, p[3]),
                 };
                 if (p.length > 5 && p[5]) {
@@ -544,6 +570,7 @@ function detailParse(detailObj){
     let tab_exclude = detailObj.tab_exclude;
     let html = detailObj.html||'';
     MY_URL = url;
+    // setItem('MY_URL',MY_URL);
     console.log(MY_URL);
     if(p==='*'){
         vod.vod_play_from = '道长在线';
@@ -584,7 +611,7 @@ function detailParse(detailObj){
         if(p.img){
             try{
                 let p1 = p.img.split(';');
-                vod.vod_pic =  pd(html, p1[0]);
+                vod.vod_pic =  pD(html, p1[0],MY_URL);
             }
             catch (e) {}
         }
@@ -626,12 +653,20 @@ console.log(3);
                 let p1 = p.lists.replaceAll('#idv', tab_name).replaceAll('#id', i);
                 tab_ext = tab_ext.replaceAll('#idv', tab_name).replaceAll('#id', i);
                 console.log(p1);
-                let vodList = pdfa(html, p1);
+                console.log(645);
+                console.log(html);
+                let vodList = [];
+                try {
+                    vodList =  pdfa(html, p1)
+                }catch (e) {
+                    console.log(e.message)
+                }
+                console.log(647);
                 console.log('len(vodList):'+vodList.length);
                 let new_vod_list = [];
                 let tabName = tab_ext?pdfh(html, tab_ext):tab_name;
                 vodList.forEach(it=>{
-                    new_vod_list.push(tabName+'$'+pd(it,'a&&href'));
+                    new_vod_list.push(tabName+'$'+pD(it,'a&&href',MY_URL));
                 });
                 let vlist = new_vod_list.join('#');
                 vod_tab_list.push(vlist);
@@ -652,7 +687,7 @@ console.log(JSON.stringify(vod));
  */
 function playParse(playObj){
     MY_URL = playObj.url;
-    input = MY_URL;
+    var input = MY_URL;
     let common_play = {
         parse:1,
         url:MY_URL
