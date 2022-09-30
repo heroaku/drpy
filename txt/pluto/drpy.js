@@ -1,6 +1,7 @@
 import ch from './cheerio.min.js';
 // import 'http://192.168.10.99:5705/txt/pluto/drT.js';
-import 'http://192.168.3.239:5705/txt/pluto/drT.js';
+// import 'http://192.168.3.239:5705/txt/pluto/drT.js';
+import 'http://gitcode.net/qq_32394351/dr_py/-/raw/master/txt/pluto/drT.js';
 // import 模板 from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js'
 // var rule = Object.assign(模板.首图2,{
 // host: 'https://www.zbkk.net',
@@ -81,6 +82,8 @@ const OCR_RETRY = 3;//ocr验证重试次数
 // const OCR_API = 'http://dm.mudery.com:10000';//ocr在线识别接口
 const OCR_API = 'http://192.168.3.239:5705/parse/ocr';//ocr在线识别接口
 var MY_URL; // 全局注入变量,pd函数需要
+var VODS = [];// 一级或者搜索需要的数据列表
+var vod = {};//二级用单个影片详情
 
 /** 处理一下 rule规则关键字段没传递的情况 **/
 let rule_cate_excludes = (rule.cate_exclude||'').split('|').filter(it=>it.trim());
@@ -475,101 +478,112 @@ function homeParse(homeObj) {
  * @returns {string}
  */
 function homeVodParse(homeVodObj){
-    let p = homeVodObj.推荐 ? homeVodObj.推荐.split(';') : [];
-    if (!homeVodObj.double && p.length < 5) {
-        return '{}'
-    }else if (homeVodObj.double && p.length < 6) {
-        return '{}'
-    }
     let d = [];
     MY_URL = homeVodObj.homeUrl;
     // setItem('MY_URL',MY_URL);
     console.log(MY_URL);
-    let html = getHtml(MY_URL);
-    try {
-        console.log('double:'+homeVodObj.double);
-        if(homeVodObj.double){
-            p[0] = p[0].trim().startsWith('json:')?p[0].replace('json:',''):p[0];
-            // console.log(p[0]);
-            let items = pdfa(html, p[0]);
-            // console.log(items.length);
-            for(let item of items){
-                // console.log(p[1]);
-                let items2 = pdfa(item,p[1]);
-                // console.log(items2.length);
-                for(let item2 of items2){
+    let p = homeVodObj.推荐;
+    if(!p){
+        return '{}'
+    }
+    if(typeof(p)==='string'&&p.trim().startsWith('js:')){
+        const TYPE = 'home';
+        var input = MY_URL;
+        const HOST = rule.host;
+        eval(p.trim().replace('js:',''));
+        d = VODS;
+    }else {
+        p = p.split(';');
+        if (!homeVodObj.double && p.length < 5) {
+            return '{}'
+        } else if (homeVodObj.double && p.length < 6) {
+            return '{}'
+        }
+        let html = getHtml(MY_URL);
+        try {
+            console.log('double:' + homeVodObj.double);
+            if (homeVodObj.double) {
+                p[0] = p[0].trim().startsWith('json:') ? p[0].replace('json:', '') : p[0];
+                // console.log(p[0]);
+                let items = pdfa(html, p[0]);
+                // console.log(items.length);
+                for (let item of items) {
+                    // console.log(p[1]);
+                    let items2 = pdfa(item, p[1]);
+                    // console.log(items2.length);
+                    for (let item2 of items2) {
+                        try {
+                            let title = pdfh(item2, p[2]);
+                            let img = '';
+                            try {
+                                img = pD(item2, p[3])
+                            } catch (e) {
+                            }
+                            let desc = pdfh(item2, p[4]);
+                            let links = [];
+                            for (let p5 of p[5].split('+')) {
+                                let link = !homeVodObj.detailUrl ? pD(item2, p5, MY_URL) : pdfh(item2, p5);
+                                links.push(link);
+                            }
+                            let vod = {
+                                vod_name: title,
+                                vod_pic: img,
+                                vod_remarks: desc,
+                                vod_id: links.join('$')
+                            };
+                            d.push(vod);
+                        } catch (e) {
+
+                        }
+
+                    }
+
+
+                }
+
+
+            } else {
+                p[0] = p[0].trim().startsWith('json:') ? p[0].replace('json:', '') : p[0];
+                let items = pdfa(html, p[0]);
+                for (let item of items) {
                     try {
-                        let title = pdfh(item2, p[2]);
+                        let title = pdfh(item, p[1]);
                         let img = '';
-                        try{
-                            img = pD(item2, p[3])
-                        }catch (e) {}
-                        let desc = pdfh(item2, p[4]);
+                        try {
+                            img = pD(item, p[2], MY_URL);
+                        } catch (e) {
+
+                        }
+                        let desc = pdfh(item, p[3]);
                         let links = [];
-                        for(let p5 of p[5].split('+')){
-                            let link = !homeVodObj.detailUrl?pD(item2, p5,MY_URL):pdfh(item2, p5);
+                        for (let p5 of p[4].split('+')) {
+                            let link = !homeVodObj.detailUrl ? pD(item, p5, MY_URL) : pdfh(item, p5);
                             links.push(link);
                         }
                         let vod = {
-                            vod_name:title,
-                            vod_pic:img,
-                            vod_remarks:desc,
-                            vod_id:links.join('$')
+                            vod_name: title,
+                            vod_pic: img,
+                            vod_remarks: desc,
+                            vod_id: links.join('$')
                         };
                         d.push(vod);
-                    }catch (e) {
-                        
+
+                    } catch (e) {
+
                     }
-
-                }
-
-
-            }
-
-
-        }
-        else{
-            p[0] = p[0].trim().startsWith('json:')?p[0].replace('json:',''):p[0];
-            let items = pdfa(html, p[0]);
-            for(let item of items){
-                try {
-                    let title = pdfh(item, p[1]);
-                    let img = '';
-                    try {
-                        img = pD(item, p[2],MY_URL);
-                    }catch (e) {
-                        
-                    }
-                    let desc = pdfh(item, p[3]);
-                    let links = [];
-                    for(let p5 of p[4].split('+')){
-                        let link = !homeVodObj.detailUrl?pD(item, p5,MY_URL):pdfh(item, p5);
-                        links.push(link);
-                    }
-                    let vod = {
-                        vod_name:title,
-                        vod_pic:img,
-                        vod_remarks:desc,
-                        vod_id:links.join('$')
-                    };
-                    d.push(vod);
-
-                }catch (e) {
 
                 }
 
             }
 
+        } catch (e) {
+
         }
-
-    }catch (e) {
-
     }
     // console.log(JSON.stringify(d));
     return JSON.stringify({
         list:d
     })
-
 }
 
 /**
@@ -578,10 +592,7 @@ function homeVodParse(homeVodObj){
  * @returns {string}
  */
 function categoryParse(cateObj) {
-    let p = cateObj.一级 ? cateObj.一级.split(';') : [];
-    if (p.length < 5) {
-        return '{}'
-    }
+    let p = cateObj.一级;
     let d = [];
     // let url = cateObj.url.replaceAll('fyclass', cateObj.tid).replaceAll('fypage', cateObj.pg);
     let url = cateObj.url.replaceAll('fyclass', cateObj.tid);
@@ -614,31 +625,45 @@ function categoryParse(cateObj) {
     MY_URL = url;
     // setItem('MY_URL',MY_URL);
     console.log(MY_URL);
-    try {
-        let html = getHtml(MY_URL);
-        if (html) {
-            let list = pdfa(html, p[0]);
-            list.forEach(it => {
-                d.push({
-                    'vod_id': pD(it, p[4],MY_URL),
-                    'vod_name': pdfh(it, p[1]),
-                    'vod_pic': pD(it, p[2],MY_URL),
-                    'vod_remarks': pdfh(it, p[3]),
-                });
-            });
-            // console.log(JSON.stringify(d));
-            return JSON.stringify({
-                'page': parseInt(cateObj.pg),
-                'pagecount': 999,
-                'limit': 20,
-                'total': 999,
-                'list': d,
-            });
+
+    if(typeof(p)==='string'&&p.trim().startsWith('js:')){
+        const MY_CATE = cateObj.tid;
+        const MY_FL = cateObj.extend;
+        const TYPE = 'cate';
+        var input = MY_URL;
+        const MY_PAGE = cateObj.pg;
+        eval(p.trim().replace('js:',''));
+        d = VODS;
+    }else {
+        p = p.split(';');
+        if (p.length < 5) {
+            return '{}'
         }
-    } catch (e) {
-        console.log(e.message);
+        try {
+            let html = getHtml(MY_URL);
+            if (html) {
+                let list = pdfa(html, p[0]);
+                list.forEach(it => {
+                    d.push({
+                        'vod_id': pD(it, p[4],MY_URL),
+                        'vod_name': pdfh(it, p[1]),
+                        'vod_pic': pD(it, p[2],MY_URL),
+                        'vod_remarks': pdfh(it, p[3]),
+                    });
+                });
+            }
+        } catch (e) {
+            console.log(e.message);
+        }
     }
-    return '{}'
+
+    return d.length<1?'{}':JSON.stringify({
+        'page': parseInt(cateObj.pg),
+        'pagecount': 999,
+        'limit': 20,
+        'total': 999,
+        'list': d,
+    });
 }
 
 /**
@@ -647,57 +672,72 @@ function categoryParse(cateObj) {
  * @returns {string}
  */
 function searchParse(searchObj) {
-    let p = searchObj.搜索 ? searchObj.搜索.split(';') : [];
-    if (p.length < 5) {
+    let d = [];
+    if(!searchObj.searchUrl){
         return '{}'
     }
-    let d = [];
+    let p = searchObj.搜索==='*'&&rule.一级 ? rule.一级 : searchObj.搜索;
     let url = searchObj.searchUrl.replaceAll('**', searchObj.wd).replaceAll('fypage', searchObj.pg);
     MY_URL = url;
-    // setItem('MY_URL',MY_URL);
     console.log(MY_URL);
-    try {
-        let html = getHtml(MY_URL);
-        if (html) {
-            if(/系统安全验证|输入验证码/.test(html)){
-                let cookie = verifyCode(MY_URL);
-                if(cookie){
-                    console.log(`本次成功过验证,cookie:${cookie}`);
-                    setItem(RULE_CK,cookie);
-                }else{
-                    console.log(`本次自动过搜索验证失败,cookie:${cookie}`);
-                }
-                // obj.headers['Cookie'] = cookie;
-                html = getHtml(MY_URL);
-            }
-            if(!html.includes(searchObj.wd)){
-                console.log('搜索结果源码未包含关键字,疑似搜索失败,正为您打印结果源码');
-                console.log(html);
-            }
-            let list = pdfa(html, p[0]);
-            list.forEach(it => {
-                let ob = {
-                    'vod_id': pD(it, p[4],MY_URL),
-                    'vod_name': pdfh(it, p[1]),
-                    'vod_pic': pD(it, p[2],MY_URL),
-                    'vod_remarks': pdfh(it, p[3]),
-                };
-                if (p.length > 5 && p[5]) {
-                    ob.vod_content = pdfh(it, p[5]);
-                }
-                d.push(ob);
-            });
-            return JSON.stringify({
-                'page': parseInt(searchObj.pg),
-                'pagecount': 10,
-                'limit': 20,
-                'total': 100,
-                'list': d,
-            });
+    // setItem('MY_URL',MY_URL);
+    if(typeof(p)==='string'&&p.trim().startsWith('js:')){
+        const TYPE = 'search';
+        const MY_PAGE = searchObj.pg;
+        const KEY = searchObj.wd;
+        var input = MY_URL;
+        var detailUrl = rule.detailUrl||'';
+        eval(p.trim().replace('js:',''));
+        d = VODS;
+    }else{
+        p = p.split(';');
+        if (p.length < 5) {
+            return '{}'
         }
-    } catch (e) {
+        try {
+            let html = getHtml(MY_URL);
+            if (html) {
+                if(/系统安全验证|输入验证码/.test(html)){
+                    let cookie = verifyCode(MY_URL);
+                    if(cookie){
+                        console.log(`本次成功过验证,cookie:${cookie}`);
+                        setItem(RULE_CK,cookie);
+                    }else{
+                        console.log(`本次自动过搜索验证失败,cookie:${cookie}`);
+                    }
+                    // obj.headers['Cookie'] = cookie;
+                    html = getHtml(MY_URL);
+                }
+                if(!html.includes(searchObj.wd)){
+                    console.log('搜索结果源码未包含关键字,疑似搜索失败,正为您打印结果源码');
+                    console.log(html);
+                }
+                let list = pdfa(html, p[0]);
+                list.forEach(it => {
+                    let ob = {
+                        'vod_id': pD(it, p[4],MY_URL),
+                        'vod_name': pdfh(it, p[1]),
+                        'vod_pic': pD(it, p[2],MY_URL),
+                        'vod_remarks': pdfh(it, p[3]),
+                    };
+                    if (p.length > 5 && p[5]) {
+                        ob.vod_content = pdfh(it, p[5]);
+                    }
+                    d.push(ob);
+                });
+
+            }
+        } catch (e) {
+            return '{}'
+        }
+        return JSON.stringify({
+            'page': parseInt(searchObj.pg),
+            'pagecount': 10,
+            'limit': 20,
+            'total': 100,
+            'list': d,
+        });
     }
-    return '{}'
 }
 
 /**
@@ -725,14 +765,18 @@ function detailParse(detailObj){
     let tab_exclude = detailObj.tab_exclude;
     let html = detailObj.html||'';
     MY_URL = url;
+    console.log(MY_URL);
     // setItem('MY_URL',MY_URL);
-    // console.log(MY_URL);
     if(p==='*'){
         vod.vod_play_from = '道长在线';
         vod.vod_remarks = detailUrl;
         vod.vod_actor = '没有二级,只有一级链接直接嗅探播放';
         vod.vod_content = MY_URL;
         vod.vod_play_url = '嗅探播放$' + MY_URL;
+    }else if(typeof(p)==='string'&&p.trim().startsWith('js:')){
+        const TYPE = 'detail';
+        var input = MY_URL;
+        eval(p.trim().replace('js:',''));
     }else if(p&&typeof(p)==='object'){
         if(!html){
             html = getHtml(MY_URL);
@@ -1001,6 +1045,7 @@ function search(wd, quick) {
         pg: 1,
         quick: quick,
     };
+    // console.log(JSON.stringify(searchObj));
     return searchParse(searchObj)
 }
 
