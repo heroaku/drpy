@@ -5,7 +5,70 @@ import ch from './cheerio.min.js';
 // var rule = Object.assign(模板.首图2,{
 // host: 'https://www.zbkk.net',
 // });
+// import template from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/txt/pluto/template-web.js'
+// import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/txt/pluto/template-web.js'
+
 const key = 'drpy_zbk';
+function myTem(Tem, data) {
+    // 检索需要填充的地方
+    var reg = /{{(\w+)}}/;
+    var res = reg.exec(Tem)   // 返回伪数组 第一个为{{name}}  第二个为 name,没有返回 null，
+    while (res) {
+        // 替换,如果有多个同名填充位，都会被填充
+        Tem = Tem.replace(res[0], data[res[1]])
+        // 再次检索
+        res = reg.exec(Tem)
+    }
+    return Tem
+}
+
+var TemplateEngine = function(html, options) {
+
+    var re = /]+\)?%>/g, reExp = /(^( )?(if|for|else|switch|case|break|{|}))(.*)?/g, code = 'var r=[];\n', cursor = 0;
+
+    var add = function(line, js) {
+
+        js? (code += line.match(reExp) ? line + '\n' : 'r.push(' + line + ');\n') :
+
+            (code += line != '' ? 'r.push("' + line.replace(/"/g, '\\"') + '");\n' : '');
+
+        return add;
+
+    }
+
+    while(match = re.exec(html)) {
+        console.log(match)
+        add(html.slice(cursor, match.index))(match[1], true);
+
+        cursor = match.index + match[0].length;
+
+    }
+
+    add(html.substr(cursor, html.length - cursor));
+
+    code += 'return r.join("");';
+
+    return new Function(code.replace(/[\r\t\n]/g, '')).apply(options);
+
+}
+
+function init_test(){
+    // eval(request('https://gitcode.net/qq_32394351/dr_py/-/raw/master/txt/pluto/template-web.js'));
+    // eval(request('http://192.168.10.99:5705/txt/pluto/template-web.js'));
+    // eval(request('http://192.168.10.99:5705/txt/pluto/doT.js'));
+    eval(request('http://192.168.10.99:5705/txt/pluto/drT.js'));
+    // var ahtml = template.render('hi, <%=value%>.', {value: 'aui'});
+    // console.log(ahtml);
+    console.log(typeof(drT))
+    // drT.templateSettings.varname = 'fl';
+    // drT.templateSettings.interpolate = /\{\{([\s\S]+?)\}\}/g;
+    // var ahtml = drT.compile('hi, {{fl.value}}哈哈.{{fl.value}}')({value: 'aui'});
+    // console.log(ahtml);
+    // ahtml = drT.compile('hi, {{fl}}哈哈.{{fl}}')({sort: 1,cate:'movie'});
+    // console.log(ahtml);
+    //
+    console.log(drT.renderText('hi, {{fl}}哈哈.{{fl}}',{sort: 1,cate:'movie'},'fl'))
+}
 
 // 二进制数据流
 // let d = req('https://www.baidu.com/favicon.ico', {
@@ -68,6 +131,7 @@ let rule = {
  * quickjs发生一次崩溃后除非重启软件,否则该源后续操作点击二级都没有数据
  * setItem系列存在问题,用的公用变量实现没法持久化,需要一个数据库存储持久化,下次进来也能获取储存的cookie
  * 电脑看日志调试
+ adb tcpip 5555
  adb connect 192.168.10.192
  adb devices -l
  adb logcat -c
@@ -801,6 +865,7 @@ function playParse(playObj){
  */
 function init(ext) {
     console.log("init");
+    init_test();
 }
 
 /**

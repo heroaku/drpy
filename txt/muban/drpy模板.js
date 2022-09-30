@@ -1,11 +1,41 @@
 import ch from './cheerio.min.js';
-import './uri.min.js';
+// import Uri from './uri.min.js';
 // var URI = require('urijs');
 // import 模板 from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js'
 // var rule = Object.assign(模板.首图2,{
 // host: 'https://www.zbkk.net',
 // });
+import template from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/txt/pluto/template-web.js'
+
+var ahtml = template.render('hi, <%=value%>.', {value: 'aui'});
+console.log(ahtml);
 const key = 'drpy_zbk';
+
+// 二进制数据流
+// let d = req('https://www.baidu.com/favicon.ico', {
+//     buffer: 1
+// });
+// // header
+// console.log(JSON.stringify(d.headers));
+// // 图片
+// let array = [];
+// for(var i in d.content){
+//     array.push(d.content[i]);
+// }
+// console.log(array.length);
+// let outbuf = new Uint8Array(array);
+// console.log(outbuf.byteLength);
+
+
+// base64
+let d = req('https://www.baidu.com/favicon.ico', {
+    buffer: 2
+});
+// header
+console.log(JSON.stringify(d.headers));
+// 图片 base64
+console.log(d.content);
+
 
 let rule = {
     title: '真不卡',
@@ -168,29 +198,30 @@ function clearItem(k){
  * @returns {*}
  */
 function urljoin(fromPath, nowPath) {
-    fromPath = fromPath||'';
-    nowPath = nowPath||'';
-    try {
-        // import Uri from './uri.min.js';
-        // var Uri = require('./uri.min.js');
-        // eval(request('https://cdn.bootcdn.net/ajax/libs/URI.js/1.19.11/URI.min.js'));
-        // let new_uri = URI(nowPath, fromPath);
+    return joinUrl(fromPath, nowPath);
+    // fromPath = fromPath||'';
+    // nowPath = nowPath||'';
+    // try {
+    //     // import Uri from './uri.min.js';
+    //     // var Uri = require('./uri.min.js');
+    //     // eval(request('https://cdn.bootcdn.net/ajax/libs/URI.js/1.19.11/URI.min.js'));
+    //     // let new_uri = URI(nowPath, fromPath);
 
-        let new_uri = Uri(nowPath, fromPath);
-        new_uri = new_uri.toString();
-        // console.log(new_uri);
-        // return fromPath + nowPath
-        return new_uri
-    }
-    catch (e) {
-        console.log('urljoin发生错误:'+e.message);
-        if(nowPath.startsWith('http')){
-            return nowPath
-        }if(nowPath.startsWith('/')){
-            return getHome(fromPath)+nowPath
-        }
-        return fromPath+nowPath
-    }
+    //     let new_uri = Uri(nowPath, fromPath);
+    //     new_uri = new_uri.toString();
+    //     // console.log(new_uri);
+    //     // return fromPath + nowPath
+    //     return new_uri
+    // }
+    // catch (e) {
+    //     console.log('urljoin发生错误:'+e.message);
+    //     if(nowPath.startsWith('http')){
+    //         return nowPath
+    //     }if(nowPath.startsWith('/')){
+    //         return getHome(fromPath)+nowPath
+    //     }
+    //     return fromPath+nowPath
+    // }
 }
 
 /**
@@ -445,7 +476,7 @@ function homeVodParse(homeVodObj){
                         };
                         d.push(vod);
                     }catch (e) {
-                        
+
                     }
 
                 }
@@ -465,7 +496,7 @@ function homeVodParse(homeVodObj){
                     try {
                         img = pD(item, p[2],MY_URL);
                     }catch (e) {
-                        
+
                     }
                     let desc = pdfh(item, p[3]);
                     let links = [];
@@ -626,7 +657,7 @@ function detailParse(detailObj){
     let html = detailObj.html||'';
     MY_URL = url;
     // setItem('MY_URL',MY_URL);
-    console.log(MY_URL);
+    // console.log(MY_URL);
     if(p==='*'){
         vod.vod_play_from = '道长在线';
         vod.vod_remarks = detailUrl;
@@ -676,8 +707,8 @@ function detailParse(detailObj){
         if(p.重定向&&p.重定向.startsWith('js:')){
             html = eval(p.重定向.replace('js:',''));
         }
-        
-console.log(2);
+
+// console.log(2);
         if(p.tabs){
             let p_tab = p.tabs.split(';')[0];
             console.log(p_tab);
@@ -698,7 +729,7 @@ console.log(2);
         }
         vod.vod_play_from = playFrom.join(vod_play_from);
 
-console.log(3);
+// console.log(3);
         let vod_play_url = '$$$';
         let vod_tab_list = [];
         if(p.lists){
@@ -729,7 +760,7 @@ console.log(3);
         }
         vod.vod_play_url = vod_tab_list.join(vod_play_url);
     }
-console.log(JSON.stringify(vod));
+// console.log(JSON.stringify(vod));
     return JSON.stringify({
         list: [vod]
     })
@@ -755,6 +786,7 @@ function playParse(playObj){
             eval(rule.lazy.replace('js:').trim());
             lazy_play = typeof(input) === 'object'?input:{
                 parse:1,
+                jx:1,
                 url:input
             };
         }catch (e) {
