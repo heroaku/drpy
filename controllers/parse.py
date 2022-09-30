@@ -6,6 +6,7 @@
 from flask import Blueprint, jsonify,redirect
 from utils.web import getParmas,get_interval
 import os
+from utils.cfg import cfg
 from utils.log import logger
 from utils.encode import OcrApi
 from utils.pyctx import py_ctx,getPreJs,runJScode,JsObjectWrapper,PyJsString,parseText,jsoup,time
@@ -95,16 +96,23 @@ def parse_home(filename):
 
 @parse.route('/ocr',methods=['POST'])
 def base64_ocr():
+    ocr_api = cfg.OCR_API
+    # print(ocr_api)
     # print('params:',getParmas())
     img = getParmas('img')
     # print(img)
-    img_bytes = base64.b64decode(img)
+    if not img:
+        return R.failed('识别失败:缺少img参数')
+    try:
+        img_bytes = base64.b64decode(img)
+    except:
+        return R.failed('识别失败:img参数不是正确的base64格式')
     # print(img_bytes)
     img_path = 'txt/pluto'
     os.makedirs(img_path,exist_ok=True)
     with open(f'{img_path}/yzm.png','wb+') as f:
         f.write(img_bytes)
-    ocr = OcrApi('http://dm.mudery.com:10000')
+    ocr = OcrApi(ocr_api)
     code = ocr.classification(img_bytes)
     resp = R.success('识别成功',code)
     print(resp.json)
