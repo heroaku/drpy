@@ -7,7 +7,9 @@ from flask import Blueprint, jsonify,redirect
 from utils.web import getParmas,get_interval
 import os
 from utils.log import logger
+from utils.encode import OcrApi
 from utils.pyctx import py_ctx,getPreJs,runJScode,JsObjectWrapper,PyJsString,parseText,jsoup,time
+import base64
 
 parse = Blueprint("parse", __name__)
 
@@ -90,3 +92,20 @@ def parse_home(filename):
         msg = f'{filename}解析出错:{e}'
         logger.info(msg)
         return R.failed(msg,extra={'time':f'{get_interval(t1)}毫秒','from':url})
+
+@parse.route('/ocr',methods=['POST'])
+def base64_ocr():
+    # print('params:',getParmas())
+    img = getParmas('img')
+    # print(img)
+    img_bytes = base64.b64decode(img)
+    # print(img_bytes)
+    img_path = 'txt/pluto'
+    os.makedirs(img_path,exist_ok=True)
+    with open(f'{img_path}/yzm.png','wb+') as f:
+        f.write(img_bytes)
+    ocr = OcrApi('http://dm.mudery.com:10000')
+    code = ocr.classification(img_bytes)
+    resp = R.success('识别成功',code)
+    print(resp.json)
+    return resp

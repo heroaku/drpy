@@ -8,13 +8,15 @@ import ch from './cheerio.min.js';
 const key = 'drpy_zbk';
 
 function init_test(){
+    console.log("init_test_start");
+    // clearItem(RULE_CK);
     console.log(JSON.stringify(rule));
     // console.log(request('https://www.baidu.com',{withHeaders:true}));
-    console.log(request('https://www.baidu.com/favicon.ico',{toBase64:true}));
-    console.log("init_test");
-    require('http://192.168.10.99:5705/txt/pluto/drT.js');
-    console.log(typeof(drT));
-    console.log(drT.renderText('{{fl.cate}},hi, {{fl}}哈哈.{{fl}}',{sort: 1,cate:'movie'},'fl'));
+    // console.log(request('https://www.baidu.com/favicon.ico',{toBase64:true}));
+    // require('http://192.168.10.99:5705/txt/pluto/drT.js');
+    // console.log(typeof(drT));
+    // console.log(drT.renderText('{{fl.cate}},hi, {{fl}}哈哈.{{fl}}',{sort: 1,cate:'movie'},'fl'));
+    console.log("init_test_end");
 }
 
 let rule = {
@@ -71,8 +73,9 @@ const RULE_CK = 'cookie'; // 源cookie的key值
 const KEY = typeof(key)!=='undefined'&&key?key:'drpy_'+rule.title; // 源的唯一标识
 const CATE_EXCLUDE = '首页|留言|APP|下载|资讯|新闻|动态';
 const TAB_EXCLUDE = '猜你|喜欢|APP|下载|剧情|热播';
-const OCR_RETRY = 3;//ocr验证重试次数
-const OCR_API = 'http://dm.mudery.com:10000';//ocr在线识别接口
+const OCR_RETRY = 1;//ocr验证重试次数
+// const OCR_API = 'http://dm.mudery.com:10000';//ocr在线识别接口
+const OCR_API = 'http://192.168.3.239:5705/parse/ocr';//ocr在线识别接口
 var MY_URL; // 全局注入变量,pd函数需要
 
 /** 处理一下 rule规则关键字段没传递的情况 **/
@@ -115,7 +118,9 @@ var OcrApi={
     classification:function (img){ // img是byte类型,这里不方便搞啊
         let code = '';
         try {
-            code = request(this.api,{data:img,headers:{'user-agent':PC_UA},'method':'POST'});
+            let html = request(this.api,{data:{img:img},headers:{'User-Agent':PC_UA},'method':'POST'});
+            html = JSON.parse(html);
+            code = html.url||'';
         }catch (e) {}
         return code
     }
@@ -132,17 +137,35 @@ function verifyCode(url){
     while (cnt < OCR_RETRY){
         try{
             // let obj = {headers:headers,timeout:timeout};
-            let img = request(`${host}/index.php/verify/index.html`);
+            let yzm_url = `${host}/index.php/verify/index.html`;
+            console.log(`验证码链接:${yzm_url}`);
+            let hhtml = request(yzm_url,{withHeaders:true,toBase64:true});
+            let json = JSON.parse(hhtml);
+            if(!cookie){
+                cookie = json['set-cookie']?json['set-cookie'].split(';')[0]:'';
+            }
+            // console.log(hhtml);
+            console.log('cookie:'+cookie);
+            let img = json.body;
+            // console.log(img);
             let code = OcrApi.classification(img);
             console.log(`第${cnt+1}次验证码识别结果:${code}`);
-            let html = request(`${host}/index.php/ajax/verify_check?type=search&verify=${code}`,{'method':'POST'});
+            let submit_url = `${host}/index.php/ajax/verify_check?type=search&verify=${code}`;
+            console.log(submit_url);
+            let html = request(submit_url,{headers:{Cookie:cookie,'User-Agent':MOBILE_UA},'method':'POST'});
+            console.log(html);
             html = JSON.parse(html);
             if(html.msg === 'ok'){
-                cookie = '';
+                console.log(`第${cnt+1}次验证码提交成功`);
                 return cookie // 需要返回cookie
+            }else if(html.msg!=='ok'&&cnt+1>=OCR_RETRY){
+                cookie = ''; // 需要清空返回cookie
             }
         }catch (e) {
-            console.log(`第${cnt+1}次验证码提交失败`)
+            console.log(`第${cnt+1}次验证码提交失败:${e.message}`);
+            if(cnt+1>=OCR_RETRY){
+                cookie = '';
+            }
         }
         cnt+=1
     }
@@ -459,13 +482,13 @@ function homeVodParse(homeVodObj){
         console.log('double:'+homeVodObj.double);
         if(homeVodObj.double){
             p[0] = p[0].trim().startsWith('json:')?p[0].replace('json:',''):p[0];
-            console.log(p[0]);
+            // console.log(p[0]);
             let items = pdfa(html, p[0]);
-            console.log(items.length);
+            // console.log(items.length);
             for(let item of items){
-                console.log(p[1]);
+                // console.log(p[1]);
                 let items2 = pdfa(item,p[1]);
-                console.log(items2.length);
+                // console.log(items2.length);
                 for(let item2 of items2){
                     try {
                         let title = pdfh(item2, p[2]);
@@ -552,7 +575,32 @@ function categoryParse(cateObj) {
         return '{}'
     }
     let d = [];
-    let url = cateObj.url.replaceAll('fyclass', cateObj.tid).replaceAll('fypage', cateObj.pg);
+    // let url = cateObj.url.replaceAll('fyclass', cateObj.tid).replaceAll('fypage', cateObj.pg);
+    let url = cateObj.url.replaceAll('fyclass', cateObj.tid);
+    if(rule.filter_url){
+        if(!/fyfilter/.test(url)){
+            if(!url.endsWith('&')&&!rule.filter_url.startsWith('&')){
+                url+='&'
+            }
+            url+=rule.filter_url;
+        }else{
+            url = url.replace('fyfilter', rule.filter_url);
+        }
+        url = drT.renderText(url,cateObj.filter);
+    }
+    if(/fypage/.test(url)){
+        if(url.includes('(')&&url.includes(')')){
+            let url_rep = url.match(/.*?\((.*)\)/)[1];
+            let cnt_page = url_rep.replaceAll('fypage', cateObj.pg);
+            eval(`let cnt_pg=${cnt_page}`);
+            url = url.replaceAll(url_rep,cnt_pg).replaceAll('(','').replaceAll(')','');
+        }else{
+            url = url.replaceAll('fypage',cateObj.pg);
+        }
+    }
+    if(cateObj.pg === 1 && url.includes('[')&&url.includes(']')){
+        url = url.split('[')[1].split(']')[0];
+    }
     MY_URL = url;
     // setItem('MY_URL',MY_URL);
     console.log(MY_URL);
@@ -750,20 +798,19 @@ function detailParse(detailObj){
                 let p1 = p.lists.replaceAll('#idv', tab_name).replaceAll('#id', i);
                 tab_ext = tab_ext.replaceAll('#idv', tab_name).replaceAll('#id', i);
                 console.log(p1);
-                console.log(645);
-                console.log(html);
+                // console.log(html);
                 let vodList = [];
                 try {
-                    vodList =  pdfa(html, p1)
+                    vodList =  pdfa(html, p1);
+                    console.log('len(vodList):'+vodList.length);
                 }catch (e) {
-                    console.log(e.message)
+                    // console.log(e.message);
                 }
-                console.log(647);
-                console.log('len(vodList):'+vodList.length);
                 let new_vod_list = [];
                 let tabName = tab_ext?pdfh(html, tab_ext):tab_name;
+                console.log(tabName);
                 vodList.forEach(it=>{
-                    new_vod_list.push(tabName+'$'+pD(it,'a&&href',MY_URL));
+                    new_vod_list.push(pdfh(it,'body&&Text')+'$'+pD(it,'a&&href',MY_URL));
                 });
                 let vlist = new_vod_list.join('#');
                 vod_tab_list.push(vlist);
@@ -871,7 +918,7 @@ function category(tid, pg, filter, extend) {
         url: urljoin(rule.host, rule.url),
         一级: rule.一级,
         tid: tid,
-        pg: pg,
+        pg: parseInt(pg),
         filter: filter,
         extend: extend
     };
