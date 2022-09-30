@@ -153,23 +153,23 @@
         //.replace(/(\s|;|\}|^|\{)out\+=''\+/g,'$1out+=');
 
         if (needhtmlencode) {
-            console.log('需要编码');
-            console.log(c.doNotSkipEncoded);
+            // console.log('需要编码');
+            // console.log(c.doNotSkipEncoded);
             if (!c.selfcontained && _globals && !_globals._encodeHTML) _globals._encodeHTML = drT.encodeHTMLSource(c.doNotSkipEncoded);
             str = "var encodeHTML = typeof _encodeHTML !== 'undefined' ? _encodeHTML : ("
                 + drT.encodeHTMLSource.toString() + "(" + (c.doNotSkipEncoded || '') + "));"
                 + str;
-            console.log(str);
+            // console.log(str);
         }else{
-            console.log('不需要编码');
+            // console.log('不需要编码');
         }
-        console.log(c.varname);
-        console.log(str);
+        // console.log(c.varname);
+        // console.log(str);
         try {
             return new Function(c.varname, str);
         } catch (e) {
             /* istanbul ignore else */
-            console.log(e.message);
+            // console.log(e.message);
             if (typeof console !== "undefined") console.log("Could not create a template function: " + str);
             throw e;
         }
@@ -185,5 +185,5 @@
         }
         dict = dict||{};
         return drT.compile(tmpl)(dict);
-    }
+    };
 }());

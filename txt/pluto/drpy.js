@@ -1,100 +1,21 @@
 import ch from './cheerio.min.js';
-// import Uri from './uri.min.js';
-// var URI = require('urijs');
+// import 'http://192.168.10.99:5705/txt/pluto/drT.js';
 // import 模板 from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js'
 // var rule = Object.assign(模板.首图2,{
 // host: 'https://www.zbkk.net',
 // });
-// import template from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/txt/pluto/template-web.js'
-// import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/txt/pluto/template-web.js'
 
 const key = 'drpy_zbk';
-function myTem(Tem, data) {
-    // 检索需要填充的地方
-    var reg = /{{(\w+)}}/;
-    var res = reg.exec(Tem)   // 返回伪数组 第一个为{{name}}  第二个为 name,没有返回 null，
-    while (res) {
-        // 替换,如果有多个同名填充位，都会被填充
-        Tem = Tem.replace(res[0], data[res[1]])
-        // 再次检索
-        res = reg.exec(Tem)
-    }
-    return Tem
-}
-
-var TemplateEngine = function(html, options) {
-
-    var re = /]+\)?%>/g, reExp = /(^( )?(if|for|else|switch|case|break|{|}))(.*)?/g, code = 'var r=[];\n', cursor = 0;
-
-    var add = function(line, js) {
-
-        js? (code += line.match(reExp) ? line + '\n' : 'r.push(' + line + ');\n') :
-
-            (code += line != '' ? 'r.push("' + line.replace(/"/g, '\\"') + '");\n' : '');
-
-        return add;
-
-    }
-
-    while(match = re.exec(html)) {
-        console.log(match)
-        add(html.slice(cursor, match.index))(match[1], true);
-
-        cursor = match.index + match[0].length;
-
-    }
-
-    add(html.substr(cursor, html.length - cursor));
-
-    code += 'return r.join("");';
-
-    return new Function(code.replace(/[\r\t\n]/g, '')).apply(options);
-
-}
 
 function init_test(){
-    // eval(request('https://gitcode.net/qq_32394351/dr_py/-/raw/master/txt/pluto/template-web.js'));
-    // eval(request('http://192.168.10.99:5705/txt/pluto/template-web.js'));
-    // eval(request('http://192.168.10.99:5705/txt/pluto/doT.js'));
-    eval(request('http://192.168.10.99:5705/txt/pluto/drT.js'));
-    // var ahtml = template.render('hi, <%=value%>.', {value: 'aui'});
-    // console.log(ahtml);
-    console.log(typeof(drT))
-    // drT.templateSettings.varname = 'fl';
-    // drT.templateSettings.interpolate = /\{\{([\s\S]+?)\}\}/g;
-    // var ahtml = drT.compile('hi, {{fl.value}}哈哈.{{fl.value}}')({value: 'aui'});
-    // console.log(ahtml);
-    // ahtml = drT.compile('hi, {{fl}}哈哈.{{fl}}')({sort: 1,cate:'movie'});
-    // console.log(ahtml);
-    //
-    console.log(drT.renderText('hi, {{fl}}哈哈.{{fl}}',{sort: 1,cate:'movie'},'fl'))
+    console.log(JSON.stringify(rule));
+    // console.log(request('https://www.baidu.com',{withHeaders:true}));
+    console.log(request('https://www.baidu.com/favicon.ico',{toBase64:true}));
+    console.log("init_test");
+    require('http://192.168.10.99:5705/txt/pluto/drT.js');
+    console.log(typeof(drT));
+    console.log(drT.renderText('{{fl.cate}},hi, {{fl}}哈哈.{{fl}}',{sort: 1,cate:'movie'},'fl'));
 }
-
-// 二进制数据流
-// let d = req('https://www.baidu.com/favicon.ico', {
-//     buffer: 1
-// });
-// // header
-// console.log(JSON.stringify(d.headers));
-// // 图片
-// let array = [];
-// for(var i in d.content){
-//     array.push(d.content[i]);
-// }
-// console.log(array.length);
-// let outbuf = new Uint8Array(array);
-// console.log(outbuf.byteLength);
-
-
-// base64
-let d = req('https://www.baidu.com/favicon.ico', {
-    buffer: 2
-});
-// header
-console.log(JSON.stringify(d.headers));
-// 图片 base64
-console.log(d.content);
-
 
 let rule = {
     title: '真不卡',
@@ -107,8 +28,8 @@ let rule = {
     // play_parse:true,
     // lazy:'',
     class_parse: 'body&&.stui-header__menu .dropdown li:gt(0):lt(5);a&&Text;a&&href;.*/(.*?).html',
-    一级: 'body&&.stui-vodlist li;a&&title;a&&data-original;.pic-text&&Text;a&&href',
-    推荐:'body&&ul.stui-vodlist.clearfix;body&&li;a&&title;.lazyload&&data-original;.pic-text&&Text;a&&href',
+    一级: '.stui-vodlist li;a&&title;a&&data-original;.pic-text&&Text;a&&href',
+    推荐:'ul.stui-vodlist.clearfix;body&&li;a&&title;.lazyload&&data-original;.pic-text&&Text;a&&href',
     二级:{"title":".stui-content__detail .title&&Text;.stui-content__detail p:eq(-2)&&Text","img":".stui-content__thumb .lazyload&&data-original","desc":".stui-content__detail p:eq(0)&&Text;.stui-content__detail p:eq(1)&&Text;.stui-content__detail p:eq(2)&&Text","content":".detail&&Text","tabs":"body&&h3.title","lists":".stui-content__playlist,#id&&li"},
     double:true, // 推荐内容是否双层定位
     //搜索:'ul.stui-vodlist__media:eq(0) li,ul.stui-vodlist:eq(0) li,#searchList li;a&&title;.lazyload&&data-original;.text-muted&&Text;a&&href;.text-muted:eq(-1)&&Text',
@@ -120,13 +41,14 @@ let rule = {
 
 /****上面才是pluto的drpy源,支持import外部模板来继承修改
  *  已知问题记录:
- *  1.pdfa没法正确获取非body开头的直接定位列表,比如 推荐 body&&ul.stui-vodlist.clearfix 和 ul.stui-vodlist.clearfix 获取出来的列表不一样,建议自动补body
- * 2.pd函数有问题,没法正确的urljoin来源链接,比如分类页获取到数据href为/zbkdetail/63174.html应该自动与rule.url拼接后才返回给二级完整链接
+ *  自动补body逻辑可能有Bug，二级选集列表现在不正常了会报错
+ *  1.pdfa没法正确获取非body开头的直接定位列表,比如 推荐 body&&ul.stui-vodlist.clearfix 和 ul.stui-vodlist.clearfix 获取出来的列表不一样,建议自动补body(已解决)
+ * 2. pd函数有问题,没法正确的urljoin来源链接,比如分类页获取到数据href为/zbkdetail/63174.html应该自动与rule.url拼接后才返回给二级完整链接 (已解决)
  * .stui-pannel_hd h3 这个pdfa都没法识别?
  * pdf 系列不支持eq定位?
  * 解析播放问题,parse返回的1怎么下面不出解析选项 ?? 不过可以通免
- * urljoin问题,求求了这个函数很重要,还要pd函数内部需要自动urljoin
- * 请求重复问题,调试日志一个console总是打印两次？？
+ * urljoin问题,求求了这个函数很重要,还要pd函数内部需要自动urljoin (已解决)
+ * 请求重复问题,调试日志一个console总是打印两次？？(待解决)
  * 筛选功能暂未实现,搜索验证码暂未实现
  * quickjs发生一次崩溃后除非重启软件,否则该源后续操作点击二级都没有数据
  * setItem系列存在问题,用的公用变量实现没法持久化,需要一个数据库存储持久化,下次进来也能获取储存的cookie
@@ -137,7 +59,6 @@ let rule = {
  adb logcat -c
  adb logcat | grep -i QuickJS
  * ***/
-
 
 
 /*** 以下是内置变量和解析方法 **/
@@ -155,8 +76,13 @@ const OCR_API = 'http://dm.mudery.com:10000';//ocr在线识别接口
 var MY_URL; // 全局注入变量,pd函数需要
 
 /** 处理一下 rule规则关键字段没传递的情况 **/
-rule.cate_exclude = (rule.cate_exclude||'')+CATE_EXCLUDE;
-rule.tab_exclude = (rule.tab_exclude||'')+TAB_EXCLUDE;
+let rule_cate_excludes = (rule.cate_exclude||'').split('|').filter(it=>it.trim());
+let rule_tab_excludes = (rule.tab_exclude||'').split('|').filter(it=>it.trim());
+rule_cate_excludes = rule_cate_excludes.concat(CATE_EXCLUDE.split('|').filter(it=>it.trim()));
+rule_tab_excludes = rule_tab_excludes.concat(TAB_EXCLUDE.split('|').filter(it=>it.trim()));
+
+rule.cate_exclude = rule_cate_excludes.join('\n');
+rule.tab_exclude = rule_tab_excludes.join('\n');
 rule.host = rule.host||'';
 rule.url = rule.url||'';
 rule.homeUrl = rule.homeUrl||'';
@@ -258,9 +184,9 @@ function clearItem(k){
  * @returns {*}
  */
 function urljoin(fromPath, nowPath) {
+    fromPath = fromPath||'';
+    nowPath = nowPath||'';
     return joinUrl(fromPath, nowPath);
-    // fromPath = fromPath||'';
-    // nowPath = nowPath||'';
     // try {
     //     // import Uri from './uri.min.js';
     //     // var Uri = require('./uri.min.js');
@@ -297,7 +223,7 @@ function pD(html,parse,uri){
         uri = '';
     }
     // MY_URL = getItem('MY_URL',MY_URL);
-    console.log(`规则${KEY}打印MY_URL:${MY_URL},uri:${uri}`);
+    // console.log(`规则${KEY}打印MY_URL:${MY_URL},uri:${uri}`);
     return urljoin(MY_URL,ret)
 }
 
@@ -309,6 +235,9 @@ function pD(html,parse,uri){
  * @returns {string}
  */
 function getHome(url){
+    if(!url){
+        return ''
+    }
     let tmp = url.split('//');
     url = tmp[0] + '//' + tmp[1].split('/')[0];
     return url
@@ -339,6 +268,14 @@ function buildUrl(url,obj){
 }
 
 /**
+ * 远程依赖执行函数
+ * @param url 远程js地址
+ */
+function require(url){
+    eval(request(url));
+}
+
+/**
  * 海阔网页请求函数完整封装
  * @param url 请求链接
  * @param obj 请求对象 {headers:{},method:'',timeout:5000,body:'',withHeaders:false}
@@ -362,7 +299,8 @@ function request(url,obj){
         }
         obj.headers = headers;
     }
-    if(obj.headers.body&&typeof (obj.headers.body)==='string'){
+    console.log(JSON.stringify(obj.headers));
+    if(typeof(obj.headers.body)!='undefined'&&obj.headers.body&&typeof (obj.headers.body)==='string'){
         let data = {};
         obj.headers.body.split('&').forEach(it=>{
             data[it.split('=')[0]] = it.split('=')[1]
@@ -370,9 +308,22 @@ function request(url,obj){
         obj.data = data;
         delete obj.headers.body
     }
+    if(!url){
+        return obj.withHeaders?'{}':''
+    }
+    if(obj.toBase64){ // 返回base64,用于请求图片
+        obj.buffer = 2;
+        delete obj.toBase64
+    }
     let res = req(url, obj);
     let html = res.content||'';
-    return html
+    if(obj.withHeaders){
+        let htmlWithHeaders = res.headers;
+        htmlWithHeaders.body = html;
+        return JSON.stringify(htmlWithHeaders);
+    }else{
+        return html
+    }
 }
 
 /**
@@ -865,7 +816,11 @@ function playParse(playObj){
  */
 function init(ext) {
     console.log("init");
-    init_test();
+    try {
+        init_test();
+    }catch (e) {
+        console.log('init_test发生错误:'+e.message);
+    }
 }
 
 /**
