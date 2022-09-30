@@ -1049,6 +1049,18 @@ function search(wd, quick) {
     return searchParse(searchObj)
 }
 
+function DRPY(){//导出函数
+    return {
+        init: init,
+        home: home,
+        homeVod: homeVod,
+        category: category,
+        detail: detail,
+        play: play,
+        search: search,
+    }
+}
+
 // 导出函数对象
 export default {
     init: init,
@@ -1057,5 +1069,6 @@ export default {
     category: category,
     detail: detail,
     play: play,
-    search: search
+    search: search,
+    DRPY:DRPY
 }

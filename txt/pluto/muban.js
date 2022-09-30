@@ -49,25 +49,20 @@ var mubanDict = { // 模板字典
     host:'',
     url:'/list/fyclass-fypage.html',
     searchUrl:'/vodsearch/**----------fypage---.html',
-    searchable:2,//是否启用全局搜索,
-    quickSearch:0,//是否启用快速搜索,
-    filterable:0,//是否启用分类筛选,
-    headers:{
-        'User-Agent':'UC_UA',
-        // "Cookie": ""
-    },
-    // class_parse:'.stui-header__menu li:gt(0):lt(7);a&&Text;a&&href;/(\\d+).html',
-    class_parse:'.stui-header__menu li:gt(0):lt(7);a&&Text;a&&href;.*/(.*?).html',
-    play_parse:true,
-    lazy:'',
-    limit:6,
-    推荐:'ul.stui-vodlist.clearfix;li;a&&title;.lazyload&&data-original;.pic-text&&Text;a&&href',
+    // headers: {
+    //     'User-Agent': MOBILE_UA
+    // },
+    // play_parse:true,
+    // lazy:'',
+    class_parse: 'body&&.stui-header__menu .dropdown li:gt(0):lt(5);a&&Text;a&&href;.*/(.*?).html',
+    一级: '.stui-vodlist li;a&&title;a&&data-original;.pic-text&&Text;a&&href',
+    推荐:'ul.stui-vodlist.clearfix;body&&li;a&&title;.lazyload&&data-original;.pic-text&&Text;a&&href',
+    二级:{"title":".stui-content__detail .title&&Text;.stui-content__detail p:eq(-2)&&Text","img":".stui-content__thumb .lazyload&&data-original","desc":".stui-content__detail p:eq(0)&&Text;.stui-content__detail p:eq(1)&&Text;.stui-content__detail p:eq(2)&&Text","content":".detail&&Text","tabs":"body&&h3.title","lists":".stui-content__playlist,#id&&li"},
     double:true, // 推荐内容是否双层定位
-    一级:'.stui-vodlist li;a&&title;a&&data-original;.pic-text&&Text;a&&href',
-    二级:{"title":".stui-content__detail .title&&Text;.stui-content__detail p:eq(-2)&&Text","img":".stui-content__thumb .lazyload&&data-original","desc":".stui-content__detail p:eq(0)&&Text;.stui-content__detail p:eq(1)&&Text;.stui-content__detail p:eq(2)&&Text","content":".detail&&Text","tabs":".stui-vodlist__head h3","lists":".stui-content__playlist:eq(#id) li"},
-    搜索:'ul.stui-vodlist__media:eq(0) li,ul.stui-vodlist:eq(0) li,#searchList li;a&&title;.lazyload&&data-original;.text-muted&&Text;a&&href;.text-muted:eq(-1)&&Text',
-    搜索1:'ul.stui-vodlist&&li;a&&title;.lazyload&&data-original;.text-muted&&Text;a&&href;.text-muted:eq(-1)&&Text',
-    搜索2:'ul.stui-vodlist__media&&li;a&&title;.lazyload&&data-original;.text-muted&&Text;a&&href;.text-muted:eq(-1)&&Text',
+    //搜索:'ul.stui-vodlist__media:eq(0) li,ul.stui-vodlist:eq(0) li,#searchList li;a&&title;.lazyload&&data-original;.text-muted&&Text;a&&href;.text-muted:eq(-1)&&Text',
+    搜索:'body&&ul.stui-vodlist__media&&li;a&&title;.lazyload&&data-original;.text-muted&&Text;a&&href;.text-muted:eq(-1)&&Text',
+    // cate_exclude: '首页|留言|APP|下载|资讯|新闻|动态',
+    // tab_exclude: '猜你|喜欢|APP|下载|剧情',
 },
 vfed:{
     title:'',
@@ -140,3 +135,6 @@ vfed:{
 
 };
 var muban = JSON.parse(JSON.stringify(mubanDict));
+export default {
+    muban:muban
+}
