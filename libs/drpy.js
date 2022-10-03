@@ -45,7 +45,8 @@ const CATE_EXCLUDE = '首页|留言|APP|下载|资讯|新闻|动态';
 const TAB_EXCLUDE = '猜你|喜欢|APP|下载|剧情|热播';
 const OCR_RETRY = 3;//ocr验证重试次数
 // const OCR_API = 'http://dm.mudery.com:10000';//ocr在线识别接口
-const OCR_API = 'http://192.168.3.239:5705/parse/ocr';//ocr在线识别接口
+// const OCR_API = 'http://192.168.3.239:5705/parse/ocr';//ocr在线识别接口
+const OCR_API = 'http://cms.nokia.press/parse/ocr';//ocr在线识别接口
 var MY_URL; // 全局注入变量,pd函数需要
 var VODS = [];// 一级或者搜索需要的数据列表
 var vod = {};//二级用单个影片详情
