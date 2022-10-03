@@ -213,8 +213,8 @@ def config_render(mode):
     host = getHost(mode)
     # ali_token = lsg.getItem('ALI_TOKEN')
     ali_token = new_conf.ALI_TOKEN
-    js_mode = new_conf.JS_MODE
-    print('jsmode:',js_mode)
+    js_mode = int(new_conf.JS_MODE or 0)
+    print(f'{type(js_mode)} jsmode:{js_mode}')
     # print(ali_token)
     customConfig = getCustonDict(host,ali_token)
     # print(customConfig)
@@ -250,8 +250,8 @@ def config_gen():
     store_conf_dict = lsg.getStoreConfDict()
     new_conf.update(store_conf_dict)
     try:
-        lsg = storage_service()
         use_py = lsg.getItem('USE_PY')
+        js_mode = int(new_conf.JS_MODE or 0)
         pys = getPys() if use_py else False
         alists = getAlist()
         alists_str = json.dumps(alists,ensure_ascii=False)
@@ -259,14 +259,14 @@ def config_gen():
         rules = get_multi_rules(rules)
         host0 = getHost(0)
         jxs = getJxs(host=host0)
-        set_local = render_template('config.txt',pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,0),mode=0,host=host0,jxs=jxs)
+        set_local = render_template('config.txt',pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,0),mode=0,js_mode=js_mode,host=host0,jxs=jxs)
         # print(set_local)
         host1 = getHost(1)
         jxs = getJxs(host=host1)
-        set_area = render_template('config.txt',pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,1),mode=1,host=host1,jxs=jxs)
+        set_area = render_template('config.txt',pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,1),mode=1,js_mode=js_mode,host=host1,jxs=jxs)
         host2 = getHost(2)
         jxs = getJxs(host=host2)
-        set_online = render_template('config.txt',pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,2),mode=1,host=host2,jxs=jxs)
+        set_online = render_template('config.txt',pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,2),mode=1,js_mode=js_mode,host=host2,jxs=jxs)
         ali_token = new_conf.ALI_TOKEN
         with open('txt/pycms0.json','w+',encoding='utf-8') as f:
             customConfig = getCustonDict(host0,ali_token)
