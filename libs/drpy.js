@@ -8,7 +8,7 @@ import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.
 function init_test(){
     console.log("init_test_start");
     console.log(RKEY);
-    console.log(rule);
+    console.log(JSON.stringify(rule));
     // clearItem(RULE_CK);
     // console.log(JSON.stringify(rule));
     // console.log(request('https://www.baidu.com',{withHeaders:true}));
@@ -375,7 +375,7 @@ function homeParse(homeObj) {
                 if (html) {
                     let list = pdfa(html, p[0]);
                     if (list && list.length > 0) {
-                        list.forEach(it => {
+                        list.forEach((it,idex) => {
                             try {
                                 let name = pdfh(it, p[1]);
                                 if (homeObj.cate_exclude && (new RegExp(homeObj.cate_exclude).test(name))) {
@@ -392,7 +392,7 @@ function homeParse(homeObj) {
                                     'type_name': name
                                 });
                             } catch (e) {
-                                console.log(e.message);
+                                console.log(`分类列表定位第${idex}个元素正常报错:${e.message}`);
                             }
                         });
                     }
@@ -883,20 +883,27 @@ function playParse(playObj){
 
         rule.cate_exclude = rule_cate_excludes.join('|');
         rule.tab_exclude = rule_tab_excludes.join('|');
-        rule.host = rule.host||'';
+        rule.host = (rule.host||'').rstrip('/');
         rule.url = rule.url||'';
+        rule.double = rule.double||false;
         rule.homeUrl = rule.homeUrl||'';
         rule.searchUrl = rule.searchUrl||'';
         if(rule.headers && typeof(rule.headers) === 'object'){
-            let header_keys = Object.keys(rule.headers);
-            for(let k of header_keys){
-                if(k.toLowerCase() === 'user-agent'){
-                    let v = header_keys[k];
-                    if(['MOBILE_UA','PC_UA','UC_UA','IOS_UA','UA'].includes(v)){
-                        rule.headers[k] = eval(v);
+            try {
+                let header_keys = Object.keys(rule.headers);
+                for(let k of header_keys){
+                    if(k.toLowerCase() === 'user-agent'){
+                        let v = rule.headers[k];
+                        console.log(v);
+                        if(['MOBILE_UA','PC_UA','UC_UA','IOS_UA','UA'].includes(v)){
+                            rule.headers[k] = eval(v);
+                        }
                     }
                 }
+            }catch (e) {
+                console.log('处理headers发生错误:'+e.message);
             }
+
         }
 
         RKEY = typeof(key)!=='undefined'&&key?key:'drpy_' + (rule.title || rule.host);
