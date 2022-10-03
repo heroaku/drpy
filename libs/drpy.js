@@ -1,18 +1,13 @@
-import ch from './cheerio.min.js';
-// import 'http://192.168.10.99:5705/txt/pluto/drT.js';
-// import 'http://192.168.3.239:5705/txt/pluto/drT.js';
-import 'http://gitcode.net/qq_32394351/dr_py/-/raw/master/txt/pluto/drT.js';
-// import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/txt/pluto/muban.js';
-import muban from 'https://raw.githubusercontent.com/pluto-player/dr/main/js/template.js'
-// import 模板 from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js'
-// var rule = Object.assign(模板.首图2,{
-// host: 'https://www.zbkk.net',
-// });
+import cheerio from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/cheerio.min.js';
+import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/drT.js';
+import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js'
 
-const key = 'drpy_zbk';
+// const key = 'drpy_zbk';
 
 function init_test(){
-    // console.log("init_test_start");
+    console.log("init_test_start");
+    console.log(RKEY);
+    console.log(rule);
     // clearItem(RULE_CK);
     // console.log(JSON.stringify(rule));
     // console.log(request('https://www.baidu.com',{withHeaders:true}));
@@ -20,10 +15,10 @@ function init_test(){
     // require('http://192.168.10.99:5705/txt/pluto/drT.js');
     // console.log(typeof(drT));
     // console.log(drT.renderText('{{fl.cate}},hi, {{fl}}哈哈.{{fl}}',{sort: 1,cate:'movie'},'fl'));
-    // console.log("init_test_end");
+    console.log("init_test_end");
 }
 
-let rule = {}
+let rule = {};
 
 
 /*** 以下是内置变量和解析方法 **/
@@ -33,8 +28,7 @@ const UA = 'Mozilla/5.0';
 const UC_UA = 'Mozilla/5.0 (Linux; U; Android 9; zh-CN; MI 9 Build/PKQ1.181121.001) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.5.5.1035 Mobile Safari/537.36';
 const IOS_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1';
 const RULE_CK = 'cookie'; // 源cookie的key值
-// const KEY = typeof(key)!=='undefined'&&key?key:'drpy_'+rule.title; // 源的唯一标识
-const KEY = typeof(key)!=='undefined'&&key?key:'drpy_' + (rule.title || rule.host); // 源的唯一标识
+// const KEY = typeof(key)!=='undefined'&&key?key:'drpy_' + (rule.title || rule.host); // 源的唯一标识
 const CATE_EXCLUDE = '首页|留言|APP|下载|资讯|新闻|动态';
 const TAB_EXCLUDE = '猜你|喜欢|APP|下载|剧情|热播';
 const OCR_RETRY = 3;//ocr验证重试次数
@@ -43,6 +37,7 @@ const OCR_API = 'http://192.168.3.239:5705/parse/ocr';//ocr在线识别接口
 var MY_URL; // 全局注入变量,pd函数需要
 var VODS = [];// 一级或者搜索需要的数据列表
 var vod = {};//二级用单个影片详情
+var RKEY; // 源的唯一标识
 
 /*** 后台需要实现的java方法并注入到js中 ***/
 
@@ -131,8 +126,8 @@ function verifyCode(url){
  * @param v 值
  */
 function setItem(k,v){
-    local.set(KEY,k,v);
-    console.log(`规则${KEY}设置${k} => ${v}`)
+    local.set(RKEY,k,v);
+    console.log(`规则${RKEY}设置${k} => ${v}`)
 }
 
 /**
@@ -142,7 +137,7 @@ function setItem(k,v){
  * @returns {*}
  */
 function getItem(k,v){
-    return local.get(KEY,k) || v;
+    return local.get(RKEY,k) || v;
 }
 
 /**
@@ -150,7 +145,7 @@ function getItem(k,v){
  * @param k
  */
 function clearItem(k){
-    local.delete(KEY,k);
+    local.delete(RKEY,k);
 }
 
 /**
@@ -199,7 +194,7 @@ function pD(html,parse,uri){
         uri = '';
     }
     // MY_URL = getItem('MY_URL',MY_URL);
-    // console.log(`规则${KEY}打印MY_URL:${MY_URL},uri:${uri}`);
+    // console.log(`规则${RKEY}打印MY_URL:${MY_URL},uri:${uri}`);
     return urljoin(MY_URL,ret)
 }
 
@@ -872,12 +867,13 @@ function playParse(playObj){
         } else if (typeof ext == 'string') {
             if (ext.startsWith('http')) {
                 let js = request(ext,{'method':'GET'});
-                if (js) eval(js.replace('var rule', 'rule'));
+                if (js){
+                    eval(js.replace('var rule', 'rule'));
+                }
+                }
             } else {
                 eval(ext.replace('var rule', 'rule'));
             }
-        }
-
         /** 处理一下 rule规则关键字段没传递的情况 **/
         let rule_cate_excludes = (rule.cate_exclude||'').split('|').filter(it=>it.trim());
         let rule_tab_excludes = (rule.tab_exclude||'').split('|').filter(it=>it.trim());
@@ -890,8 +886,20 @@ function playParse(playObj){
         rule.url = rule.url||'';
         rule.homeUrl = rule.homeUrl||'';
         rule.searchUrl = rule.searchUrl||'';
+        if(rule.headers && typeof(rule.headers) === 'object'){
+            let header_keys = Object.keys(rule.headers);
+            for(let k of header_keys){
+                if(k.toLowerCase() === 'user-agent'){
+                    let v = header_keys[k];
+                    if(['MOBILE_UA','PC_UA','UC_UA','IOS_UA','UA'].includes(v)){
+                        rule.headers[k] = eval(v);
+                    }
+                }
+            }
+        }
 
-        // init_test();
+        RKEY = typeof(key)!=='undefined'&&key?key:'drpy_' + (rule.title || rule.host);
+        init_test();
     }catch (e) {
         console.log('init_test发生错误:'+e.message);
     }
