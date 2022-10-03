@@ -1,4 +1,5 @@
-Object.assign = function () {
+if (typeof Object.assign != 'function') {
+    Object.assign = function () {
 	var target = arguments[0];
     for (var i = 1; i < arguments.length; i++) {
         var source = arguments[i];
@@ -10,6 +11,8 @@ Object.assign = function () {
     }
     return target;
 };
+}
+
 var mubanDict = { // 模板字典
  mxpro:{
     title:'',
@@ -152,3 +155,4 @@ vfed:{
 
 };
 var muban = JSON.parse(JSON.stringify(mubanDict));
+export default muban;

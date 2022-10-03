@@ -124,10 +124,16 @@ def get_files(name):
     return response
 
 @home.route('/txt/<path:filename>')
-def custom_static(filename):
+def custom_static_txt(filename):
     # 自定义静态目录 {{ url_for('custom_static',filename='help.txt')}}
     # print(filename)
     return send_from_directory('txt', filename)
+
+@home.route('/libs/<path:filename>')
+def custom_static_libs(filename):
+    # 自定义静态目录 {{ url_for('custom_static',filename='help.txt')}}
+    # print(filename)
+    return send_from_directory('libs', filename)
 
 # @home.route('/txt/<name>')
 # def get_txt_files(name):
@@ -207,6 +213,8 @@ def config_render(mode):
     host = getHost(mode)
     # ali_token = lsg.getItem('ALI_TOKEN')
     ali_token = new_conf.ALI_TOKEN
+    js_mode = new_conf.JS_MODE
+    print('jsmode:',js_mode)
     # print(ali_token)
     customConfig = getCustonDict(host,ali_token)
     # print(customConfig)
@@ -221,7 +229,7 @@ def config_render(mode):
     rules = getRules('js')
     rules = get_multi_rules(rules)
     # html = render_template('config.txt',rules=getRules('js'),host=host,mode=mode,jxs=jxs,base64Encode=base64Encode,config=new_conf)
-    html = render_template('config.txt',pys=pys,rules=rules,host=host,mode=mode,jxs=jxs,alists=alists,alists_str=alists_str,live_url=live_url,config=new_conf)
+    html = render_template('config.txt',pys=pys,rules=rules,host=host,mode=mode,js_mode=js_mode,jxs=jxs,alists=alists,alists_str=alists_str,live_url=live_url,config=new_conf)
     merged_config = custom_merge(parseText(html),customConfig)
     # print(merged_config['sites'])
 

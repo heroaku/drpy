@@ -35,6 +35,7 @@ OCR_API = 'http://dm.mudery.com:10000' # 验证码识别接口,传参数data
 UNAME = 'admin'  # 管理员账号
 PWD = 'drpy' # 管理员密码
 USE_PY = 0  # 开启py源
+JS_MODE = 0 # js模式 0 drpy服务器解析 1 pluto本地解析
 MAX_CONTENT_LENGTH = 1 * 1024 * 100  # 100 kB
 LIVE_MODE = 0  # 0 本地 1外网
 LIVE_URL = 'https://gitcode.net/bd/v/-/raw/main/live/zb.txt'  # 初始化外网直播地址(后续在管理界面改)
