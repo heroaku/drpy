@@ -1,6 +1,7 @@
+import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/es6py.js';
 import cheerio from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/cheerio.min.js';
 import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/drT.js';
-import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js'
+import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js';
 
 // const key = 'drpy_zbk';
 
