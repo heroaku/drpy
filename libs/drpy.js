@@ -5,6 +5,7 @@ import cheerio from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/che
 import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/drT.js';
 // import 'http://192.168.10.103:5705/libs/drT.js';
 import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js';
+import pa from "./cheerio.min";
 // import muban from 'http://192.168.10.103:5705/admin/view/模板.js';
 
 // const key = 'drpy_zbk';
@@ -211,9 +212,16 @@ function pD(html,parse,uri){
     if(typeof(uri)==='undefined'||!uri){
         uri = '';
     }
+    if(/(url|src|href|data-original|data-src)$/.test(parse)){
+        if(/http/.test(ret)){
+            ret = ret.substr(ret.indexOf('http'));
+        }else{
+            ret = urljoin(MY_URL,ret)
+        }
+    }
     // MY_URL = getItem('MY_URL',MY_URL);
     // console.log(`规则${RKEY}打印MY_URL:${MY_URL},uri:${uri}`);
-    return urljoin(MY_URL,ret)
+    return ret
 }
 
 /*** js自封装的方法 ***/
