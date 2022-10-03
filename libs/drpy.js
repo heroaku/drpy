@@ -1,7 +1,11 @@
-import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/es6py.js';
-import cheerio from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/cheerio.min.js';
-import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/drT.js';
-import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js';
+// import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/es6py.js';
+import 'http://192.168.10.103:5705/libs/es6py.js';
+// import cheerio from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/cheerio.min.js';
+import cheerio from 'http://192.168.10.103:5705/libs/cheerio.min.js';
+// import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/drT.js';
+import 'http://192.168.10.103:5705/libs/drT.js';
+// import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js';
+import muban from 'http://192.168.10.103:5705/admin/view/模板.js';
 
 // const key = 'drpy_zbk';
 
@@ -20,6 +24,11 @@ function init_test(){
 }
 
 let rule = {};
+/** 已知问题记录
+ * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染
+ * 2.import es6py.js但是里面的函数没有被装载进来.比如drpy规则报错setResult2 is undefiend
+ *
+ * **/
 
 
 /*** 以下是内置变量和解析方法 **/
@@ -39,6 +48,11 @@ var MY_URL; // 全局注入变量,pd函数需要
 var VODS = [];// 一级或者搜索需要的数据列表
 var vod = {};//二级用单个影片详情
 var RKEY; // 源的唯一标识
+var fetch;
+var print;
+var log;
+var fetch_params;
+var oheaders;
 
 /*** 后台需要实现的java方法并注入到js中 ***/
 
@@ -298,6 +312,17 @@ function request(url,obj){
     }
 }
 
+fetch = request;
+print = function (data){
+    data = data||'';
+    if(typeof(data)!=='string'){
+        try {
+            data = JSON.stringify(data);
+        }catch (e) {}
+    }
+    console.log(data);
+}
+log = console.log;
 /**
  * 检查宝塔验证并自动跳过获取正确源码
  * @param html 之前获取的html
@@ -549,13 +574,21 @@ function categoryParse(cateObj) {
         }
         // console.log('filter:'+cateObj.filter);
         let fl = cateObj.filter?cateObj.extend:{};
-        url = drT.renderText(url,fl);
+        let new_url;
+        new_url = cheerio.jinja2(url,{fl:fl});
+        if(/object Object/.test(new_url)){
+            new_url = drT.renderText(url,fl);
+        }
+        url = new_url;
     }
     if(/fypage/.test(url)){
         if(url.includes('(')&&url.includes(')')){
             let url_rep = url.match(/.*?\((.*)\)/)[1];
+            // console.log(url_rep);
             let cnt_page = url_rep.replaceAll('fypage', cateObj.pg);
-            eval(`let cnt_pg=${cnt_page}`);
+            // console.log(cnt_page);
+            let cnt_pg = eval(cnt_page);
+            // console.log(cnt_pg);
             url = url.replaceAll(url_rep,cnt_pg).replaceAll('(','').replaceAll(')','');
         }else{
             url = url.replaceAll('fypage',cateObj.pg);
@@ -888,6 +921,8 @@ function playParse(playObj){
         rule.double = rule.double||false;
         rule.homeUrl = rule.homeUrl||'';
         rule.searchUrl = rule.searchUrl||'';
+        rule.timeout = rule.timeout||5000;
+        rule.encoding = rule.编码||rule.encoding||'utf-8';
         if(rule.headers && typeof(rule.headers) === 'object'){
             try {
                 let header_keys = Object.keys(rule.headers);
@@ -903,9 +938,9 @@ function playParse(playObj){
             }catch (e) {
                 console.log('处理headers发生错误:'+e.message);
             }
-
         }
-
+        fetch_params  = {'headers': rule.headers||{}, 'timeout': rule.timeout, 'encoding': rule.encoding};
+        oheaders = rule.headers||{};
         RKEY = typeof(key)!=='undefined'&&key?key:'drpy_' + (rule.title || rule.host);
         init_test();
     }catch (e) {
