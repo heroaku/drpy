@@ -28,6 +28,8 @@ let rule = {};
  * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染
  * 2.import es6py.js但是里面的函数没有被装载进来.比如drpy规则报错setResult2 is undefiend
  *
+ *
+ * todo:  jsp:{pdfa,pdfh,pd},json:{pdfa,pdfh,pd},jq:{pdfa,pdfh,pd}
  * **/
 
 
