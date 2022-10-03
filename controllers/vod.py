@@ -27,7 +27,7 @@ def search_one(rule, wd, before: str = ''):
     t1 = time()
     if not before:
         with open('js/模板.js', encoding='utf-8') as f:
-            before = f.read()
+            before = f.read().split('export')[0]
     js_path = f'js/{rule}.js'
     try:
         ctx, js_code = parser.runJs(js_path, before=before)
@@ -63,7 +63,7 @@ def multi_search2(wd):
     # print(search_sites)
     res = []
     with open('js/模板.js', encoding='utf-8') as f:
-        before = f.read()
+        before = f.read().split('export')[0]
     logger.info(f'聚搜准备工作耗时:{get_interval(t1)}毫秒')
     t2 = time()
     thread_pool = ThreadPoolExecutor(len(search_sites))  # 定义线程池来启动多线程执行此任务
@@ -109,7 +109,7 @@ def multi_search(wd):
     # print(search_sites)
     res = []
     with open('js/模板.js', encoding='utf-8') as f:
-        before = f.read()
+        before = f.read().split('export')[0]
     with ThreadPoolExecutor(max_workers=len(search_sites)) as executor:
         to_do = []
         for site in search_sites:
@@ -159,7 +159,7 @@ def vod_home():
     # js_path = f'js/{rule}.js' if not ext.startswith('http') else ext
     js_path = f'js/{rule}.js' if not ext else ext
     with open('js/模板.js', encoding='utf-8') as f:
-        before = f.read()
+        before = f.read().split('export')[0]
     # logger.info(f'js读取耗时:{get_interval(t1)}毫秒')
     logger.info(f'参数检验js读取共计耗时:{get_interval(t0)}毫秒')
     t2 = time()

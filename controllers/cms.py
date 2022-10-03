@@ -1245,7 +1245,7 @@ if __name__ == '__main__':
     # js_path = f'js/玩偶姐姐.js'
     # js_path = f'js/555影视.js'
     with open('../js/模板.js', encoding='utf-8') as f:
-        before = f.read()
+        before = f.read().split('export')[0]
     js_path = f'js/360影视.js'
     ctx, js_code = parser.runJs(js_path,before=before)
     ruleDict = ctx.rule.to_dict()

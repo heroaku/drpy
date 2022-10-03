@@ -38,8 +38,11 @@ def admin_index():  # 管理员界面
     live_url = lsg.getItem('LIVE_URL')
     use_py = lsg.getItem('USE_PY')
     # print(f'live_url:', live_url)
+    rules = getRules('js')
+    # print(rules)
     cache_count = getCacheCount()
-    return render_template('admin.html', pystate=use_py,rules=getRules('js'),cache_count=cache_count, ver=getLocalVer(), live_url=live_url)
+    # print(cache_count)
+    return render_template('admin.html', pystate=use_py,rules=rules,cache_count=cache_count, ver=getLocalVer(), live_url=live_url)
 
 @admin.route('/settings')
 def admin_settings():  # 管理员界面
@@ -214,7 +217,7 @@ def upload_file():
             if os.path.exists(savePath):
                 return R.failed(f'上传失败,文件已存在,请先查看删除再试')
             with open('js/模板.js', encoding='utf-8') as f2:
-                before = f2.read()
+                before = f2.read().split('export')[0]
             upcode = file.stream.read().decode('utf-8')
             check_to_run = before + upcode
             # print(check_to_run)

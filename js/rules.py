@@ -40,7 +40,7 @@ def getRules(path='cache'):
     rule_list = [file.replace('.js', '') for file in file_name]
     js_path = [f'{path}/{rule}.js' for rule in rule_list]
     with open('js/模板.js', encoding='utf-8') as f:
-        before = f.read()
+        before = f.read().split('export')[0]
     rule_codes = []
     # for js in js_path:
     #     with open(js,encoding='utf-8') as f:
