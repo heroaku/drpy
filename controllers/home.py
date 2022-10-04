@@ -192,7 +192,7 @@ def merged_hide(merged_config):
     all_cnt = len(merged_config['sites'])
 
     def filter_show(x):
-        name = x['api'].split('rule=')[1].split('&')[0] if 'rule=' in x['api'] else x['key']
+        name = x['api'].split('rule=')[1].split('&')[0] if 'rule=' in x['api'] else x['key'].replace('dr_','')
         # print(name)
         return name not in hide_rule_names
 
