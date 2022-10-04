@@ -34,7 +34,7 @@ vod.vod_pic =  json.imageUrl.replace('.jpg', ('_'+vsize+'.jpg?caplist=jpg,webp')
 // print(vod.vod_pic);
 vod.type_name =  json.categories.map(function (it){return it.name}).join(',');
 if(json.people.main_charactor){
-    vod_actors = [];
+    let vod_actors = [];
     json.people.main_charactor.forEach(function (it){
         vod_actors.push(it.name);
     });

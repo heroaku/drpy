@@ -1,11 +1,10 @@
 import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/es6py.js';
 // import {是否正版,urlDeal,setResult,setResult2,setHomeResult,maoss,urlencode} from 'http://192.168.10.103:5705/libs/es6py.js';
 // import 'http://192.168.10.103:5705/libs/es6py.js';
+
 import cheerio from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/cheerio.min.js';
 // import cheerio from 'http://192.168.10.103:5705/libs/cheerio.min.js';
 
-// import {parseTags,urljoin,stringify} from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/parseTags.js';
-// import {parseTags,urljoin,stringify} from 'http://192.168.10.103:5705/libs/parseTags.js';
 import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/drT.js';
 // import 'http://192.168.10.103:5705/libs/drT.js';
 import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js';
@@ -55,8 +54,6 @@ const OCR_API = 'http://cms.nokia.press/parse/ocr';//ocr在线识别接口
 if(typeof(MY_URL)==='undefined'){
     var MY_URL; // 全局注入变量,pd函数需要
 }
-var VODS = [];// 一级或者搜索需要的数据列表
-var vod = {};//二级用单个影片详情
 var RKEY; // 源的唯一标识
 var fetch;
 var print;
@@ -489,6 +486,7 @@ function request(url,obj){
         obj.buffer = 2;
         delete obj.toBase64
     }
+    console.log('request:'+url);
     let res = req(url, obj);
     let html = res.content||'';
     if(obj.withHeaders){
@@ -810,6 +808,7 @@ function categoryParse(cateObj) {
         const TYPE = 'cate';
         var input = MY_URL;
         const MY_PAGE = cateObj.pg;
+        var desc = '';
         eval(p.trim().replace('js:',''));
         d = VODS;
     }else {
@@ -977,6 +976,7 @@ function detailParse(detailObj){
         const TYPE = 'detail';
         var input = MY_URL;
         eval(p.trim().replace('js:',''));
+        console.log(JSON.stringify(vod));
     }else if(p&&typeof(p)==='object'){
         if(!html){
             html = getHtml(MY_URL);

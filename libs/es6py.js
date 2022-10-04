@@ -132,13 +132,12 @@ function urlDeal(vipUrl){
     }
     return vipUrl
 }
-export function setResult(d){
+function setResult(d){
     if(!Array.isArray(d)){
         return []
     }
-    if(typeof VODS==='undefined'){
-        VODS = [];
-    }
+    VODS = [];
+    // console.log(JSON.stringify(d));
     d.forEach(function (it){
         let obj = {
             vod_id:it.url||'',
@@ -229,12 +228,21 @@ function maoss(jxurl, ref, key) {
     }
 }
 
-export function urlencode (str) {
+function urlencode (str) {
     str = (str + '').toString();
     return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').
     replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
 }
-export var encodeUrl = urlencode;
+globalThis.VODS = [];// 一级或者搜索需要的数据列表
+globalThis.encodeUrl = urlencode;
+globalThis.urlencode = urlencode;
+globalThis.是否正版 = 是否正版;
+globalThis.urlDeal = urlDeal;
+globalThis.setResult = setResult;
+globalThis.setResult2 = setResult2;
+globalThis.setHomeResult = setHomeResult;
+globalThis.maoss = maoss;
+globalThis.urljoin2 = joinUrl;
 
 // export default {
 //     是否正版:是否正版,
