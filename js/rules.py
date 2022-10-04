@@ -29,8 +29,9 @@ def getCacheCount():
     file_name = list(filter(lambda x: str(x).endswith('.js') and str(x).find('模板') < 0, file_name))
     return len(file_name)
 
-def getRules(path='cache'):
+def getRules(path='cache',js_mode=0):
     t1 = time()
+
     base_path = path+'/'  # 当前文件所在目录
     # print(base_path)
     os.makedirs(base_path,exist_ok=True)
@@ -70,9 +71,10 @@ def getRules(path='cache'):
         # print(rule_codes[0].quickSearch)
         new_rule_list = []
         for i in range(len(rule_list)):
+            sable = rule_codes[i].searchable or 0
             tmpObj = {
                 'name':rule_list[i],
-                'searchable':rule_codes[i].searchable or 0,
+                'searchable':1 if (js_mode==1 and sable==2) else sable,
                 'quickSearch':rule_codes[i].quickSearch or 0,
                 'filterable':rule_codes[i].filterable or 0,
             }
