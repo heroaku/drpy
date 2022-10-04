@@ -806,7 +806,7 @@ function categoryParse(cateObj) {
     if(p.startsWith('js:')){
         const MY_CATE = cateObj.tid;
         const cateID = cateObj.tid;
-        const MY_FL = cateObj.extend;
+        var MY_FL = cateObj.extend;
         const TYPE = 'cate';
         var input = MY_URL;
         const MY_PAGE = cateObj.pg;

@@ -234,6 +234,7 @@ export function urlencode (str) {
     return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').
     replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
 }
+export var encodeUrl = urlencode;
 
 // export default {
 //     是否正版:是否正版,
