@@ -132,7 +132,7 @@ function urlDeal(vipUrl){
     }
     return vipUrl
 }
-function setResult(d){
+export function setResult(d){
     if(!Array.isArray(d)){
         return []
     }
@@ -229,8 +229,18 @@ function maoss(jxurl, ref, key) {
     }
 }
 
-function urlencode (str) {
+export function urlencode (str) {
     str = (str + '').toString();
     return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').
     replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
 }
+
+// export default {
+//     是否正版:是否正版,
+//     urlDeal:urlDeal,
+//     setResult:setResult,
+//     setResult2:setResult2,
+//     setHomeResult:setHomeResult,
+//     maoss:maoss,
+//     urlencode:urlencode
+// }
