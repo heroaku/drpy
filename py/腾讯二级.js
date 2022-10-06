@@ -1,9 +1,10 @@
 js:
-var VOD = {};
+VOD = {};
 let d = [];
 let video_list = [];
 let video_lists = [];
 let list = [];
+let QZOutputJson;
 let html = fetch(input,fetch_params);
 // print(html);
 let sourceId = /get_playsource/.test(input)?input.match(/id=(\d*?)&/)[1]:input.split('cid=')[1];
