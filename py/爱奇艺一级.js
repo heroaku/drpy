@@ -1,10 +1,10 @@
 js:
-let d = []; // 一级固定返回VODS变量,内置变量有 cateID,detailUrl,setResult用法跟海阔相同
-if(cateID==='16'){//网络电影
+let d = []; // 一级固定返回VODS变量,内置变量有 MY_CATE,detailUrl,setResult用法跟海阔相同
+if(MY_CATE==='16'){//网络电影
     input = input.replace("channel_id=16", "channel_id=1").split("three_category_id")[0];
     input+= "three_category_id=27401";
     // input+= "three_category_id=27401;must,地区;must,类型;must,规格;must";
-}else if(cateID==='5'){//音乐
+}else if(MY_CATE==='5'){//音乐
     input = input.replace("data_type=1", "data_type=2");
 }
 // let html = fetch(input,fetch_params);
@@ -43,7 +43,7 @@ json.data.list.forEach(function (data){
         }
     }
      // url = "https://pcw-api.iqiyi.com/video/video/videoinfowithuser/" + data.albumId + "?agent_type=1&authcookie=&subkey=" + data.albumId + "&subscribe=1";
-    url = cateID +'$'+data.albumId;
+    url = MY_CATE +'$'+data.albumId;
     // d.push({
     //     vod_id:url,
     //     vod_name: data.name,

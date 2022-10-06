@@ -715,7 +715,6 @@ class CMS:
                 'oheaders': self.d.oheaders,
                 'fetch_params': {'headers': self.headers, 'timeout': self.d.timeout, 'encoding': self.d.encoding},
                 'd': self.d,
-                'cateID':fyclass, # 分类id
                 'MY_CATE':fyclass, # 分类id
                 'MY_FL':fl, # 筛选
                 'MY_PAGE':fypage,  # 页数
@@ -885,7 +884,7 @@ class CMS:
                     'input': url,
                     'html': html,
                     'TYPE': 'detail',  # 海阔js环境标志
-                    'cateID': fyclass,  # 当前分类
+                    'MY_CATE': fyclass,  # 分类id
                     'oheaders': self.d.oheaders,
                     'fetch_params': {'headers': self.headers, 'timeout': self.d.timeout, 'encoding': self.d.encoding},
                     'd': self.d,
@@ -983,7 +982,7 @@ class CMS:
                     'TYPE': 'detail',  # 海阔js环境标志
                     # 'VID': id,  # 传递的vod_id
                     '二级': self.二级渲染,  # 二级解析函数,可以解析dict
-                    'cateID': fyclass,  # 当前分类
+                    'MY_CATE': fyclass,  # 分类id
                     'oheaders': self.d.oheaders,
                     'fetch_params': {'headers': self.headers, 'timeout': self.d.timeout, 'encoding': self.d.encoding},
                     'd': self.d,
