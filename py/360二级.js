@@ -17,7 +17,7 @@ let director = data.director.join(",");
 let actor = data.actor.join(",");
 // let content = jsp.pjfh(html,"data.description");
 let content = data.description;
-base_vod = {
+let base_vod = {
     vod_id:input,
     vod_name:tilte,
     type_name:vod_type,
@@ -28,14 +28,11 @@ base_vod = {
     vod_pic:urljoin2(input,img),
     // vod_pic:img,
 };
-// print(base_vod);
 let delta = 200;
 let vod_play = {};
 // let sites = jsp.pjfa(html,"data.playlink_sites"); //data.playlinksdetail.#idv.quality
 let sites = data.playlink_sites; //data.playlinksdetail.#idv.quality
-// print(sites);
-for(let i in sites){
-    let site = sites[i];
+sites.forEach(function (site){
     let playList = "";
     let vodItems = [];
     if(data.allupinfo){
@@ -63,8 +60,8 @@ for(let i in sites){
             }
         }
     }else{
+        // print(data.playlinksdetail);
         let item = data.playlinksdetail[site];
-        // print(item);
         vodItems.push((item.sort||"") + "$" +urlDeal(item.default_url||""));
     }
     if(vodItems.length > 0){
@@ -72,24 +69,25 @@ for(let i in sites){
     }
     // print(playList);
     if(playList.length < 1){
-       continue
+       return
     }
     vod_play[site]=playList;
-}
+});
 // print(vod_play);
 let tabs = Object.keys(vod_play);
 // let playUrls = Object.values(vod_play); // 没法使用values方法和列表的join方法
 let playUrls = [];
 for(let id in tabs){
+    print('id:'+id);
     playUrls.push(vod_play[tabs[id]]);
 }
 // print(tabs);
 // print(playUrls);
 if(tabs.length>0){
    // vod_play_from = join(tabs,"$$$");
-   vod_play_from = tabs.join("$$$");
+   let vod_play_from = tabs.join("$$$");
    // vod_play_url = join(playUrls,"$$$");
-   vod_play_url = playUrls.join("$$$");
+   let vod_play_url = playUrls.join("$$$");
    // print(vod_play_from);
    // print(vod_play_url);
    base_vod.vod_play_from = vod_play_from;

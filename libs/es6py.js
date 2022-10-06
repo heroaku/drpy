@@ -234,6 +234,7 @@ function urlencode (str) {
     replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
 }
 globalThis.VODS = [];// 一级或者搜索需要的数据列表
+globalThis.VOD = {};// 二级的单个数据
 globalThis.encodeUrl = urlencode;
 globalThis.urlencode = urlencode;
 globalThis.是否正版 = 是否正版;
@@ -242,7 +243,7 @@ globalThis.setResult = setResult;
 globalThis.setResult2 = setResult2;
 globalThis.setHomeResult = setHomeResult;
 globalThis.maoss = maoss;
-globalThis.urljoin2 = joinUrl;
+// globalThis.urljoin2 = joinUrl;
 
 // export default {
 //     是否正版:是否正版,
