@@ -1,5 +1,5 @@
 js:
-var vod = {};
+var VOD = {};
 let d = [];
 let video_list = [];
 let video_lists = [];
@@ -16,7 +16,7 @@ var pd = jsp.pd;
 //影片信息
 try{
 let json = JSON.parse(html);
-vod = {
+VOD = {
     vod_id:json.c.vid,
     vod_url:input,
     vod_name:json.c.title,
@@ -29,7 +29,7 @@ vod = {
     vod_remarks:json.rec,
     vod_pic:urljoin2(input,json.c.pic),
 };
-// print(vod);
+// print(VOD);
 }catch(e){log('解析片名海报等基础信息发生错误:'+e.message) }
 
 //掏直链
@@ -110,7 +110,7 @@ if (/get_playsource/.test(input)) {
 
 }
 // print(d);
-vod.vod_play_from = 'qq';
-vod.vod_play_url = d.map(function (it){
+VOD.vod_play_from = 'qq';
+VOD.vod_play_url = d.map(function (it){
     return it.title + '$' + it.url;
 }).join('#');

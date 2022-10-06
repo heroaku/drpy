@@ -5,7 +5,7 @@ fetch_params.headers['User-Agent'] = UA;
 pdfh = jsp.pdfh;
 pdfa = jsp.pdfa;
 pd = jsp.pd;
-vod = {};
+VOD = {};
 let d = [];
 let html = request(input);
 let json = JSON.parse(html);
@@ -41,18 +41,18 @@ try{
     let JJ = pdfh(html,'.desc&&Text').split("简介：")[1];//简介
     let _desc = time;//更新，时间
 
-     vod.vod_name = pdfh(html, '.vt-txt&&Text');
-     vod.type_name = pdfh(html, 'p:eq(0)&&Text').substr(0,6);
-     vod.vod_area = pdfh(html, 'p:eq(1)&&Text');
-     vod.vod_actor = actor;
-     vod.vod_director = director;
-     vod.vod_remarks = _desc;
-     vod.vod_pic = _img;
-     vod.vod_content = JJ;
+     VOD.vod_name = pdfh(html, '.vt-txt&&Text');
+     VOD.type_name = pdfh(html, 'p:eq(0)&&Text').substr(0,6);
+     VOD.vod_area = pdfh(html, 'p:eq(1)&&Text');
+     VOD.vod_actor = actor;
+     VOD.vod_director = director;
+     VOD.vod_remarks = _desc;
+     VOD.vod_pic = _img;
+     VOD.vod_content = JJ;
 }catch(e){
     log('获取影片信息发生错误:'+e.message);
 }
-// print(vod);
+// print(VOD);
 function getRjpg(imgUrl,xs){
     xs = xs||3;
     let picSize = /jpg_/.test(imgUrl)?imgUrl.split('jpg_')[1].split('.')[0]:false;
@@ -95,8 +95,8 @@ if (json.data.total === 1 && json.data.list.length===1) {
 }else{
     print(input+'暂无片源');
 }
-vod.vod_play_from = 'mgtv';
-vod.vod_play_url = d.map(function (it){
+VOD.vod_play_from = 'mgtv';
+VOD.vod_play_url = d.map(function (it){
     return it.title + '$' + it.url;
 }).join('#');
 setResult(d);

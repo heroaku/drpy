@@ -997,7 +997,7 @@ class CMS:
                 # print(jscode)
                 loader, _ = runJScode(jscode, ctx=ctx)
                 # print(loader.toString())
-                vod = loader.eval('vod')
+                vod = loader.eval('VOD')
                 if isinstance(vod,JsObjectWrapper):
                     vod = vod.to_dict()
                     if show_name:

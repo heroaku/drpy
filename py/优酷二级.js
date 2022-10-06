@@ -1,6 +1,6 @@
 js:
 var d = [];
-var vod={vod_id:input};
+VOD={vod_id:input};
 let html=request(input);
 // print(html);
 let json = JSON.parse(html);
@@ -18,10 +18,10 @@ if(/优酷/.test(name)&&video_lists.length>0){//获取简介详情
     let json = /__INITIAL_DATA__/.test(html)?html.split('window.__INITIAL_DATA__ =')[1].split(';')[0]:'{}';
     if(json==='{}'){
         log('触发了优酷人机验证');
-        vod.vod_remarks = ourl;
-        vod.vod_pic = _img;
-        vod.vod_name = video_lists[0].title.replace(/(\d+)/g,'');
-        vod.vod_content = '触发了优酷人机验证,本次未获取详情,但不影响播放('+ourl+')';
+        VOD.vod_remarks = ourl;
+        VOD.vod_pic = _img;
+        VOD.vod_name = video_lists[0].title.replace(/(\d+)/g,'');
+        VOD.vod_content = '触发了优酷人机验证,本次未获取详情,但不影响播放('+ourl+')';
     }else{
         try {
             json = JSON.parse(json);
@@ -36,21 +36,22 @@ if(/优酷/.test(name)&&video_lists.length>0){//获取简介详情
             let _title = m.introTitle;
             // subtitle  desc   showImgV 是竖着的  showImg横着的
             // let uptips = pdfh(html,'.title-info&&Text');
-            vod.vod_pic = img;
-            vod.vod_name = _title;
-            vod.vod_type = _type;
-            vod.vod_remarks = _desc;
-            vod.vod_content = JJ;
+            VOD.vod_pic = img;
+            VOD.vod_name = _title;
+            VOD.vod_type = _type;
+            VOD.vod_remarks = _desc;
+            VOD.vod_content = JJ;
         }catch (e) {
             log('海报渲染发生错误:'+e.message);
-            vod.vod_remarks = name;
+            print(json);
+            VOD.vod_remarks = name;
         }
     }
 }
 
 if(!/优酷/.test(name)){
-    vod.vod_content = '非自家播放源,暂无视频简介及海报';
-    vod.vod_remarks = name;
+    VOD.vod_content = '非自家播放源,暂无视频简介及海报';
+    VOD.vod_remarks = name;
 }
 function adhead(url){
     // let hd = 'https://v.sogou.com';
@@ -76,7 +77,7 @@ video_lists.forEach(function (it){
         });
     }
 });
-vod.vod_play_from = name;
-vod.vod_play_url = d.map(function (it){
+VOD.vod_play_from = name;
+VOD.vod_play_url = d.map(function (it){
     return it.title + '$' + it.url;
 }).join('#');

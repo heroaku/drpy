@@ -1,12 +1,12 @@
 js:
 var d=[];
-var vod={vod_id:input};
+var VOD={vod_id:input};
 // print(input);
 try {
 let html=request(input);
 html = JSON.parse(html);
 let node = html.data;
-vod = {
+VOD = {
     "vod_id":node['id'],
     "vod_name":node['videoName'],
     "vod_pic":node['videoCover'],
@@ -18,7 +18,7 @@ vod = {
     "vod_director":node['director'],
     "vod_content":node['brief'].strip()
 }
-// print(vod);
+// print(VOD);
 let tid = input.split('ids=')[1];
 let listUrl = 'http://api.kunyu77.com/api.php/provide/videoPlaylist?devid=453CA5D864457C7DB4D0EAA93DE96E66&package=com.sevenVideo.app.android&version=1.8.7&ids='+tid;
 html = request(listUrl);
@@ -48,9 +48,9 @@ Object.keys(playMap).forEach(function (key){
 // print(playList);
 let vod_play_from = playFrom.join('$$$');
 let vod_play_url = playList.join('$$$');
-vod['vod_play_from'] = vod_play_from;
-vod['vod_play_url'] = vod_play_url;
-// print(vod);
+VOD['vod_play_from'] = vod_play_from;
+VOD['vod_play_url'] = vod_play_url;
+// print(VOD);
 }catch (e) {
     log('获取二级详情页发生错误:'+e.message);
 }

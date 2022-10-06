@@ -95,5 +95,5 @@ if(tabs.length>0){
    base_vod.vod_play_from = vod_play_from;
    base_vod.vod_play_url = vod_play_url;
 }
-vod = base_vod;
-// print(vod);
+VOD = base_vod;
+// print(VOD);

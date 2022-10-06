@@ -1,6 +1,6 @@
 js:
 // let d = [];
-var vod = {vod_id:input};
+var VOD = {vod_id:input};
 let html = request(input);
 
 function adhead(url){
@@ -29,21 +29,21 @@ try {
     let shows = json.play_from_open_index;
     let plays = json.play.item_list;
     if (shows) {
-        vod.vod_name = name;
-        vod.vod_area = emcee + ',' + tv_station;
-        vod.vod_director = director;
-        vod.vod_actor = starring;
-        vod.vod_pic = jsp.pd(html, '#thumb_img&&img&&src');
-        vod.vod_remarks = style + ' 评分:' + score + ',' + update;
-        vod.vod_content = introduction;
+        VOD.vod_name = name;
+        VOD.vod_area = emcee + ',' + tv_station;
+        VOD.vod_director = director;
+        VOD.vod_actor = starring;
+        VOD.vod_pic = jsp.pd(html, '#thumb_img&&img&&src');
+        VOD.vod_remarks = style + ' 评分:' + score + ',' + update;
+        VOD.vod_content = introduction;
     } else {
-        vod.vod_name = name;
-        // vod.vod_area = '';
-        vod.vod_director = director;
-        vod.vod_actor = starring;
-        vod.vod_pic = jsp.pd(html, '#thumb_img&&img&&src');
-        // vod.vod_remarks = style + ' 评分:' + score + ',' + update;
-        vod.vod_content = introduction;
+        VOD.vod_name = name;
+        // VOD.vod_area = '';
+        VOD.vod_director = director;
+        VOD.vod_actor = starring;
+        VOD.vod_pic = jsp.pd(html, '#thumb_img&&img&&src');
+        // VOD.vod_remarks = style + ' 评分:' + score + ',' + update;
+        VOD.vod_content = introduction;
     }
     let tp = '&type=json';
     try {
@@ -55,8 +55,8 @@ try {
             tbn = tbn.split('').join(' '); // 加空格防止被软件拦截
             tabs.push(tbn);
         });
-        vod.vod_play_from = tabs.join('$$$');
-        // print(vod);
+        VOD.vod_play_from = tabs.join('$$$');
+        // print(VOD);
         // print(lists);
         // print(shows);
         vod_lists = []; // 拿$$$去填
@@ -99,10 +99,10 @@ try {
             }
         });
         // print(vod_lists);
-        vod.vod_play_url = vod_lists.join('$$$');
+        VOD.vod_play_url = vod_lists.join('$$$');
     } catch(e) {
         let img = json.photo.item_list;
-        vod.vod_name = '本片无选集';
-        vod.vod_pic = img.length>0?img[0]:'';
+        VOD.vod_name = '本片无选集';
+        VOD.vod_pic = img.length>0?img[0]:'';
     }
 } catch(e) {}
