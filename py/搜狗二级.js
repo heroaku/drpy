@@ -1,6 +1,6 @@
 js:
 // let d = [];
-var VOD = {vod_id:input};
+VOD = {vod_id:input};
 let html = request(input);
 
 function adhead(url){
@@ -59,7 +59,10 @@ try {
         // print(VOD);
         // print(lists);
         // print(shows);
-        vod_lists = []; // 拿$$$去填
+        let vod_lists = []; // 拿$$$去填
+        if(typeof(play_url)==='undefined'){
+            var play_url = '';
+        }
         play_url = play_url.replace('&play_url=','&type=json&play_url=');
         lists.forEach(function (item,idex){ // item是个json列表
             if (item || shows) { // 动漫,电视剧
@@ -105,4 +108,6 @@ try {
         VOD.vod_name = '本片无选集';
         VOD.vod_pic = img.length>0?img[0]:'';
     }
-} catch(e) {}
+} catch(e) {
+    print('发生了错误:'+e.message);
+}

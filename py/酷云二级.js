@@ -1,9 +1,10 @@
 js:
 var d=[];
-var VOD={vod_id:input};
+VOD={vod_id:input};
 // print(input);
 try {
 let html=request(input);
+print(html);
 html = JSON.parse(html);
 let node = html.data;
 VOD = {
@@ -25,11 +26,14 @@ html = request(listUrl);
 html = JSON.parse(html);
 let episodes = html.data.episodes;
 let playMap = {};
+if(typeof(play_url)==='undefined'){
+    var play_url = '';
+}
 play_url = play_url.replace('&play_url=','&type=json&play_url=');
 episodes.forEach(function (ep){
     let playurls = ep['playurls'];
     playurls.forEach(function (playurl){
-        source = playurl['playfrom'];
+        let source = playurl['playfrom'];
         if(!playMap.hasOwnProperty(source)){
             playMap[source] = [];
         }

@@ -34,6 +34,7 @@ let rule = {};
  * 2.import es6py.js但是里面的函数没有被装载进来.比如drpy规则报错setResult2 is undefiend
  * 3.无法重复导入cheerio(怎么解决drpy和parseTag里都需要导入cheerio的问题) 无法在副文件导入cheerio (现在是全部放在drpy一个文件里了,凑合解决?)
  * 4.有个错误不知道哪儿来的 executeScript: com.quickjs.JSObject$Undefined cannot be cast to java.lang.String 在 点击选集播放打印init_test_end后面打印
+ * 5.需要实现 stringify 函数,比起JSON.stringify函数,它会原封不动保留中文不会编码unicode
  * todo:  jsp:{pdfa,pdfh,pd},json:{pdfa,pdfh,pd},jq:{pdfa,pdfh,pd}
  *  * 电脑看日志调试
  adb tcpip 5555
@@ -313,8 +314,16 @@ function urlencode (str) {
     return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').
     replace(/\)/g, '%29').replace(/\*/g, '%2A').replace(/%20/g, '+');
 }
+
+function base64Encode(text){
+    return text
+}
+
 globalThis.VODS = [];// 一级或者搜索需要的数据列表
 globalThis.VOD = {};// 二级的单个数据
+globalThis.encodeUrl = urlencode;
+globalThis.urlencode = urlencode;
+
 
 
 /**
@@ -703,11 +712,15 @@ function require(url){
  */
 function request(url,obj){
     if(typeof(obj)==='undefined'||!obj||obj==={}){
+        let headers = {
+            'User-Agent':MOBILE_UA,
+            'Referer':getHome(url),
+        };
+        if(rule.headers){
+            Object.assign(headers,rule.headers);
+        }
         obj = {
-            headers:{
-                'User-Agent':MOBILE_UA,
-                'Referer':getHome(url),
-            }
+            headers:headers
         }
     }else{
         let headers = obj.headers||{};
@@ -1169,6 +1182,7 @@ function searchParse(searchObj) {
                     let links = p[4].split('+').map(p4=>{
                         return !rule.detailUrl?_pd(it, p4,MY_URL):_pdfh(it, p4)
                     });
+
                     let link = links.join('$');
                     let ob = {
                         'vod_id': link,
@@ -1371,6 +1385,7 @@ function playParse(playObj){
         lazy_play =  common_play;
     }else if(rule.play_parse&&rule.lazy&&typeof(rule.lazy)==='string'){
         try {
+            print('开始执行js免嗅=>'+rule.lazy);
             eval(rule.lazy.replace('js:').trim());
             lazy_play = typeof(input) === 'object'?input:{
                 parse:1,
@@ -1378,6 +1393,7 @@ function playParse(playObj){
                 url:input
             };
         }catch (e) {
+            print('js免嗅错误:'+e.message);
             lazy_play =  common_play;
         }
     }else{
