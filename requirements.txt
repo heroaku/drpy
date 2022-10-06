@@ -1,8 +1,8 @@
 js2py
 pyquery
-flask
+flask==2.2.2
 flask_migrate
-flask-sqlalchemy
+flask-sqlalchemy==2.5.1
 requests
 psutil
 # netifaces
