@@ -21,6 +21,6 @@ if (/\.m3u8|\.mp4/.test(input)) {
     let playurl = JSON.parse(playhtml).url;
     input = GetPlayUrl(playurl);
     }catch (e) {
-        input = {parse:1,url:input};
+        input = {parse:1,jx:1,url:input};
     }
 }
