@@ -66,7 +66,8 @@ var RKEY; // 源的唯一标识
 var fetch;
 var print;
 var log;
-var fetch_params;
+var rule_fetch_params;
+var fetch_params; // 每个位置单独的
 var oheaders;
 var _pdfh;
 var _pdfa;
@@ -837,6 +838,7 @@ function getHtml(url){
  * @returns {string}
  */
 function homeParse(homeObj) {
+    fetch_params = JSON.parse(JSON.stringify(rule_fetch_params));
     let classes = [];
     if (homeObj.class_name && homeObj.class_url) {
         let names = homeObj.class_name.split('&');
@@ -903,6 +905,7 @@ function homeParse(homeObj) {
  * @returns {string}
  */
 function homeVodParse(homeVodObj){
+    fetch_params = JSON.parse(JSON.stringify(rule_fetch_params));
     let d = [];
     MY_URL = homeVodObj.homeUrl;
     // setItem('MY_URL',MY_URL);
@@ -1026,6 +1029,7 @@ function homeVodParse(homeVodObj){
  * @returns {string}
  */
 function categoryParse(cateObj) {
+    fetch_params = JSON.parse(JSON.stringify(rule_fetch_params));
     let p = cateObj.一级;
     if(!p||typeof(p)!=='string'){
         return '{}'
@@ -1132,6 +1136,7 @@ function categoryParse(cateObj) {
  * @returns {string}
  */
 function searchParse(searchObj) {
+    fetch_params = JSON.parse(JSON.stringify(rule_fetch_params));
     let d = [];
     if(!searchObj.searchUrl){
         return '{}'
@@ -1225,6 +1230,7 @@ function searchParse(searchObj) {
  * @returns {string}
  */
 function detailParse(detailObj){
+    fetch_params = JSON.parse(JSON.stringify(rule_fetch_params));
     let vod = {
         vod_id: "id",
         vod_name: "片名",
@@ -1383,6 +1389,7 @@ function detailParse(detailObj){
  * @returns {string}
  */
 function playParse(playObj){
+    fetch_params = JSON.parse(JSON.stringify(rule_fetch_params));
     MY_URL = playObj.url;
     if(!/http/.test(MY_URL)){
         try {
@@ -1475,7 +1482,8 @@ function playParse(playObj){
                 console.log('处理headers发生错误:'+e.message);
             }
         }
-        fetch_params  = {'headers': rule.headers||{}, 'timeout': rule.timeout, 'encoding': rule.encoding};
+        // print(rule.headers);
+        rule_fetch_params  = {'headers': rule.headers||false, 'timeout': rule.timeout, 'encoding': rule.encoding};
         oheaders = rule.headers||{};
         RKEY = typeof(key)!=='undefined'&&key?key:'drpy_' + (rule.title || rule.host);
         init_test();
