@@ -2,7 +2,9 @@ js:
 // fetch_params.withHeaders = 1;
 // let data=fetch(input,fetch_params);
 // let html = data.body;
-fetch_params.headers['user-agent'] = MOBILE_UA;
+print(input);
+fetch_params.headers['User-Agent'] = MOBILE_UA;
+print(fetch_params);
 let html=request(input);
 // let rurl = html.match(/window\.open\('(.*?)',/)[1].split('?')[0];
 let rurl = html.match(/window\.open\('(.*?)',/)[1];
@@ -10,5 +12,5 @@ let rurl = html.match(/window\.open\('(.*?)',/)[1];
 rurl = urlDeal(rurl);
 // print(rurl);
 // input = rurl;
-input = {parse:1,url:rurl};
+input = {parse:1,jx:1,url:rurl};
 // print(html);

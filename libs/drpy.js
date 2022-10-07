@@ -218,10 +218,8 @@ function setResult(d){
         return []
     }
     VODS = [];
-    print(221);
-    console.log(JSON.stringify(d));
+    // print(d);
     d.forEach(function (it){
-        print(it);
         let obj = {
             vod_id:it.url||'',
             vod_name: it.title||'',
@@ -229,7 +227,6 @@ function setResult(d){
             vod_content: it.content||'',
             vod_pic: it.pic_url||it.img||'',
         };
-        print(obj);
         let keys = Object.keys(it);
         if(keys.includes('tname')){
             obj.type_name = it.tname||'';
@@ -249,12 +246,8 @@ function setResult(d){
         if(keys.includes('area')){
             obj.vod_area = it.area||'';
         }
-        print(251);
         VODS.push(obj);
-        print(VODS);
     });
-    print(256);
-    print(VODS);
     return VODS
 }
 function setResult2(res){
@@ -323,6 +316,10 @@ function urlencode (str) {
 }
 
 function base64Encode(text){
+    return text
+}
+
+function base64Decode(text){
     return text
 }
 
@@ -719,16 +716,19 @@ function require(url){
  */
 function request(url,obj){
     if(typeof(obj)==='undefined'||!obj||obj==={}){
-        let headers = {
-            'User-Agent':MOBILE_UA,
-            'Referer':getHome(url),
-        };
-        if(rule.headers){
-            Object.assign(headers,rule.headers);
+        if(!fetch_params||!fetch_params.headers){
+            let headers = {
+                'User-Agent':MOBILE_UA,
+            };
+            if(rule.headers){
+                Object.assign(headers,rule.headers);
+            }
+            fetch_params.headers = headers;
         }
-        obj = {
-            headers:headers
+        if(!fetch_params.headers.Referer){
+            fetch_params.headers.Referer = getHome(url)
         }
+        obj = fetch_params;
     }else{
         let headers = obj.headers||{};
         let keys = Object.keys(headers).map(it=>it.toLowerCase());
@@ -1371,7 +1371,7 @@ function detailParse(detailObj){
         }
         vod.vod_play_url = vod_tab_list.join(vod_play_url);
     }
-    console.log(JSON.stringify(vod));
+    // print(vod);
     return JSON.stringify({
         list: [vod]
     })
@@ -1384,18 +1384,25 @@ function detailParse(detailObj){
  */
 function playParse(playObj){
     MY_URL = playObj.url;
-    var input = MY_URL;
+    if(!/http/.test(MY_URL)){
+        try {
+            MY_URL = base64Decode(MY_URL);
+        }catch (e) {}
+    }
+    MY_URL = decodeURIComponent(MY_URL);
+    var input = MY_URL;//注入给免嗅js
     let common_play = {
         parse:1,
-        url:MY_URL
+        url:input
     };
     let lazy_play;
     if(!rule.play_parse||!rule.lazy){
         lazy_play =  common_play;
     }else if(rule.play_parse&&rule.lazy&&typeof(rule.lazy)==='string'){
         try {
-            print('开始执行js免嗅=>'+rule.lazy);
-            eval(rule.lazy.replace('js:').trim());
+            let lazy_code = rule.lazy.replace('js:','').trim();
+            print('开始执行js免嗅=>'+lazy_code);
+            eval(lazy_code);
             lazy_play = typeof(input) === 'object'?input:{
                 parse:1,
                 jx:1,
