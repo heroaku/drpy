@@ -71,10 +71,13 @@ def getRules(path='cache',js_mode=0):
         # print(rule_codes[0].quickSearch)
         new_rule_list = []
         for i in range(len(rule_list)):
+            if js_mode == 1 and rule_list[i] == 'drpy':
+                continue
             sable = rule_codes[i].searchable or 0
             tmpObj = {
                 'name':rule_list[i],
-                'searchable':1 if (js_mode==1 and sable==2) else sable,
+                # 'searchable':1 if (js_mode==1 and sable==2) else sable, # 对js模式1开放软件聚搜(还是算了，服务器遭不住)
+                'searchable':sable,
                 'quickSearch':rule_codes[i].quickSearch or 0,
                 'filterable':rule_codes[i].filterable or 0,
             }

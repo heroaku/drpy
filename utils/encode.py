@@ -134,6 +134,7 @@ def baseDecode(text):
 
 def parseText(text:str):
     text = text.replace('false','False').replace('true','True').replace('null','None')
+    # print(text)
     return literal_eval(text)
 
 def setDetail(title:str,img:str,desc:str,content:str,tabs:list=None,lists:list=None):

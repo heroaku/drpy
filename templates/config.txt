@@ -25,6 +25,15 @@
     "filterable": {{ rule.filterable }},
     "ext":"{{ host }}/admin/view/{{ rule.name }}.js"
 }{% endif %}{% if loop.last==False %},{% endif %}{% endfor %}
+{% if js_mode == 1 %},{
+    "key":"dr_drpy",
+    "name":"drpy(道长)",
+    "type":1,
+    "api":"{{ host }}/vod?rule=drpy",
+    "searchable": 2,
+    "quickSearch": 1,
+    "filterable": 1
+}{% endif %}
 {% if pys %}
 ,{% for py in pys %}{
     "key":"{{ py.name }}",
