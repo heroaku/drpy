@@ -1100,7 +1100,7 @@ function categoryParse(cateObj) {
                 let list = _pdfa(html, p[0]);
                 list.forEach(it => {
                     let links = p[4].split('+').map(p4=>{
-                        return !rule.detailUrl?_pd(p4, p[4],MY_URL):_pdfh(it, p[4]);
+                        return !rule.detailUrl?_pd(it, p4,MY_URL):_pdfh(it, p4);
                     });
                     let link = links.join('$');
                     let vod_id = rule.detailUrl?MY_CATE+'$'+link:link;
@@ -1446,7 +1446,10 @@ function playParse(playObj){
         rule.url = rule.url||'';
         rule.double = rule.double||false;
         rule.homeUrl = rule.homeUrl||'';
+        rule.detailUrl = rule.detailUrl||'';
         rule.searchUrl = rule.searchUrl||'';
+        rule.homeUrl = rule.host&&rule.homeUrl?urljoin(rule.host,rule.homeUrl):(rule.homeUrl||rule.host);
+        rule.detailUrl = rule.host&&rule.detailUrl?urljoin(rule.host,rule.detailUrl):rule.detailUrl;
         rule.timeout = rule.timeout||5000;
         rule.encoding = rule.编码||rule.encoding||'utf-8';
         if(rule.headers && typeof(rule.headers) === 'object'){
@@ -1498,13 +1501,11 @@ function home(filter) {
  * @returns {string}
  */
 function homeVod(params) {
-    let homeUrl = rule.host&&rule.homeUrl?urljoin(rule.host,rule.homeUrl):(rule.homeUrl||rule.host);
-    let detailUrl = rule.host&&rule.detailUrl?urljoin(rule.host,rule.detailUrl):rule.detailUrl;
     let homeVodObj = {
         推荐:rule.推荐,
         double:rule.double,
-        homeUrl:homeUrl,
-        detailUrl:detailUrl
+        homeUrl:rule.homeUrl,
+        detailUrl:rule.detailUrl
     };
     return homeVodParse(homeVodObj)
     // return "{}";
@@ -1545,8 +1546,6 @@ function detail(vod_url) {
     }
     let detailUrl = vod_url;
     let url;
-    rule.homeUrl = urljoin(rule.host,rule.homeUrl);
-    rule.detailUrl = urljoin(rule.host,rule.detailUrl);
     if(!detailUrl.startsWith('http')&&!detailUrl.includes('/')){
         url = rule.detailUrl.replaceAll('fyid', detailUrl).replaceAll('fyclass',fyclass);
     }else if(detailUrl.includes('/')){
