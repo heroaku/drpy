@@ -888,6 +888,8 @@ function homeParse(homeObj) {
 
         }
     }
+    // 排除分类
+    classes = classes.filter(it=>!homeObj.cate_exclude || !(new RegExp(homeObj.cate_exclude).test(it.type_name)));
     let resp = {
         'class': classes
     };
