@@ -505,7 +505,7 @@ class CMS:
                     video_result = self.homeVideoContent(html,fypage)
             except Exception as e:
                 logger.info(f'{self.getName()}主页发生错误:{e}')
-
+        classes = list(filter(lambda x:not self.cate_exclude or not jsoup(self.url).test(self.cate_exclude, x['type_name']),classes))
         result['class'] = classes
         if self.filter:
             if isinstance(self.filter,dict):
