@@ -12,7 +12,7 @@ json.data.contents.forEach(function (data){
             desc += it.name + '\t';
         });
         if (list[0].source === 'imgo') {
-          let img = data.data.pic ? data.data.pic : data.data.yearList[0].pic;
+            let img = data.data.pic ? data.data.pic : data.data.yearList[0].pic;
             d.push({
                 title: data.data.title ? data.data.title : data.data.yearList[0].title,
                 img:img ,
@@ -22,6 +22,5 @@ json.data.contents.forEach(function (data){
             });
         }
     }
-
 });
 setResult(d);

@@ -22,7 +22,7 @@ var rule = {
     limit:20,
     play_parse:true,
     // 手动调用解析请求json的url,此lazy不方便
-    lazy:'js:print(input);fetch_params.headers["user-agent"]=MOBILE_UA;let html=request(input);let rurl=html.match(/window\\.open\\(\'(.*?)\',/)[1];rurl=urlDeal(rurl);input={parse:1,url:rurl};',
+    // lazy:'js:print(input);fetch_params.headers["user-agent"]=MOBILE_UA;let html=request(input);let rurl=html.match(/window\\.open\\(\'(.*?)\',/)[1];rurl=urlDeal(rurl);input={parse:1,url:rurl};',
     // 推荐:'.list_item;img&&alt;img&&src;a&&Text;a&&data-float',
     一级:'json:data.hitDocs;title;img;updateInfo||rightCorner.text;playPartId',
     // 一级:'json:data.hitDocs;title;img;updateInfo;playPartId',

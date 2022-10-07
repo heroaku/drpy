@@ -218,8 +218,10 @@ function setResult(d){
         return []
     }
     VODS = [];
-    // console.log(JSON.stringify(d));
+    print(221);
+    console.log(JSON.stringify(d));
     d.forEach(function (it){
+        print(it);
         let obj = {
             vod_id:it.url||'',
             vod_name: it.title||'',
@@ -227,6 +229,7 @@ function setResult(d){
             vod_content: it.content||'',
             vod_pic: it.pic_url||it.img||'',
         };
+        print(obj);
         let keys = Object.keys(it);
         if(keys.includes('tname')){
             obj.type_name = it.tname||'';
@@ -246,8 +249,12 @@ function setResult(d){
         if(keys.includes('area')){
             obj.vod_area = it.area||'';
         }
+        print(251);
         VODS.push(obj);
+        print(VODS);
     });
+    print(256);
+    print(VODS);
     return VODS
 }
 function setResult2(res){
@@ -751,6 +758,7 @@ function request(url,obj){
     console.log('request:'+url);
     let res = req(url, obj);
     let html = res.content||'';
+    // console.log(html);
     if(obj.withHeaders){
         let htmlWithHeaders = res.headers;
         htmlWithHeaders.body = html;
@@ -1200,14 +1208,15 @@ function searchParse(searchObj) {
         } catch (e) {
             return '{}'
         }
-        return JSON.stringify({
-            'page': parseInt(searchObj.pg),
-            'pagecount': 10,
-            'limit': 20,
-            'total': 100,
-            'list': d,
-        });
+
     }
+    return JSON.stringify({
+        'page': parseInt(searchObj.pg),
+        'pagecount': 10,
+        'limit': 20,
+        'total': 100,
+        'list': d,
+    });
 }
 
 /**
