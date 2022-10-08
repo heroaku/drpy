@@ -793,7 +793,7 @@ print = function (data){
     }
     console.log(data);
 }
-log = console.log;
+log = print;
 /**
  * 检查宝塔验证并自动跳过获取正确源码
  * @param html 之前获取的html
