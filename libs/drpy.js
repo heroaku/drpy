@@ -1466,6 +1466,15 @@ function playParse(playObj){
         rule.searchUrl = rule.searchUrl||'';
         rule.homeUrl = rule.host&&rule.homeUrl?urljoin(rule.host,rule.homeUrl):(rule.homeUrl||rule.host);
         rule.detailUrl = rule.host&&rule.detailUrl?urljoin(rule.host,rule.detailUrl):rule.detailUrl;
+        if(rule.url.includes('[')&&rule.url.includes(']')){
+            let u1 = rule.url.split('[')[0]
+            let u2 = rule.url.split('[')[1].split(']')[0]
+            rule.url = rule.host && rule.url?urljoin(rule.host,u1)+'['+urljoin(rule.host,u2)+']':rule.url;
+        }else{
+            rule.url = rule.host && rule.url ? urljoin(rule.host,rule.url) : rule.url;
+        }
+        rule.searchUrl = rule.host && rule.searchUrl ? urljoin(rule.host,rule.searchUrl) : rule.searchUrl;
+
         rule.timeout = rule.timeout||5000;
         rule.encoding = rule.编码||rule.encoding||'utf-8';
         if(rule.headers && typeof(rule.headers) === 'object'){
@@ -1503,7 +1512,7 @@ function home(filter) {
     console.log("home");
     let homeObj = {
         filter:rule.filter||false,
-        MY_URL: rule.host,
+        MY_URL: rule.homeUrl,
         class_name: rule.class_name || '',
         class_url: rule.class_url || '',
         class_parse: rule.class_parse || '',
@@ -1538,7 +1547,7 @@ function homeVod(params) {
  */
 function category(tid, pg, filter, extend) {
     let cateObj = {
-        url: urljoin(rule.host, rule.url),
+        url: rule.url,
         一级: rule.一级,
         tid: tid,
         pg: parseInt(pg),
@@ -1604,7 +1613,7 @@ function play(flag, id, flags) {
  */
 function search(wd, quick) {
     let searchObj = {
-        searchUrl: urljoin(rule.host, rule.searchUrl),
+        searchUrl: rule.searchUrl,
         搜索: rule.搜索,
         wd: wd,
         //pg: pg,
