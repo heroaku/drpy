@@ -1,7 +1,6 @@
 // import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/es6py.js';
 // import {是否正版,urlDeal,setResult,setResult2,setHomeResult,maoss,urlencode} from 'http://192.168.10.103:5705/libs/es6py.js';
 // import 'http://192.168.1.124:5705/libs/es6py.js';
-import { Base64 } from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/base64.min.js';
 import cheerio from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/cheerio.min.js';
 // import cheerio from 'http://192.168.10.103:5705/libs/cheerio.min.js';
 
@@ -10,17 +9,16 @@ import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/drT.js';
 import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js';
 // import muban from 'http://192.168.10.103:5705/admin/view/模板.js';
 
-
 // const key = 'drpy_zbk';
 // eval(req('http://192.168.1.124:5705/libs/es6py.js').content);
 function init_test(){
     console.log("init_test_start");
     console.log(RKEY);
     console.log(JSON.stringify(rule));
-    let aa = base64Encode('编码测试一下')
-    log(aa);
-    let bb = base64Decode(aa);
-    log('bb:'+bb);
+    // let aa = base64Encode('编码测试一下')
+    // log(aa);
+    // let bb = base64Decode(aa);
+    // log('bb:'+bb);
     // clearItem(RULE_CK);
     // console.log(JSON.stringify(rule));
     // console.log(request('https://www.baidu.com',{withHeaders:true}));
@@ -321,11 +319,13 @@ function urlencode (str) {
 }
 
 function base64Encode(text){
-    return Base64.encode(text)
+    // return Base64.encode(text)
+    return text
 }
 
 function base64Decode(text){
-    return Base64.decode(text)
+    // return Base64.decode(text)
+    return text
 }
 
 globalThis.VODS = [];// 一级或者搜索需要的数据列表
@@ -718,7 +718,6 @@ function buildUrl(url,obj){
 function require(url){
     eval(request(url));
 }
-
 /**
  * 海阔网页请求函数完整封装
  * @param url 请求链接
