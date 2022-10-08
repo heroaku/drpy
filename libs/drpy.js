@@ -399,7 +399,8 @@ const parseTags = {
             if (!parse || !parse.trim()){
                 return '';
             }
-            if (typeof (html) === 'string'){
+            if (typeof(html) === 'string'){
+                // print('jsonpath:pdfh字符串转dict');
                 html = JSON.parse(html);
             }
             parse = parse.trim();
@@ -427,7 +428,8 @@ const parseTags = {
             if (!parse || !parse.trim()){
                 return '';
             }
-            if (typeof (html) === 'string'){
+            if (typeof(html) === 'string'){
+                // print('jsonpath:pdfa字符串转dict');
                 html = JSON.parse(html);
             }
             parse = parse.trim()
@@ -567,6 +569,10 @@ function dealJson(html) {
         return html.match(/[\w|\W|\s|\S]*?(\{[\w|\W|\s|\S]*\})/).group[1];
     } catch (e) {
     }
+    try {
+        html = JSON.parse(html);
+    }catch (e) {}
+    // console.log(typeof(html));
     return html;
 }
 
@@ -939,6 +945,7 @@ function homeVodParse(homeVodObj){
         // print(p[0]);
         let html = getHtml(MY_URL);
         if(is_json){
+            // print('是json,开始处理');
             html = dealJson(html);
         }
         try {
