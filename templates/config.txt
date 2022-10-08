@@ -31,7 +31,7 @@
     "name":"drpy(道长)",
     "type":1,
     "api":"{{ host }}/vod?rule=drpy",
-    "searchable": 2,
+    "searchable": 1,
     "quickSearch": 1,
     "filterable": 1
 }{% endif %}
