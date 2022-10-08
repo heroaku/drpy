@@ -60,6 +60,9 @@ function adhead(url){
     // }
     return urlencode(url)
 }
+if(typeof(play_url)==='undefined'){
+    var play_url = '';
+}
 play_url = play_url.replace('&play_url=','&type=json&play_url=');
 video_lists.forEach(function (it){
     let url = 'https://v.youku.com/v_show/id_' + it.videoId + '.html';

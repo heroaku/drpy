@@ -684,6 +684,9 @@ function getHome(url){
     }
     let tmp = url.split('//');
     url = tmp[0] + '//' + tmp[1].split('/')[0];
+    try {
+        url = decodeURIComponent(url);
+    }catch (e) {}
     return url
 }
 

@@ -88,7 +88,7 @@ class CMS:
         self.lsg = storage_service()
         self.title = rule.get('title', '')
         self.id = rule.get('id', self.title)
-        self.filter_url = rule.get('filter_url', '')
+        self.filter_url = rule.get('filter_url', '').replace('{{fl}}','{{fl|safe}}') # python jinjia2禁用自动编码
         cate_exclude  = rule.get('cate_exclude','')
         tab_exclude  = rule.get('tab_exclude','')
         self.lazy = rule.get('lazy', False)
