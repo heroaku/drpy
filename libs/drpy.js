@@ -12,10 +12,11 @@ import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.
 // const key = 'drpy_zbk';
 // eval(req('http://192.168.1.124:5705/libs/es6py.js').content);
 function init_test(){
-    console.log(typeof(CryptoJS));
+    // console.log(typeof(CryptoJS));
     console.log("init_test_start");
     console.log(RKEY);
     console.log(JSON.stringify(rule));
+    // console.log('123456的md5值是:'+md5('123456'));
     // let aa = base64Encode('编码测试一下')
     // log(aa);
     // let bb = base64Decode(aa);
@@ -32,14 +33,14 @@ function init_test(){
 
 let rule = {};
 /** 已知问题记录
- * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)
+ * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)[影魔牛逼，最新的文件发现这问题已经解决了]
  * Array.prototype.append = Array.prototype.push; 这种js执行后有毛病,for in 循环列表会把属性给打印出来 (这个大毛病需要重点排除一下)
  * 2.import es6py.js但是里面的函数没有被装载进来.比如drpy规则报错setResult2 is undefiend(合并文件了可以不管了)
  * 3.无法重复导入cheerio(怎么解决drpy和parseTag里都需要导入cheerio的问题) 无法在副文件导入cheerio (现在是全部放在drpy一个文件里了,凑合解决?)
- * 4.有个错误不知道哪儿来的 executeScript: com.quickjs.JSObject$Undefined cannot be cast to java.lang.String 在 点击选集播放打印init_test_end后面打印(可以不管了)
+ * 4.有个错误不知道哪儿来的 executeScript: com.quickjs.JSObject$Undefined cannot be cast to java.lang.String 在 点击选集播放打印init_test_end后面打印(貌似不影响使用)
  * 5.需要实现 stringify 函数,比起JSON.stringify函数,它会原封不动保留中文不会编码unicode
- * 6.base64Encode和base64Decode函数还没有实现
- * 7.eval(getCryptoJS());还没有实现
+ * 6.base64Encode,base64Decode,md5函数还没有实现 (抄影魔代码实现了)
+ * 7.eval(getCryptoJS());还没有实现 (可以空实现了,以后遇到能忽略)
  * done:  jsp:{pdfa,pdfh,pd},json:{pdfa,pdfh,pd},jq:{pdfa,pdfh,pd}
  *  * 电脑看日志调试
  adb tcpip 5555
@@ -269,6 +270,7 @@ function setHomeResult(res){
 // 千万不要用for in 推荐 forEach (for in 会打乱顺序)
 //猫函数
 function maoss(jxurl, ref, key) {
+    fetch_params = JSON.parse(JSON.stringify(rule_fetch_params));
     eval(getCryptoJS());
     try {
         var getVideoInfo = function (text) {
@@ -322,13 +324,22 @@ function urlencode (str) {
 }
 
 function base64Encode(text){
-    // return Base64.encode(text)
-    return text
+    return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(text));
+    // return text
 }
 
 function base64Decode(text){
-    // return Base64.decode(text)
-    return text
+    return CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse(text));
+    // return text
+}
+
+function md5(text) {
+    return CryptoJS.MD5(text).toString();
+}
+
+function getCryptoJS(){
+    // return request('https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/crypto-hiker.js');
+    return 'console.log("CryptoJS已装载");'
 }
 
 globalThis.VODS = [];// 一级或者搜索需要的数据列表
@@ -547,6 +558,7 @@ const parseTags = {
 
 const stringify = JSON.stringify;
 const jsp = parseTags.jsp;
+const jq = parseTags.jq;
 
 /*** 后台需要实现的java方法并注入到js中 ***/
 
@@ -1068,6 +1080,7 @@ function categoryParse(cateObj) {
         let fl = cateObj.filter?cateObj.extend:{};
         let new_url;
         new_url = cheerio.jinja2(url,{fl:fl});
+        // console.log('jinjia2执行后的new_url类型为:'+typeof(new_url));
         if(/object Object/.test(new_url)){
             new_url = drT.renderText(url,fl);
         }
