@@ -20,7 +20,7 @@
     "name":"{{ rule.name }}(drpy)",
     "type":3,
     "api":"{{ host }}/libs/drpy.min.js",
-    #"api":"{{ host }}/libs/drpy.js",
+     #"api":"{{ host }}/libs/drpy.js",
     "searchable": {{ rule.searchable }},
     "quickSearch": {{ rule.quickSearch }},
     "filterable": {{ rule.filterable }},

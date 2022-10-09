@@ -267,6 +267,35 @@ function setHomeResult(res){
     }
     return setResult(res.list);
 }
+// 猫了个咪
+function rc(js) {
+    if (js === 'maomi_aes.js') {
+        var a = CryptoJS.enc.Utf8.parse("625222f9149e961d");
+        var t = CryptoJS.enc.Utf8.parse("5efdtf6060e2o330");
+        return {
+            De: function (word) {
+                word = CryptoJS.enc.Hex.parse(word)
+                return CryptoJS.AES.decrypt(CryptoJS.enc.Base64.stringify(word), a, {
+                    iv: t,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                }).toString(CryptoJS.enc.Utf8)
+            },
+            En: function (word) {
+                // print(a);
+                // print(word);
+                var Encrypted = CryptoJS.AES.encrypt(word, a, {
+                    iv: t,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+                return Encrypted.ciphertext.toString();
+            }
+        };
+    }
+    return {};
+}
+
 // 千万不要用for in 推荐 forEach (for in 会打乱顺序)
 //猫函数
 function maoss(jxurl, ref, key) {
