@@ -3,7 +3,7 @@
 // import 'http://192.168.1.124:5705/libs/es6py.js';
 import cheerio from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/cheerio.min.js';
 // import cheerio from 'http://192.168.10.103:5705/libs/cheerio.min.js';
-
+import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/crypto-js.js';
 import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/drT.js';
 // import 'http://192.168.10.103:5705/libs/drT.js';
 import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js';
@@ -12,6 +12,7 @@ import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.
 // const key = 'drpy_zbk';
 // eval(req('http://192.168.1.124:5705/libs/es6py.js').content);
 function init_test(){
+    console.log(typeof(CryptoJS));
     console.log("init_test_start");
     console.log(RKEY);
     console.log(JSON.stringify(rule));
