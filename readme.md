@@ -46,6 +46,8 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)   
+###### 2022/10/09
+- [X] 1.v3.8.2 本地drpy.js抄了一下影魔代码实现了base64加解密和md5加密并且引入全局的CryptoJS对象
 ###### 2022/10/08
 - [X] 1.v3.8.1 本地drpy.js优化优酷兼容,已全部完善
 ###### 2022/10/07
