@@ -6,7 +6,7 @@ import cheerio from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/che
 import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/crypto-js.js';
 import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/drT.js';
 // import 'http://192.168.10.103:5705/libs/drT.js';
-import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js';
+// import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js';
 // import muban from 'http://192.168.10.103:5705/admin/view/模板.js';
 
 // const key = 'drpy_zbk';
@@ -1464,6 +1464,14 @@ function playParse(playObj){
  function init(ext) {
     console.log('init');
     try {
+        // make shared jsContext happy muban不能import,不然会造成换源继承后变量被篡改
+        if (typeof (globalThis.mubanJs) === 'undefined') {
+            let mubanJs = request('https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js', { 'User-Agent': MOBILE_UA });
+            mubanJs = mubanJs.replace('export default', '(function() {return muban;}()) // export default');
+            // console.log(mubanJs);
+            globalThis.mubanJs = mubanJs;
+        }
+        let muban = eval(globalThis.mubanJs);
         if (typeof ext == 'object'){
             rule = ext;
             if (rule.template) {
