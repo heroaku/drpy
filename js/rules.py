@@ -184,7 +184,7 @@ def getJxs(path='js',host=None):
     base_path = 'jiexi'  # 自建解析目录
     os.makedirs(base_path, exist_ok=True)
     file_name = os.listdir(base_path)
-    file_name = list(filter(lambda x: str(x).endswith('.js') and str(x).find('模板') < 0, file_name))
+    file_name = list(filter(lambda x: str(x).endswith('.js') and str(x).find('模板') < 0 and str(x).find('加密') < 0, file_name))
     # print(file_name)
     jx_list = [file.replace('.js', '') for file in file_name]
     # print(file_name)
