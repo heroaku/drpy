@@ -48,6 +48,11 @@ def 重定向(url:str):
     else:
         return str(url)
 
+def toast(url:str):
+    if isinstance(url, PyJsString):
+        url = parseText(str(url))
+    return f'toast://{url}'
+
 @parse.route('/api/<path:filename>')
 def parse_home(filename):
     url = getParmas('url')
@@ -61,14 +66,17 @@ def parse_home(filename):
         return R.failed(f'{file_path}文件不存在')
     logger.info(f'开始尝试通过{filename}解析:{url}')
 
-
-
     jsp = jsoup(url)
     py_ctx.update({
         'vipUrl': url,
         'fetch_params': {'headers': {'Referer':url}, 'timeout': 10, 'encoding': 'utf-8'},
         'jsp':jsp,
-        '重定向':重定向
+        '重定向':重定向,
+        'toast':toast,
+        'print':print,
+        'log':logger.info,
+        'getParmas':getParmas,
+        'params':getParmas()
     })
     ctx = py_ctx
     with open(file_path,encoding='utf-8') as f:
@@ -88,6 +96,8 @@ def parse_home(filename):
         # print(realUrl)
         if str(realUrl).startswith('redirect://'):
             return redirect(realUrl.split('redirect://')[1])
+        elif str(realUrl).startswith('toast://'):
+            return R.failed(str(realUrl).split('toast://')[1],extra={'from':url})
         return R.success(f'{filename}解析成功',realUrl,{'time':f'{get_interval(t1)}毫秒','from':url})
     except Exception as e:
         msg = f'{filename}解析出错:{e}'
