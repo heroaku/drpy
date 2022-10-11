@@ -7,10 +7,12 @@ import json
 import os
 from time import time
 import js2py
+from quickjs import Function,Context
 from utils.log import logger
 # from utils.web import get_interval,UA
 from utils.ua import UA,get_interval
 from flask import render_template_string
+import ujson
 
 def getRuleLists():
     base_path = os.path.dirname(os.path.abspath(__file__)) # 当前文件所在目录
@@ -29,7 +31,7 @@ def getCacheCount():
     file_name = list(filter(lambda x: str(x).endswith('.js') and str(x).find('模板') < 0, file_name))
     return len(file_name)
 
-def getRules(path='cache',js_mode=0):
+def getRulesJs2py(path='cache',js_mode=0):
     t1 = time()
 
     base_path = path+'/'  # 当前文件所在目录
@@ -64,11 +66,11 @@ def getRules(path='cache',js_mode=0):
         for i in range(len(js_path)):
             rule_codes.append(ctx.eval(f'rule{i}'))
 
-        # print(rule_codes)
         # print(type(rule_codes[0]),rule_codes[0])
         # print(rule_codes[0].title)
         # print(rule_codes[0].searchable)
         # print(rule_codes[0].quickSearch)
+        # rule_codes 是个 js2py.base.JsObjectWrapper 类型,所以下面才能用. 获取属性
         new_rule_list = []
         for i in range(len(rule_list)):
             if js_mode == 1 and rule_list[i] == 'drpy':
@@ -82,6 +84,60 @@ def getRules(path='cache',js_mode=0):
                 'filterable':rule_codes[i].filterable or 0,
             }
             if rule_codes[i].multi:
+                tmpObj['multi'] = 1
+            new_rule_list.append(tmpObj)
+        # print(new_rule_list)
+        rules = {'list': new_rule_list, 'count': len(rule_list)}
+    except Exception as e:
+        logger.info(f'装载js内置源列表失败,置空内置源')
+        rules = []
+    logger.info(f'自动配置装载耗时:{get_interval(t1)}毫秒')
+    return rules
+
+def getRules(path='cache',js_mode=0):
+    t1 = time()
+
+    base_path = path+'/'  # 当前文件所在目录
+    os.makedirs(base_path,exist_ok=True)
+    file_name = os.listdir(base_path)
+    file_name = list(filter(lambda x: str(x).endswith('.js') and str(x).find('模板') < 0, file_name))
+    rule_list = [file.replace('.js', '') for file in file_name]
+    js_path = [f'{path}/{rule}.js' for rule in rule_list]
+    with open('js/模板.js', encoding='utf-8') as f:
+        before = f.read().split('export')[0]
+    rule_codes = []
+    ctx = Context()
+    codes = []
+    for i in range(len(js_path)):
+        js = js_path[i]
+        with open(js,encoding='utf-8') as f:
+            code = f.read()
+            new_code = 'var muban = JSON.parse(JSON.stringify(mubanDict));\n'+code.replace('rule',f'rule{i}',1)
+            # new_code = ''+code.replace('rule',f'rule{i}',1)
+            codes.append(new_code)
+    newCodes = before + '\n'+ '\n'.join(codes)
+    # print(newCodes)
+    try:
+        ctx.eval(newCodes)
+        for i in range(len(js_path)):
+            rule_codes.append(ctx.get(f'rule{i}'))
+
+        # rule_codes 是个 js2py.base.JsObjectWrapper 类型,所以下面才能用. 获取属性
+        new_rule_list = []
+        for i in range(len(rule_list)):
+            if js_mode == 1 and rule_list[i] == 'drpy':
+                continue
+            rule_codes[i] = ujson.loads(rule_codes[i].json())
+            sable = rule_codes[i].get('searchable',0)
+            tmpObj = {
+                'name':rule_list[i],
+                # 'searchable':1 if (js_mode==1 and sable==2) else sable, # 对js模式1开放软件聚搜(还是算了，服务器遭不住)
+                'searchable':sable,
+                'quickSearch': rule_codes[i].get('quickSearch',0),
+                'filterable': rule_codes[i].get('filterable',0),
+            }
+            # print(tmpObj)
+            if rule_codes[i].get('multi'):
                 tmpObj['multi'] = 1
             new_rule_list.append(tmpObj)
         # print(new_rule_list)

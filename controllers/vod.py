@@ -20,6 +20,8 @@ from models.playparse import PlayParse
 from js.rules import getRules
 from controllers.service import storage_service
 from concurrent.futures import ThreadPoolExecutor,as_completed,thread  # 引入线程池
+from quickjs import Function,Context
+import ujson
 vod = Blueprint("vod", __name__)
 
 
@@ -163,13 +165,29 @@ def vod_home():
     # logger.info(f'js读取耗时:{get_interval(t1)}毫秒')
     logger.info(f'参数检验js读取共计耗时:{get_interval(t0)}毫秒')
     t2 = time()
-    ctx, js_code = parser.runJs(js_path,before=before)
-    if not js_code:
+
+
+    # ctx, js_code = parser.runJs(js_path,before=before)
+    # if not js_code:
+    #     return R.failed('爬虫规则加载失败')
+    # # rule = ctx.eval('rule')
+    # # print(type(ctx.rule.lazy()),ctx.rule.lazy().toString())
+    # ruleDict = ctx.rule.to_dict()
+
+    ctx = Context()
+    try:
+        with open(js_path,encoding='utf-8') as f2:
+            jscode = f2.read()
+        jscode = before + jscode
+        ctx.eval(jscode)
+        js_ret = ctx.get('rule')
+        ruleDict = ujson.loads(js_ret.json())
+    except Exception as e:
+        logger.info(f'{e}')
         return R.failed('爬虫规则加载失败')
 
-    # rule = ctx.eval('rule')
-    # print(type(ctx.rule.lazy()),ctx.rule.lazy().toString())
-    ruleDict = ctx.rule.to_dict()
+    # print(type(ruleDict))
+    # print(ruleDict)
     ruleDict['id'] = rule  # 把路由请求的id装到字典里,后面播放嗅探才能用
     # print(ruleDict)
     # print(rule)

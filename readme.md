@@ -4,19 +4,19 @@
   <a href="https://alist.nn.ci"><img height="100px" alt="logo" src="https://gitcode.net/qq_32394351/dr_py/-/raw/1fe0e082b1ceacc4469d7f175a605cc2edf0bab0/static/img/icon.png"/></a>
   <p><em>🗂️A webServer convert web and x5 movie sites to cms api data</em></p>
   <a href="https://gitcode.net/qq_32394351/dr_py/-/releases">
-    <img src="https://img.shields.io/badge/version-3.8.1-blue" alt="latest version" />
+    <img src="https://img.shields.io/badge/version-3.9.0-blue" alt="latest version" />
   </a>
   <a href="https://gitcode.net/qq_32394351/dr_py/-/issues">
     <img src="https://img.shields.io/badge/discussions-2-orange" alt="discussions" />
   </a>
 
   <a href="https://gitcode.net/qq_32394351/dr_py/-/releases">
-    <img src="https://img.shields.io/badge/downloads-2837-blue" alt="Downloads" />
+    <img src="https://img.shields.io/badge/downloads-5329-blue" alt="Downloads" />
   </a>
 
 
-<a href="https://wwi.lanzoup.com/i02Vp0c3hpkd">
-    <img src="https://img.shields.io/badge/蓝奏云下载-3.7.0-blue" alt="Downloads" />
+<a href="https://wwi.lanzoup.com/igPCG0dlqouf">
+    <img src="https://img.shields.io/badge/蓝奏云下载-3.9.0-blue" alt="Downloads" />
   </a>
 
 
@@ -30,7 +30,7 @@
   </a>
 
 <a href="https://gitcode.net/qq_32394351/dr_py">
-    <img src="https://img.shields.io/badge/coverage-80%25-yellowgreen" alt="License" />
+    <img src="https://img.shields.io/badge/coverage-99.9%25-yellowgreen" alt="License" />
   </a>
 </div>  
 
@@ -46,6 +46,9 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)   
+###### 2022/10/11
+- [X] 增加自建解析加密示例
+- [X] 发布3.9.0镜像,重大升级，优化js装载速度
 ###### 2022/10/09
 - [X] 1.v3.8.2 本地drpy.js抄了一下影魔代码实现了base64加解密和md5加密并且引入全局的CryptoJS对象
 - [X] 2.v3.8.3 本地drpy.js抄了一下影魔代码不用import模板改成init加载模板解决换源冲突问题

@@ -88,15 +88,22 @@ ctx.add_callable('request',request)
 ctx.eval('bd()')
 
 t1 = time()
-with open('../../js/兔小贝.js',encoding='utf-8') as f1:
+rule_file = '555影视.js'
+with open('../../js/模板.js', encoding='utf-8') as f:
+    before = f.read().split('export')[0]
+
+with open(f'../../js/{rule_file}',encoding='utf-8') as f1:
     jscode = f1.read()
+    jscode = before + jscode
     print(jscode)
 
 ctx1 = Context()
 ctx1.eval(jscode)
 ret = ctx1.get('rule')
-print(type(ret.json()),ret.json())
-print(json.loads(ret.json()))
+# print(type(ret.json()),ret.json())
+# print(json.loads(ret.json()))
+ret = json.loads(ret.json())
+print(type(ret),ret)
 t2 = time()
 print(f'quickjs耗时:{round((t2-t1)*1000,2)}毫秒')
 tt1 = time()
@@ -108,9 +115,10 @@ tt2 = time()
 print(f'quickjs第2次耗时:{round((tt2-tt1)*1000,2)}毫秒')
 
 t3 = time()
-with open('../../js/兔小贝.js',encoding='utf-8') as f1:
+with open(f'../../js/{rule_file}',encoding='utf-8') as f1:
     jscode = f1.read()
-    print(jscode)
+    jscode = before + jscode
+    # print(jscode)
 ctx2 = js2py.EvalJs({},enable_require=False) # enable_require启用require关键字,会自动获取系统nodejs环境
 ctx2.execute(jscode)
 ret = ctx2.rule.to_dict()
