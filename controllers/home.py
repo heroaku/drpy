@@ -7,7 +7,7 @@ import json
 import os
 
 
-from flask import Blueprint,abort,render_template,render_template_string,url_for,redirect,make_response,send_from_directory
+from flask import Blueprint,abort,render_template,render_template_string,url_for,redirect,make_response,send_from_directory,request
 from controllers.service import storage_service,rules_service
 from controllers.classes import getClasses,getClassInfo
 
@@ -202,6 +202,9 @@ def merged_hide(merged_config):
 @home.route('/config/<int:mode>')
 def config_render(mode):
     # print(dict(app.config))
+    UA = request.headers['User-Agent']
+    ISTVB = 'okhttp/3' in UA
+    logger.info(UA)
     if mode == 1:
         jyw_ip = getHost(mode)
         logger.info(jyw_ip)
@@ -229,7 +232,7 @@ def config_render(mode):
     rules = getRules('js',js_mode)
     rules = get_multi_rules(rules)
     # html = render_template('config.txt',rules=getRules('js'),host=host,mode=mode,jxs=jxs,base64Encode=base64Encode,config=new_conf)
-    html = render_template('config.txt',pys=pys,rules=rules,host=host,mode=mode,js_mode=js_mode,jxs=jxs,alists=alists,alists_str=alists_str,live_url=live_url,config=new_conf)
+    html = render_template('config.txt',UA=UA,ISTVB=ISTVB,pys=pys,rules=rules,host=host,mode=mode,js_mode=js_mode,jxs=jxs,alists=alists,alists_str=alists_str,live_url=live_url,config=new_conf)
     merged_config = custom_merge(parseText(html),customConfig)
     # print(merged_config['sites'])
 

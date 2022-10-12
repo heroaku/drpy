@@ -46,7 +46,9 @@
 [golang最好的js引擎-otto](https://github.com/robertkrimen/otto)   
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
-[获取本地设备信息](https://m.jb51.net/article/140716.htm)   
+[获取本地设备信息](https://m.jb51.net/article/140716.htm)  
+###### 2022/10/12
+- [X] js模式2动态配置链接支持多种壳子
 ###### 2022/10/11
 - [X] 增加自建解析加密示例
 - [X] 发布3.9.0镜像,重大升级，优化js装载速度
