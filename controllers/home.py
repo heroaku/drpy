@@ -5,7 +5,7 @@
 # Date  : 2022/9/6
 import json
 import os
-
+import re
 
 from flask import Blueprint,abort,render_template,render_template_string,url_for,redirect,make_response,send_from_directory,request
 from controllers.service import storage_service,rules_service
@@ -13,7 +13,7 @@ from controllers.classes import getClasses,getClassInfo
 
 from utils.files import getPics,custom_merge,getAlist,get_live_url,get_multi_rules,getCustonDict
 from js.rules import getRules,getPys
-from utils.encode import parseText
+from utils.encode import parseText,base64Encode,baseDecode
 from base.R import R
 from utils.system import getHost,is_linux
 from utils.cfg import cfg
@@ -152,13 +152,21 @@ def custom_static_libs(filename):
 
 @home.route('/lives')
 def get_lives():
-    live_path = 'base/直播.txt'
+    # ?path=base/live.txt
+    path = getParmas('path')
+    live_path = path or 'base/直播.txt'
     if not os.path.exists(live_path):
         with open(live_path,mode='w+',encoding='utf-8') as f:
             f.write('')
 
     with open(live_path,encoding='utf-8') as f:
         live_text = f.read()
+    if len(live_text) > 100 and live_text.find('http') < 0:
+        try:
+            live_text = baseDecode(live_text)
+            logger.info(f'{path} base64解码完毕')
+        except:
+            pass
     response = make_response(live_text)
     response.headers['Content-Type'] = 'text/plain; charset=utf-8'
     return response
