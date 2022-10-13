@@ -412,6 +412,26 @@ function urljoin(fromPath, nowPath) {
 }
 var urljoin2 = urljoin;
 
+// 内置 pdfh,pdfa,pd
+const defaultParser = {
+    pdfh:pdfh,
+    pdfa:pdfa,
+    pd(html,parse,uri){
+        let ret = this.pdfh(html,parse);
+        if(typeof(uri)==='undefined'||!uri){
+            uri = '';
+        }
+        if(DOM_CHECK_ATTR.test(parse)){
+            if(/http/.test(ret)){
+                ret = ret.substr(ret.indexOf('http'));
+            }else{
+                ret = urljoin(MY_URL,ret)
+            }
+        }
+        return ret
+    },
+};
+
 /**
  *  pdfh原版优化,能取style属性里的图片链接
  * @param html 源码
@@ -419,7 +439,7 @@ var urljoin2 = urljoin;
  * @returns {string|*}
  */
 function pdfh2(html,parse){
-    let result = pdfh(html,parse);
+    let result = defaultParser.pdfh(html,parse);
     let option = parse.includes('&&')?parse.split('&&').slice(-1)[0]:parse.split(' ').slice(-1)[0];
     if(/style/.test(option.toLowerCase())&&/url\(/.test(result)){
         try {
@@ -430,13 +450,13 @@ function pdfh2(html,parse){
 }
 
 /**
- * 重写pd方法-增加自动urljoin(没法重写,改个名继续骗)
+ * pd原版方法重写-增加自动urljoin
  * @param html
  * @param parse
  * @param uri
  * @returns {*}
  */
-function pD(html,parse,uri){
+function pd2(html,parse,uri){
     let ret = pdfh2(html,parse);
     if(typeof(uri)==='undefined'||!uri){
         uri = '';
@@ -456,8 +476,8 @@ function pD(html,parse,uri){
 const parseTags = {
     jsp:{
         pdfh:pdfh2,
-        pdfa:pdfa,
-        pd:pD,
+        pdfa:defaultParser.pdfa,
+        pd:pd2,
     },
     json:{
         pdfh(html, parse) {

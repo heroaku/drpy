@@ -27,6 +27,7 @@ if(html.includes('window.location =')){
 try{
     // print(html);
     let details = pdfh(html, '.m-details&&Html').replace(/h1>/,'h6>').replace(/div/g, 'br');//详情网页
+    print(details);
     let actor='',director='',time='';
     if (/播出时间/.test(details)) {
         actor = pdfh(html, 'p:eq(5)&&Text').substr(0,25);
