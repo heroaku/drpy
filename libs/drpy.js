@@ -411,6 +411,24 @@ function urljoin(fromPath, nowPath) {
     // }
 }
 var urljoin2 = urljoin;
+
+/**
+ *  pdfh原版优化,能取style属性里的图片链接
+ * @param html 源码
+ * @param parse 解析表达式
+ * @returns {string|*}
+ */
+function pdfh2(html,parse){
+    let result = pdfh(html,parse);
+    let option = parse.includes('&&')?parse.split('&&').slice(-1)[0]:parse.split(' ').slice(-1)[0];
+    if(/style/.test(option.toLowerCase())&&/url\(/.test(result)){
+        try {
+            result =  result.match(/url\((.*?)\)/)[1];
+        }catch (e) {}
+    }
+    return result
+}
+
 /**
  * 重写pd方法-增加自动urljoin(没法重写,改个名继续骗)
  * @param html
@@ -419,7 +437,7 @@ var urljoin2 = urljoin;
  * @returns {*}
  */
 function pD(html,parse,uri){
-    let ret = pdfh(html,parse);
+    let ret = pdfh2(html,parse);
     if(typeof(uri)==='undefined'||!uri){
         uri = '';
     }
@@ -437,7 +455,7 @@ function pD(html,parse,uri){
 
 const parseTags = {
     jsp:{
-        pdfh:pdfh,
+        pdfh:pdfh2,
         pdfa:pdfa,
         pd:pD,
     },
@@ -540,6 +558,11 @@ const parseTags = {
                 }
                 else {
                     result = $(ret).attr(option);
+                    if(/style/.test(option.toLowerCase())&&/url\(/.test(result)){
+                        try {
+                            result =  result.match(/url\((.*?)\)/)[1];
+                        }catch (e) {}
+                    }
                 }
                 if (result && base_url && DOM_CHECK_ATTR.test(option)) {
                     if (/http/.test(result)) {
