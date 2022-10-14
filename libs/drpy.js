@@ -850,6 +850,9 @@ function request(url,obj){
         }
         obj.headers = headers;
     }
+    if(rule.encoding&&rule.encoding!=='utf-8'){
+        obj.headers["content-type"] = "text/html; charset="+rule.encoding;
+    }
     console.log(JSON.stringify(obj.headers));
     if(typeof(obj.headers.body)!='undefined'&&obj.headers.body&&typeof (obj.headers.body)==='string'){
         let data = {};
@@ -1515,6 +1518,19 @@ function detailParse(detailObj){
 }
 
 /**
+ * 判断是否需要解析
+ * @param url
+ * @returns {number|number}
+ */
+function tellIsJx(url){
+    try {
+        let is_vip = !/\.(m3u8|mp4|m4a)$/.test(url.split('?')[0]) && 是否正版(url);
+        return is_vip?1:0
+    }catch (e) {
+        return 1
+    }
+}
+/**
  * 选集播放点击事件解析
  * @param playObj
  * @returns {string}
@@ -1531,7 +1547,8 @@ function playParse(playObj){
     var input = MY_URL;//注入给免嗅js
     let common_play = {
         parse:1,
-        url:input
+        url:input,
+        jx:tellIsJx(input)
     };
     let lazy_play;
     if(!rule.play_parse||!rule.lazy){
@@ -1543,7 +1560,7 @@ function playParse(playObj){
             eval(lazy_code);
             lazy_play = typeof(input) === 'object'?input:{
                 parse:1,
-                jx:1,
+                jx:tellIsJx(input),
                 url:input
             };
         }catch (e) {
