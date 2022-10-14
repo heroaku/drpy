@@ -432,6 +432,7 @@ const defaultParser = {
     },
 };
 
+
 /**
  *  pdfh原版优化,能取style属性里的图片链接
  * @param html 源码
@@ -1022,6 +1023,10 @@ function homeVodParse(homeVodObj){
     // setItem('MY_URL',MY_URL);
     console.log(MY_URL);
     let p = homeVodObj.推荐;
+    if(p==='*' && rule.一级){
+        p = rule.一级;
+        homeVodObj.double = false;
+    }
     if(!p||typeof(p)!=='string'){
         return '{}'
     }

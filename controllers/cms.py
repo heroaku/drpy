@@ -552,6 +552,10 @@ class CMS:
             except Exception as e:
                 logger.info(f'首页推荐执行js获取列表出错:{e}')
         else:
+            if p == '*' and self.一级:
+                p = self.一级
+                self.double = False
+                logger.info(f'首页推荐继承一级: {p}')
             p = p.strip().split(';')  # 解析
             if not self.double and len(p) < 5:
                 return self.blank()
