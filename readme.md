@@ -47,6 +47,8 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm) 
+###### 2022/10/15
+- [X] beta2 修复dealJson导致的兔小贝一级分类无数据
 ###### 2022/10/14
 - [X] todo:推荐支持* 自动集成一级定位
 - [X] todo:辅助嗅探
