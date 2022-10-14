@@ -47,6 +47,9 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm) 
+###### 2022/10/14
+- [X] todo:推荐支持* 自动集成一级定位
+- [X] todo:辅助嗅探
 ###### 2022/10/13
 - [X] 3.9.5修复凌云影视源并增加短视模板
 - [X] 增加秋霞影视,ddys等半成品(优化代码兼容取style属性的情况自动提取链接)
