@@ -667,7 +667,8 @@ function readFile(filePath){
  */
 function dealJson(html) {
     try {
-        return html.match(/[\w|\W|\s|\S]*?(\{[\w|\W|\s|\S]*\})/).group[1];
+        // html = html.match(/[\w|\W|\s|\S]*?(\{[\w|\W|\s|\S]*\})/).group[1];
+        html = '{'+html.match(/.*?\{(.*)\}/)[1]+'}';
     } catch (e) {
     }
     try {
