@@ -713,7 +713,7 @@ var OcrApi={
     classification:function (img){ // img是byte类型,这里不方便搞啊
         let code = '';
         try {
-            let html = request(this.api,{data:{img:img},headers:{'User-Agent':PC_UA},'method':'POST'});
+            let html = request(this.api,{data:{img:img},headers:{'User-Agent':PC_UA},'method':'POST'},true);
             html = JSON.parse(html);
             code = html.url||'';
         }catch (e) {}
@@ -734,7 +734,7 @@ function verifyCode(url){
             // let obj = {headers:headers,timeout:timeout};
             let yzm_url = `${host}/index.php/verify/index.html`;
             console.log(`验证码链接:${yzm_url}`);
-            let hhtml = request(yzm_url,{withHeaders:true,toBase64:true});
+            let hhtml = request(yzm_url,{withHeaders:true,toBase64:true},true);
             let json = JSON.parse(hhtml);
             if(!cookie){
                 cookie = json['set-cookie']?json['set-cookie'].split(';')[0]:'';
@@ -849,9 +849,11 @@ function require(url){
  * 海阔网页请求函数完整封装
  * @param url 请求链接
  * @param obj 请求对象 {headers:{},method:'',timeout:5000,body:'',withHeaders:false}
+ * @param ocr_flag 标识此flag是用于请求ocr识别的,自动过滤content-type指定编码
  * @returns {string|string|DocumentFragment|*}
  */
-function request(url,obj){
+function request(url,obj,ocr_flag){
+    ocr_flag = ocr_flag||false;
     if(typeof(obj)==='undefined'||!obj||obj==={}){
         if(!fetch_params||!fetch_params.headers){
             let headers = {
@@ -876,7 +878,7 @@ function request(url,obj){
         }
         obj.headers = headers;
     }
-    if(rule.encoding&&rule.encoding!=='utf-8'){
+    if(rule.encoding&&rule.encoding!=='utf-8'&&!ocr_flag){
         obj.headers["Content-Type"] = 'text/html; charset='+rule.encoding;
     }
     if(typeof(obj.headers.body)!='undefined'&&obj.headers.body&&typeof (obj.headers.body)==='string'){
