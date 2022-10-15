@@ -882,7 +882,8 @@ class CMS:
 
             vod_play_from = '$$$'
             playFrom = []
-            if p.get('重定向') and str(p['重定向']).startswith('js:'):
+            init_flag = {'ctx':False}
+            def js_pre():
                 headers['Referer'] = getHome(url)
                 py_ctx.update({
                     'input': url,
@@ -896,6 +897,10 @@ class CMS:
                     'saveParse': self.d.saveParse,
                     'jsp': jsp, 'setDetail': setDetail,
                 })
+                init_flag['ctx'] = True
+            if p.get('重定向') and str(p['重定向']).startswith('js:'):
+                if not init_flag['ctx']:
+                    js_pre()
                 ctx = py_ctx
                 # print(ctx)
                 rcode = p['重定向'].replace('js:', '', 1)
@@ -910,19 +915,34 @@ class CMS:
 
             if p.get('tabs'):
                 vodHeader = []
-                # print(p['tabs'].split(';')[0])
-                vHeader = pdfa(html, p['tabs'].split(';')[0])
-                # print(f'线路列表数:{len((vodHeader))}')
-                # print(vodHeader)
-                if not is_json:
-                    for v in vHeader:
-                        # 过滤排除掉线路标题
-                        v_title = pq(v).text()
-                        if self.tab_exclude and jsp.test(self.tab_exclude, v_title):
-                            continue
-                        vodHeader.append(v_title)
-                else:
+                if str(p['tabs']).startswith('js:'):
+                    if not init_flag['ctx']:
+                        js_pre()
+                    ctx = py_ctx
+                    rcode = p['tabs'].replace('js:', '', 1)
+                    jscode = getPreJs() + rcode
+                    # print(jscode)
+                    loader, _ = runJScode(jscode, ctx=ctx)
+                    # print(loader.toString())
+                    logger.info(f'开始执行tabs代码:{rcode}')
+                    vHeader = loader.eval('TABS')
+                    if isinstance(vod, JsObjectWrapper):
+                        vHeader = vHeader.to_list()
                     vodHeader = vHeader
+                else:
+                    # print(p['tabs'].split(';')[0])
+                    vHeader = pdfa(html, p['tabs'].split(';')[0])
+                    # print(f'线路列表数:{len((vodHeader))}')
+                    # print(vodHeader)
+                    if not is_json:
+                        for v in vHeader:
+                            # 过滤排除掉线路标题
+                            v_title = pq(v).text()
+                            if self.tab_exclude and jsp.test(self.tab_exclude, v_title):
+                                continue
+                            vodHeader.append(v_title)
+                    else:
+                        vodHeader = vHeader
             else:
                 vodHeader = ['道长在线']
 
@@ -935,25 +955,43 @@ class CMS:
             vod_play_url = '$$$'
             vod_tab_list = []
             if p.get('lists'):
-                for i in range(len(vodHeader)):
-                    tab_name = str(vodHeader[i])
-                    tab_ext = p['tabs'].split(';')[1] if len(p['tabs'].split(';')) > 1 else ''
-                    p1 = p['lists'].replace('#idv', tab_name).replace('#id', str(i))
-                    tab_ext = tab_ext.replace('#idv', tab_name).replace('#id', str(i))
-                    vodList = pdfa(html, p1)  # 1条线路的选集列表
-                    # print(vodList)
-                    # vodList = [pq(i).text()+'$'+pd(i,'a&&href') for i in vodList]  # 拼接成 名称$链接
-                    if self.play_parse:  # 自动base64编码
-                        vodList = [(pdfh(html, tab_ext) if tab_ext else tab_name) + '$' + self.play_url + encodeUrl(i) for i
-                                   in vodList] if is_json else \
-                            [pq(i).text() + '$' + self.play_url + encodeUrl(pd(i, 'a&&href')) for i in vodList]  # 拼接成 名称$链接
-                    else:
-                        vodList = [(pdfh(html, tab_ext) if tab_ext else tab_name) + '$' + self.play_url + i for i in
-                                   vodList] if is_json else \
-                            [pq(i).text() + '$' + self.play_url + pd(i, 'a&&href') for i in vodList]  # 拼接成 名称$链接
-                    vlist = '#'.join(vodList)  # 拼多个选集
-                    vod_tab_list.append(vlist)
-                vod_play_url = vod_play_url.join(vod_tab_list)
+                if str(p['lists']).startswith('js:'):
+                    if not init_flag['ctx']:
+                        js_pre()
+                    ctx = py_ctx
+                    ctx['TABS'] = vodHeader # 把选集列表传过去
+                    rcode = p['lists'].replace('js:', '', 1)
+                    jscode = getPreJs() + rcode
+                    # print(jscode)
+                    loader, _ = runJScode(jscode, ctx=ctx)
+                    # print(loader.toString())
+                    logger.info(f'开始执行lists代码:{rcode}')
+                    vlists = loader.eval('LISTS')
+                    if isinstance(vod, JsObjectWrapper):
+                        vlists = vlists.to_list() # [['第1集$http://1.mp4','第2集$http://2.mp4'],['第3集$http://1.mp4','第4集$http://2.mp4']]
+
+                    vod_play_url = vod_play_url.join(list(map(lambda x:'#'.join(x),vlists)))
+                else:
+                    for i in range(len(vodHeader)):
+                        tab_name = str(vodHeader[i])
+                        tab_ext = p['tabs'].split(';')[1] if len(p['tabs'].split(';')) > 1 else ''
+                        p1 = p['lists'].replace('#idv', tab_name).replace('#id', str(i))
+                        tab_ext = tab_ext.replace('#idv', tab_name).replace('#id', str(i))
+                        vodList = pdfa(html, p1)  # 1条线路的选集列表
+                        # print(vodList)
+                        # vodList = [pq(i).text()+'$'+pd(i,'a&&href') for i in vodList]  # 拼接成 名称$链接
+                        if self.play_parse:  # 自动base64编码
+                            vodList = [(pdfh(html, tab_ext) if tab_ext else tab_name) + '$' + self.play_url + encodeUrl(i) for i
+                                       in vodList] if is_json else \
+                                [pq(i).text() + '$' + self.play_url + encodeUrl(pd(i, 'a&&href')) for i in vodList]  # 拼接成 名称$链接
+                        else:
+                            vodList = [(pdfh(html, tab_ext) if tab_ext else tab_name) + '$' + self.play_url + i for i in
+                                       vodList] if is_json else \
+                                [pq(i).text() + '$' + self.play_url + pd(i, 'a&&href') for i in vodList]  # 拼接成 名称$链接
+                        vlist = '#'.join(vodList)  # 拼多个选集
+                        vod_tab_list.append(vlist)
+                    vod_play_url = vod_play_url.join(vod_tab_list)
+
             # print(vod_play_url)
             vod['vod_play_from'] = vod_play_from
             # print(vod_play_from)

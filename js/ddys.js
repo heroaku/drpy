@@ -21,7 +21,7 @@ var rule={
     //推荐:'.indexShowBox;ul&&li;a&&title;img&&data-src;.s1&&Text;a&&href',
     double:true, // 推荐内容是否双层定位
     一级:'.post-box-list&&article;a:eq(-1)&&Text;.post-box-image&&style;a:eq(0)&&Text;a:eq(-1)&&href',
-    二级:{"title":".post-title&&Text;.cat-links&&Text","img":".doulist-item&&img&&data-cfsrc","desc":".published&&Text","content":".abstract&&Text","tabs":".py-tabs&&option","lists":".player:eq(#id) li"},
+    二级:{"title":".post-title&&Text;.cat-links&&Text","img":".doulist-item&&img&&data-cfsrc","desc":".published&&Text","content":".abstract&&Text","tabs":"js:TABS=['道长在线','道长在线2']","lists":"js:log(TABS);LISTS=[['第1集$http://1.mp4','第2集$http://2.mp4'],['第3集$http://1.mp4','第4集$http://2.mp4']]"},
     搜索:'#main&&article;.post-title&&Text;;.published&&Text;a&&href',
     推荐:'*'
 }

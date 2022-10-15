@@ -35,7 +35,11 @@ class jsoup:
         # FIXME 暂时不支持jsonpath那样的|| 分割取或属性
         if option:
             # print(f'parse:{parse}=>(option:{option})')
-            ret = doc(parse)
+            if ':eq(-1)' in parse:
+                # 处理 eq(-1)的情况,兼容性差，暂时只支持一层eq
+                ret = doc(parse.replace(':eq(-1)','')).eq(-1)
+            else:
+                ret = doc(parse)
             # print(html)
             # FIXME 解析出来有多个的情况应该自动取第一个
             if option == 'Text':
