@@ -851,9 +851,8 @@ function request(url,obj){
         obj.headers = headers;
     }
     if(rule.encoding&&rule.encoding!=='utf-8'){
-        obj.headers["content-type"] = "text/html; charset="+rule.encoding;
+        obj.headers["Content-Type"] = 'text/html; charset='+rule.encoding;
     }
-    console.log(JSON.stringify(obj.headers));
     if(typeof(obj.headers.body)!='undefined'&&obj.headers.body&&typeof (obj.headers.body)==='string'){
         let data = {};
         obj.headers.body.split('&').forEach(it=>{
@@ -869,6 +868,8 @@ function request(url,obj){
         obj.buffer = 2;
         delete obj.toBase64
     }
+    console.log(JSON.stringify(obj.headers));
+    // console.log('request:'+url+' obj:'+JSON.stringify(obj));
     console.log('request:'+url);
     let res = req(url, obj);
     let html = res.content||'';
