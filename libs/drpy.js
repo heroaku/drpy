@@ -968,21 +968,27 @@ function homeParse(homeObj) {
 
     if (homeObj.class_parse) {
         let p = homeObj.class_parse.split(';');
-        if (p.length >= 4) {
+        let _ps = parseTags.getParse(p[0]);
+        _pdfa = _ps.pdfa;
+        _pdfh = _ps.pdfh;
+        _pd = _ps.pd;
+        MY_URL = rule.url;
+        if (p.length >= 3) { // 可以不写正则
             try {
                 let html = getHtml(homeObj.MY_URL);
                 if (html) {
                     homeHtmlCache = html;
-                    let list = pdfa(html, p[0]);
+                    let list = _pdfa(html, p[0]);
                     if (list && list.length > 0) {
                         list.forEach((it,idex) => {
                             try {
-                                let name = pdfh(it, p[1]);
+                                let name = _pdfh(it, p[1]);
                                 if (homeObj.cate_exclude && (new RegExp(homeObj.cate_exclude).test(name))) {
                                     return;
                                 }
-                                let url = pdfh(it, p[2]);
-                                if (p[3]) {
+                                // let url = pdfh(it, p[2]);
+                                let url = _pd(it, p[2]);
+                                if (p.length > 3 && p[3]) {
                                     let exp = new RegExp(p[3]);
                                     url = url.match(exp)[1];
                                 }
