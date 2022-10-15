@@ -49,6 +49,7 @@
 [获取本地设备信息](https://m.jb51.net/article/140716.htm) 
 ###### 2022/10/15
 - [X] beta2 修复dealJson导致的兔小贝一级分类无数据
+- [X] beta6 尝试完善低端影视,增加tabs和lists支持js:写法(js模式0和模式1同步测试)
 ###### 2022/10/14
 - [X] todo:推荐支持* 自动集成一级定位
 - [X] todo:辅助嗅探
@@ -350,4 +351,7 @@ host:'https://yanetflix.com',
 url:'/index.php/vod/show/id/fyclass/page/fypage.html',
 class_parse:'.navbar-items li:gt(1):lt(6);a&&Text;a&&href;.*/(.*?).html',
 });
+
+js:内置变量
+input,html,VODS,VOD,TABS,LISTS
 ```
