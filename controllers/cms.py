@@ -392,7 +392,7 @@ class CMS:
             cookies_dict = requests.utils.dict_from_cookiejar(r.cookies)
             cookie_str = ';'.join([f'{k}={cookies_dict[k]}' for k in cookies_dict])
             self.headers['cookie'] = cookie_str
-            r = requests.get(url, headers=self.headers, timeout=self.timeout)
+            r = requests.get(url, headers=self.headers, timeout=self.timeout,verify=False)
             r.encoding = self.encoding
             html = r.text
             if html.find('?btwaf=') < 0:
@@ -466,7 +466,7 @@ class CMS:
                     pass
                 else:
                     new_classes = []
-                    r = requests.get(self.homeUrl, headers=self.headers, timeout=self.timeout)
+                    r = requests.get(self.homeUrl, headers=self.headers, timeout=self.timeout,verify=False)
                     html = self.checkHtml(r)
                     # print(html)
                     # print(self.headers)
@@ -754,7 +754,7 @@ class CMS:
 
             items = []
             try:
-                r = requests.get(url, headers=self.headers, timeout=self.timeout)
+                r = requests.get(url, headers=self.headers, timeout=self.timeout,verify=False)
                 html = self.checkHtml(r)
                 print(self.headers)
                 # print(html)
@@ -831,7 +831,7 @@ class CMS:
             obj = {}
             vod_name = ''
             if not html: # 没传递html参数接下来智能获取
-                r = requests.get(url, headers=self.headers, timeout=self.timeout)
+                r = requests.get(url, headers=self.headers, timeout=self.timeout,verify=False)
                 html = self.checkHtml(r)
                 if is_json:
                     html = self.dealJson(html)
@@ -1136,7 +1136,7 @@ class CMS:
             pd = jsp.pj if is_json else jsp.pd
             pq = jsp.pq
             try:
-                r = requests.get(url, headers=self.headers,timeout=self.timeout)
+                r = requests.get(url, headers=self.headers,timeout=self.timeout,verify=False)
                 html = self.checkHtml(r)
                 if is_json:
                     html = self.dealJson(html)
@@ -1152,7 +1152,7 @@ class CMS:
                         }
                     self.saveCookie(cookie)
                     self.headers['cookie'] = cookie
-                    r = requests.get(url, headers=self.headers, timeout=self.timeout)
+                    r = requests.get(url, headers=self.headers, timeout=self.timeout,verify=False)
                     r.encoding = self.encoding
                     html = r.text
                 if not show_name and not str(html).find(key) > -1:

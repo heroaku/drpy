@@ -61,7 +61,7 @@ def requireCache(lib:str):
                 r = requests.get(lib,headers={
                     'Referer': lib,
                     'User-Agent': UC_UA,
-                },timeout=5)
+                },timeout=5,verify=False)
                 with open(lib_path,mode='wb+') as f:
                     f.write(r.content)
                 code =  r.text
@@ -86,7 +86,7 @@ class OcrApi:
 
     def classification(self,img):
         try:
-            code = requests.post(self.api,data=img,headers={'user-agent':PC_UA}).text
+            code = requests.post(self.api,data=img,headers={'user-agent':PC_UA},verify=False).text
         except Exception as e:
             print(f'ocr识别发生错误:{e}')
             code = ''
@@ -106,7 +106,7 @@ def verifyCode(url,headers,timeout=5,total_cnt=3,api=None):
     while cnt < total_cnt:
         s = requests.session()
         try:
-            img = s.get(url=f"{host}/index.php/verify/index.html", headers=headers,timeout=timeout).content
+            img = s.get(url=f"{host}/index.php/verify/index.html", headers=headers,timeout=timeout,verify=False).content
             code = ocr.classification(img)
             print(f'第{cnt+1}次验证码识别结果:{code}')
             res = s.post(

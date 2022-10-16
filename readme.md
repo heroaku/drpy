@@ -47,6 +47,8 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm) 
+###### 2022/10/17
+- [X] 3.9.8beta2 全局关闭https对应的ssl证书验证
 ###### 2022/10/16
 - [X] 3.9.8 完成ddys选集播放和免嗅(可惜我刚弄完没播放俩个剧就被封ip了)
 - [X] 3.9.8beta1 增加了俩自建js解析
