@@ -895,7 +895,7 @@ class CMS:
                     'd': self.d,
                     'getParse': self.d.getParse,
                     'saveParse': self.d.saveParse,
-                    'jsp': jsp, 'setDetail': setDetail,
+                    'jsp': jsp, 'setDetail': setDetail,'play_url':self.play_url
                 })
                 init_flag['ctx'] = True
             if p.get('重定向') and str(p['重定向']).startswith('js:'):
@@ -992,7 +992,7 @@ class CMS:
                         vod_tab_list.append(vlist)
                     vod_play_url = vod_play_url.join(vod_tab_list)
 
-            # print(vod_play_url)
+            print(vod_play_url)
             vod['vod_play_from'] = vod_play_from
             # print(vod_play_from)
             vod['vod_play_url'] = vod_play_url
@@ -1222,6 +1222,8 @@ class CMS:
                 pass
         # print(unquote(play_url))
         play_url = unquote(play_url)
+        origin_play_url = play_url
+        print(origin_play_url)
         if self.lazy:
             print(f'{play_url}->开始执行免嗅代码{type(self.lazy)}->{self.lazy}')
             t1 = time()
@@ -1271,6 +1273,10 @@ class CMS:
                     # print(type(play_url))
                     # print(play_url)
                     logger.info(f'js免嗅耗时:{get_interval(t1)}毫秒,播放地址:{play_url}')
+                    if not play_url and play_url!='' and play_url!={}:
+                        play_url = origin_play_url
+                    # if play_url == {}:
+                    #     play_url = None
             except Exception as e:
                 logger.info(f'免嗅耗时:{get_interval(t1)}毫秒,并发生错误:{e}')
             return play_url

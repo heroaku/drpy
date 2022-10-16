@@ -881,7 +881,9 @@ function request(url,obj,ocr_flag){
         obj.headers = headers;
     }
     if(rule.encoding&&rule.encoding!=='utf-8'&&!ocr_flag){
-        obj.headers["Content-Type"] = 'text/html; charset='+rule.encoding;
+        if(!obj.headers.hasOwnProperty('Content-Type')){ // 手动指定了就不管
+            obj.headers["Content-Type"] = 'text/html; charset='+rule.encoding;
+        }
     }
     if(typeof(obj.headers.body)!='undefined'&&obj.headers.body&&typeof (obj.headers.body)==='string'){
         let data = {};

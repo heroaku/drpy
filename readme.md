@@ -47,6 +47,8 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm) 
+###### 2022/10/16
+- [X] 3.9.8 完成ddys选集播放和免嗅(可惜我刚弄完没播放俩个剧就被封ip了)
 ###### 2022/10/15
 - [X] beta2 修复dealJson导致的兔小贝一级分类无数据
 - [X] beta6 尝试完善低端影视,增加tabs和lists支持js:写法(js模式0和模式1同步测试)
