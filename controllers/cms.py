@@ -739,6 +739,8 @@ class CMS:
                 url = url.replace('fypage',pg)
         if fypage == 1 and self.test('[\[\]]',url):
             url = url.split('[')[1].split(']')[0]
+        elif fypage > 1 and self.test('[\[\]]',url):
+            url = url.split('[')[0]
         # print(url)
         logger.info(url)
         p = self.一级

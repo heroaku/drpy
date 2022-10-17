@@ -1274,6 +1274,8 @@ function categoryParse(cateObj) {
     }
     if(cateObj.pg === 1 && url.includes('[')&&url.includes(']')){
         url = url.split('[')[1].split(']')[0];
+    }else if(cateObj.pg > 1 && url.includes('[')&&url.includes(']')){
+        url = url.split('[')[0];
     }
     MY_URL = url;
     // setItem('MY_URL',MY_URL);
