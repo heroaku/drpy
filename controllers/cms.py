@@ -562,33 +562,53 @@ class CMS:
             if self.double and len(p) < 6:
                 return self.blank()
             jsp = jsoup(self.homeUrl)
-            is_json = str(p[0]).startswith('json:')
+            pp = self.一级.split(';')
+            def getPP(p,pn,pp,ppn):
+                ps = pp[ppn] if p[pn] == '*' and len(pp) > ppn else p[pn]
+                return ps
+            p0 = getPP(p,0,pp,0)
+            is_json = str(p0).startswith('json:')
             if is_json:
                 html = self.dealJson(html)
             pdfh = jsp.pjfh if is_json else jsp.pdfh
             pdfa = jsp.pjfa if is_json else jsp.pdfa
             pd = jsp.pj if is_json else jsp.pd
+
+
+
             # print(html)
             try:
                 if self.double:
-                    items = pdfa(html, p[0].replace('json:',''))
+                    items = pdfa(html, p0.replace('json:',''))
                     # print(p[0])
                     # print(items)
                     # print(len(items))
                     for item in items:
                         items2 = pdfa(item,p[1])
-                        # print(items2)
+                        # print(len(items2))
                         for item2 in items2:
                             try:
-                                title = pdfh(item2, p[2])
+                                p2 = getPP(p,2,pp,1)
+                                title = pdfh(item2, p2)
+                                # print(title)
                                 try:
-                                    img = pd(item2, p[3])
+                                    p3 = getPP(p,3,pp,2)
+                                    img = pd(item2, p3)
                                 except:
                                     img = ''
-                                desc = pdfh(item2, p[4])
-                                links = [pd(item2, p5) if not self.detailUrl else pdfh(item2, p5) for p5 in p[5].split('+')]
+                                try:
+                                    p4 = getPP(p,4,pp,3)
+                                    desc = pdfh(item2, p4)
+                                except:
+                                    desc = ''
+                                p5 = getPP(p,5,pp,4)
+                                links = [pd(item2, _p5) if not self.detailUrl else pdfh(item2, _p5) for _p5 in p5.split('+')]
                                 link = '$'.join(links)
-                                content = '' if len(p) < 7 else pdfh(item2, p[6])
+                                if len(p) > 6 and p[6]:
+                                    p6 = getPP(p,6,pp,5)
+                                    content = pdfh(item2, p6)
+                                else:
+                                    content = ''
                                 videos.append({
                                     "vod_id": link,
                                     "vod_name": title,
@@ -603,17 +623,31 @@ class CMS:
                             except:
                                 pass
                 else:
-                    items = pdfa(html, p[0].replace('json:',''))
+                    items = pdfa(html, p0.replace('json:',''))
                     # print(items)
                     for item in items:
                         try:
-                            title = pdfh(item, p[1])
-                            img = pd(item, p[2])
-                            desc = pdfh(item, p[3])
+                            p1 = getPP(p,1,pp,1)
+                            title = pdfh(item, p1)
+                            try:
+                                p2 = getPP(p,2,pp,2)
+                                img = pd(item, p2)
+                            except:
+                                img = ''
+                            try:
+                                p3 = getPP(p,3,pp,3)
+                                desc = pdfh(item, p3)
+                            except:
+                                desc = ''
+                            p4 = getPP(p,4,pp,4)
                             # link = pd(item, p[4])
-                            links = [pd(item, p5) if not self.detailUrl else pdfh(item, p5) for p5 in p[4].split('+')]
+                            links = [pd(item, _p5) if not self.detailUrl else pdfh(item, _p5) for _p5 in p4.split('+')]
                             link = '$'.join(links)
-                            content = '' if len(p) < 6 else pdfh(item, p[5])
+                            if len(p) > 5 and p[5]:
+                                p5 = getPP(p,5,pp,5)
+                                content = pdfh(item, p5)
+                            else:
+                                content = ''
                             videos.append({
                                 "vod_id": link,
                                 "vod_name": title,
@@ -1096,9 +1130,14 @@ class CMS:
             return self.blank()
         # p = self.一级.split(';') if self.搜索 == '*' and self.一级 else self.搜索.split(';')  # 解析
         p = self.一级 if self.搜索 == '*' and self.一级 else self.搜索
+        pp = self.一级.split(';')
         jsp = jsoup(self.url)
         videos = []
         is_js = isinstance(p, str) and str(p).startswith('js:')  # 是js
+
+        def getPP(p, pn, pp, ppn):
+            ps = pp[ppn] if p[pn] == '*' and len(pp) > ppn else p[pn]
+            return ps
         if is_js:
             headers['Referer'] = getHome(url)
             py_ctx.update({
@@ -1159,28 +1198,34 @@ class CMS:
                     logger.info('搜索结果源码未包含关键字,疑似搜索失败,正为您打印结果源码')
                     print(html)
 
-                items = pdfa(html,p[0].replace('json:','',1))
+                p0 = getPP(p,0,pp,0)
+                items = pdfa(html,p0.replace('json:','',1))
                 # print(len(items),items)
                 videos = []
                 for item in items:
                     # print(item)
                     try:
                         # title = pdfh(item, p[1])
-                        title = ''.join([pdfh(item, i) for i in p[1].split('||')])
+                        p1 = getPP(p, 1, pp, 1)
+                        title = ''.join([pdfh(item, i) for i in p1.split('||')])
                         try:
-                            img = pd(item, p[2])
+                            p2 = getPP(p, 2, pp, 2)
+                            img = pd(item, p2)
                         except:
                             img = ''
                         try:
-                            desc = pdfh(item, p[3])
+                            p3 = getPP(p, 3, pp, 3)
+                            desc = pdfh(item, p3)
                         except:
                             desc = ''
-                        try:
-                            content = '' if len(p) < 6 else pdfh(item, p[5])
-                        except:
+                        if len(p) > 5 and p[5]:
+                            p5 = getPP(p, 5, pp, 5)
+                            content = pdfh(item, p5)
+                        else:
                             content = ''
                         # link = '$'.join([pd(item, p4) for p4 in p[4].split('+')])
-                        links = [pd(item, p4) if not self.detailUrl else pdfh(item, p4) for p4 in p[4].split('+')]
+                        p4 = getPP(p, 4, pp, 4)
+                        links = [pd(item, _p4) if not self.detailUrl else pdfh(item, _p4) for _p4 in p4.split('+')]
                         link = '$'.join(links)
                         # print(content)
                         # sid = self.regStr(sid, "/video/(\\S+).html")
