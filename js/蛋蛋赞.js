@@ -1,8 +1,8 @@
 var rule={
-    title:'麦豆',
+    title:'蛋蛋赞',
     host:'https://www.dandanzan10.top',
     // homeUrl:'/',
-    url:'/fyclass/index_fypage.html[/fyclass/index.html]',          
+    url:'/fyclass/index_fypage.html[/fyclass/index.html]',   
     //searchUrl:'/search/**/',
     searchable:2,//是否启用全局搜索,
     quickSearch:0,//是否启用快速搜索,
@@ -19,7 +19,6 @@ var rule={
    一级:'.lists-content:eq(1)&&ul&&li;img&&alt;.thumb&&src;.note&&Text;a&&href',
 
     double:true, // 推荐内容是否双层定位
-
-   二级:{"title":"h1&&Text;.col-xs-2.text-overflow:eq(0)&&Text","img":".vod-detail-thumb&&img&&src","desc":";;.text-overflow.hidden-xs:eq(3)&&Text;.col-md-1.text-overflow:eq(1)&&Text;.col-xs-2.hidden-xs:eq(0)&&Text","content":".txt-hidden.pointer&&Text","tabs":".details-play-nav li a","lists":".play-div-oa:eq(#id) li"},
+   二级:{"title":"h1&&Text;.product-excerpt:eq(2)&&Text","img":".thumb&&src","desc":";;.product-excerpt:eq(3)&&Text;.product-excerpt:eq(1)&&Text;.product-excerpt:eq(0)&&Text","content":".product-excerpt:eq(5)&&Text","tabs":".playlists dl dt","lists":".play-div-oa:eq(#id) li"},
    搜索:'ul.img-list.clearfix&&li;a&&title;.lazyload&&data-original;.pic-text&&Text;a&&href',
 }
