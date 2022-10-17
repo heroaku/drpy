@@ -27,7 +27,7 @@
     "ext":"{{ host }}/admin/view/{{ rule.name }}.js"
 }{% endif %}{% if loop.last==False %},{% endif %}{% endfor %}
 {% if js_mode == 1 %},{
-    "key":"dr_drpy",
+    "key":"js_drpy",
     "name":"drpy(道长)",
     "type":1,
     "api":"{{ host }}/vod?rule=drpy",

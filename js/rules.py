@@ -73,6 +73,7 @@ def getRulesJs2py(path='cache',js_mode=0):
         # rule_codes 是个 js2py.base.JsObjectWrapper 类型,所以下面才能用. 获取属性
         new_rule_list = []
         for i in range(len(rule_list)):
+            # 过滤排除drpy
             if js_mode == 1 and rule_list[i] == 'drpy':
                 continue
             sable = rule_codes[i].searchable or 0
@@ -125,8 +126,9 @@ def getRules(path='cache',js_mode=0):
         # rule_codes 是个 js2py.base.JsObjectWrapper 类型,所以下面才能用. 获取属性
         new_rule_list = []
         for i in range(len(rule_list)):
-            if js_mode == 1 and rule_list[i] == 'drpy':
-                continue
+            # 过滤排除drpy
+            # if js_mode == 1 and rule_list[i] == 'drpy':
+            #     continue
             rule_codes[i] = ujson.loads(rule_codes[i].json())
             sable = rule_codes[i].get('searchable',0)
             tmpObj = {
