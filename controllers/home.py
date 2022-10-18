@@ -275,7 +275,8 @@ def config_gen():
         host1 = getHost(1)
         jxs = getJxs(host=host1)
         set_area = render_template('config.txt',pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,1),mode=1,js_mode=js_mode,host=host1,jxs=jxs)
-        host2 = getHost(2)
+        host2 = getHost(2) or host1
+        # print('远程地址:'+host2)
         jxs = getJxs(host=host2)
         set_online = render_template('config.txt',pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,2),mode=1,js_mode=js_mode,host=host2,jxs=jxs)
         ali_token = new_conf.ALI_TOKEN
