@@ -1709,9 +1709,6 @@ function playParse(playObj){
         let muban = eval(globalThis.mubanJs);
         if (typeof ext == 'object'){
             rule = ext;
-            if (rule.模板 && muban.hasOwnProperty(rule.模板)) {
-                rule = Object.assign(muban[rule.模板], rule);
-            }
         } else if (typeof ext == 'string') {
             if (ext.startsWith('http')) {
                 let js = request(ext,{'method':'GET'});
@@ -1719,9 +1716,13 @@ function playParse(playObj){
                     eval(js.replace('var rule', 'rule'));
                 }
                 }
-            } else {
-                eval(ext.replace('var rule', 'rule'));
-            }
+        } else {
+            eval(ext.replace('var rule', 'rule'));
+        }
+        if (rule.模板 && muban.hasOwnProperty(rule.模板)) {
+            print('继承模板:'+rule.模板);
+            rule = Object.assign(muban[rule.模板], rule);
+        }
         /** 处理一下 rule规则关键字段没传递的情况 **/
         let rule_cate_excludes = (rule.cate_exclude||'').split('|').filter(it=>it.trim());
         let rule_tab_excludes = (rule.tab_exclude||'').split('|').filter(it=>it.trim());
