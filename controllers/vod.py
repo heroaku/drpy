@@ -25,7 +25,7 @@ import ujson
 vod = Blueprint("vod", __name__)
 
 
-def search_one(rule, wd, before: str = ''):
+def search_one_py(rule, wd, before: str = ''):
     t1 = time()
     if not before:
         with open('js/模板.js', encoding='utf-8') as f:
@@ -44,6 +44,31 @@ def search_one(rule, wd, before: str = ''):
     except Exception as e:
         print(f'{rule}发生错误:{e}')
         return None
+
+def search_one(rule, wd, before: str = ''):
+    t1 = time()
+    if not before:
+        with open('js/模板.js', encoding='utf-8') as f:
+            before = f.read().split('export')[0]
+    end_code = """\nif (rule.模板 && muban.hasOwnProperty(rule.模板)) {rule = Object.assign(muban[rule.模板], rule);}"""
+    js_path = f'js/{rule}.js'
+    ctx = Context()
+    try:
+        with open(js_path, encoding='utf-8') as f2:
+            jscode = f2.read()
+        jscode = before + jscode + end_code
+        # print(jscode)
+        ctx.eval(jscode)
+        js_ret = ctx.get('rule')
+        ruleDict = ujson.loads(js_ret.json())
+        ruleDict['id'] = rule  # 把路由请求的id装到字典里,后面播放嗅探才能用
+        logger.info(f'规则{rule}装载耗时:{get_interval(t1)}毫秒')
+        cms = CMS(ruleDict, db, RuleClass, PlayParse, cfg)
+        data = cms.searchContent(wd, show_name=True)
+        return data
+    except Exception as e:
+        logger.info(f'{e}')
+        return R.failed('爬虫规则加载失败')
 
 def multi_search2(wd):
     t1 = time()
