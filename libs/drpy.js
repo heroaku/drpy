@@ -1356,6 +1356,7 @@ function searchParse(searchObj) {
     let url = searchObj.searchUrl.replaceAll('**', searchObj.wd).replaceAll('fypage', searchObj.pg);
     MY_URL = url;
     console.log(MY_URL);
+    // log(searchObj.搜索);
     // setItem('MY_URL',MY_URL);
     if(p.startsWith('js:')){
         const TYPE = 'search';
@@ -1377,6 +1378,7 @@ function searchParse(searchObj) {
         _pd = _ps.pd;
         let is_json = p0.startsWith('json:');
         p0 = p0.replace(/^(jsp:|json:|jq:)/,'');
+        // print('1381 p0:'+p0);
         try {
             let html = getHtml(MY_URL);
             if (html) {
@@ -1411,7 +1413,7 @@ function searchParse(searchObj) {
                     let content;
                     if(p.length > 5 && p[5]){
                         let p5 = getPP(p,5,pp,5);
-                        content = _pdfh(item, p5);
+                        content = _pdfh(it, p5);
                     }else{
                         content = '';
                     }
@@ -1427,6 +1429,7 @@ function searchParse(searchObj) {
 
             }
         } catch (e) {
+            print('搜索发生错误:'+e.message);
             return '{}'
         }
     }
