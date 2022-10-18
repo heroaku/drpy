@@ -113,7 +113,7 @@ def getRules(path='cache',js_mode=0):
         js = js_path[i]
         with open(js,encoding='utf-8') as f:
             code = f.read()
-            new_code = 'var muban = JSON.parse(JSON.stringify(mubanDict));\n'+code.replace('rule',f'rule{i}',1)
+            new_code = 'var muban = JSON.parse(JSON.stringify(mubanDict));\n'+code.replace('rule',f'rule{i}',1)+f'\nif (rule{i}.模板 && muban.hasOwnProperty(rule{i}.模板))'+'{'+f'rule{i} = Object.assign(muban[rule{i}.模板], rule{i});'+'}'
             # new_code = ''+code.replace('rule',f'rule{i}',1)
             codes.append(new_code)
     newCodes = before + '\n'+ '\n'.join(codes)

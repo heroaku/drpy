@@ -163,6 +163,7 @@ def vod_home():
     with open('js/模板.js', encoding='utf-8') as f:
         before = f.read().split('export')[0]
     # logger.info(f'js读取耗时:{get_interval(t1)}毫秒')
+    end_code = """\nif (rule.模板 && muban.hasOwnProperty(rule.模板)) {rule = Object.assign(muban[rule.模板], rule);}"""
     logger.info(f'参数检验js读取共计耗时:{get_interval(t0)}毫秒')
     t2 = time()
 
@@ -178,7 +179,8 @@ def vod_home():
     try:
         with open(js_path,encoding='utf-8') as f2:
             jscode = f2.read()
-        jscode = before + jscode
+        jscode = before + jscode + end_code
+        # print(jscode)
         ctx.eval(jscode)
         js_ret = ctx.get('rule')
         ruleDict = ujson.loads(js_ret.json())
@@ -187,6 +189,7 @@ def vod_home():
         return R.failed('爬虫规则加载失败')
 
     # print(type(ruleDict))
+    # print(ruleDict)
     # print(ruleDict)
     ruleDict['id'] = rule  # 把路由请求的id装到字典里,后面播放嗅探才能用
     # print(ruleDict)

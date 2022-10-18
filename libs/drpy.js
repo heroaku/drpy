@@ -1708,8 +1708,8 @@ function playParse(playObj){
         let muban = eval(globalThis.mubanJs);
         if (typeof ext == 'object'){
             rule = ext;
-            if (rule.template) {
-                rule = Object.assign(muban[rule.template], rule);
+            if (rule.模板 && muban.hasOwnProperty(rule.模板)) {
+                rule = Object.assign(muban[rule.模板], rule);
             }
         } else if (typeof ext == 'string') {
             if (ext.startsWith('http')) {
