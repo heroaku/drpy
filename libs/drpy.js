@@ -64,7 +64,8 @@ const TAB_EXCLUDE = '猜你|喜欢|APP|下载|剧情|热播';
 const OCR_RETRY = 3;//ocr验证重试次数
 // const OCR_API = 'http://dm.mudery.com:10000';//ocr在线识别接口
 // const OCR_API = 'http://192.168.3.239:5705/parse/ocr';//ocr在线识别接口
-const OCR_API = 'http://cms.nokia.press/parse/ocr';//ocr在线识别接口
+// const OCR_API = 'http://cms.nokia.press/parse/ocr';//ocr在线识别接口
+const OCR_API = 'http://cms.nokia.press:5706/parse/ocr';//ocr在线识别接口
 if(typeof(MY_URL)==='undefined'){
     var MY_URL; // 全局注入变量,pd函数需要
 }
