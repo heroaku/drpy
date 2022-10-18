@@ -47,6 +47,10 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm) 
+###### 2022/10/18
+- [ ] 没有二级只有一级的情况下想办法把标题和图片带进去二级。(这个想法实现难度太大了,直接放弃,不要瞎搞了)
+- [X] 3.9.10 (修复js模式1搜索不到结果,修复js模式0二级选集和线路异常,优化drpy聚搜)
+- [X] 源增加属性 模板,可用作模板继承
 ###### 2022/10/17
 - [X] 3.9.8beta2 全局关闭https对应的ssl证书验证
 - [X] 3.9.9 增加新特性,简写快看源,修复小品网推荐显示
@@ -346,6 +350,8 @@ var rule = {
     // 类似海阔一级 列表;标题;图片;描述;链接;详情 其中最后一个参数选填
     一级:'.col-sm-6;h3&&Text;img&&data-src;.date&&Text;a&&href',
     // 二级可以是*,表示规则无二级,直接拿一级的链接进行嗅探
+    // 二级 title: 片名;类型
+    // 二级 desc: 主要信息;年代;地区;演员;导演
     // 或者 {title:'',img:'',desc:'',content:'',tabs:'',lists:''} 同海阔dr二级
     二级:'*',
     // 搜索可以是*,集成一级，或者跟一级一样的写法 列表;标题;图片;描述;链接;详情
@@ -360,7 +366,15 @@ host:'https://yanetflix.com',
 url:'/index.php/vod/show/id/fyclass/page/fypage.html',
 class_parse:'.navbar-items li:gt(1):lt(6);a&&Text;a&&href;.*/(.*?).html',
 });
-
+```
+模板继承写法(新)
+```javascript
+var rule = {
+title:'cokemv',
+模板:'mxpro',
+host:'https://cokemv.me',
+class_parse:'.navbar-items li:gt(1):lt(7);a&&Text;a&&href;/(\\d+).html',
+}
+```
 js:内置变量
 input,html,VODS,VOD,TABS,LISTS
-```
