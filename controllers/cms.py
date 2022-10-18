@@ -864,8 +864,7 @@ class CMS:
             pdfa = jsp.pjfa if is_json else jsp.pdfa
             pd = jsp.pj if is_json else jsp.pd
             pq = jsp.pq
-            obj = {}
-            vod_name = ''
+            vod['vod_id'] = detailUrl
             if not html: # 没传递html参数接下来智能获取
                 r = requests.get(url, headers=self.headers, timeout=self.timeout,verify=False)
                 html = self.checkHtml(r)
@@ -874,16 +873,16 @@ class CMS:
                     html = json.loads(html)
             if p.get('title'):
                 p1 = p['title'].split(';')
-                vod_name = pdfh(html, p1[0]).replace('\n', ' ')
-                # title = '\n'.join([pdfh(html,i).replace('\n',' ') for i in p1])
-                title = '\n'.join([','.join([pdfh(html, pp1).strip() for pp1 in i.split('+')]) for i in p1])
-                # print(title)
-                obj['title'] = title
+                vod['vod_name'] = pdfh(html, p1[0]).replace('\n', ' ').strip()
+                vod['type_name'] = pdfh(html, p1[1]).replace('\n',' ').strip() if len(p1)>1 else ''
             if p.get('desc'):
                 try:
                     p1 = p['desc'].split(';')
-                    desc = '\n'.join([pdfh(html, i).replace('\n', ' ') for i in p1])
-                    obj['desc'] = desc
+                    vod['vod_remarks'] = pdfh(html, p1[0]).replace('\n', '').strip()
+                    vod['vod_year'] = pdfh(html, p1[1]).replace('\n', ' ').strip() if len(p1) > 1 else ''
+                    vod['vod_area'] = pdfh(html, p1[2]).replace('\n', ' ').strip() if len(p1) > 2 else ''
+                    vod['vod_actor'] = pdfh(html, p1[3]).replace('\n', ' ').strip() if len(p1) > 3 else ''
+                    vod['vod_director'] = pdfh(html, p1[4]).replace('\n', ' ').strip() if len(p1) > 4 else ''
                 except:
                     pass
 
@@ -891,7 +890,7 @@ class CMS:
                 p1 = p['content'].split(';')
                 try:
                     content = '\n'.join([pdfh(html, i).replace('\n', ' ') for i in p1])
-                    obj['content'] = content
+                    vod['vod_content'] = content
                 except:
                     pass
 
@@ -899,22 +898,9 @@ class CMS:
                 p1 = p['img']
                 try:
                     img = pd(html, p1)
-                    obj['img'] = img
+                    vod['vod_pic'] = img
                 except Exception as e:
                     logger.info(f'二级图片定位失败,但不影响使用{e}')
-
-            vod = {
-                "vod_id": detailUrl,
-                "vod_name": vod_name,
-                "vod_pic": obj.get('img', ''),
-                "type_name": obj.get('title', ''),
-                "vod_year": "",
-                "vod_area": "",
-                "vod_remarks": obj.get('desc', ''),
-                "vod_actor": "",
-                "vod_director": "",
-                "vod_content": obj.get('content', '')
-            }
 
             vod_play_from = '$$$'
             playFrom = []
@@ -966,19 +952,28 @@ class CMS:
                         vHeader = vHeader.to_list()
                     vodHeader = vHeader
                 else:
-                    # print(p['tabs'].split(';')[0])
-                    vHeader = pdfa(html, p['tabs'].split(';')[0])
-                    # print(f'线路列表数:{len((vodHeader))}')
-                    # print(vodHeader)
+                    tab_parse = p['tabs'].split(';')[0]
+                    # print('tab_parse:',tab_parse)
+                    vHeader = pdfa(html, tab_parse)
+                    # print(vHeader)
+                    print(f'二级线路定位列表数:{len((vHeader))}')
+                    # print(vHeader[0].outerHtml())
+                    # print(vHeader[0].toString())
+                    # from lxml import etree
+                    # print(str(etree.tostring(vHeader[0], pretty_print=True), 'utf-8'))
+                    from lxml.html import tostring as html2str
+                    # print(html2str(vHeader[0].root).decode('utf-8'))
                     if not is_json:
                         for v in vHeader:
                             # 过滤排除掉线路标题
                             v_title = pq(v).text()
+                            # print(v_title)
                             if self.tab_exclude and jsp.test(self.tab_exclude, v_title):
                                 continue
                             vodHeader.append(v_title)
                     else:
                         vodHeader = vHeader
+                    print(f'过滤后真实线路列表数:{len((vodHeader))} {vodHeader}')
             else:
                 vodHeader = ['道长在线']
 
@@ -1010,9 +1005,11 @@ class CMS:
                 else:
                     for i in range(len(vodHeader)):
                         tab_name = str(vodHeader[i])
+                        # print(tab_name)
                         tab_ext = p['tabs'].split(';')[1] if len(p['tabs'].split(';')) > 1 else ''
                         p1 = p['lists'].replace('#idv', tab_name).replace('#id', str(i))
                         tab_ext = tab_ext.replace('#idv', tab_name).replace('#id', str(i))
+                        # print(p1)
                         vodList = pdfa(html, p1)  # 1条线路的选集列表
                         # print(vodList)
                         # vodList = [pq(i).text()+'$'+pd(i,'a&&href') for i in vodList]  # 拼接成 名称$链接
@@ -1028,7 +1025,7 @@ class CMS:
                         vod_tab_list.append(vlist)
                     vod_play_url = vod_play_url.join(vod_tab_list)
 
-            print(vod_play_url)
+            # print(vod_play_url)
             vod['vod_play_from'] = vod_play_from
             # print(vod_play_from)
             vod['vod_play_url'] = vod_play_url

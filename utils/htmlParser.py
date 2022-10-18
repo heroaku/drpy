@@ -6,6 +6,7 @@
 import json
 
 from pyquery import PyQuery as pq
+from lxml import etree
 from urllib.parse import urljoin
 import re
 from jsonpath import jsonpath
@@ -22,7 +23,6 @@ class jsoup:
     def pdfh(self,html,parse:str,add_url=False):
         if not parse:
             return ''
-
         doc = pq(html)
         option = None
         if parse.find('&&') > -1:
@@ -66,10 +66,14 @@ class jsoup:
             # ret = doc(parse) # 下面注释的写法不对的
             # ret = ret.find(':first')
             # ret = ret.children(':first')
-            ret = str(ret)
+            # print(parse)
+            # ret = str(ret)
+            ret = ret.outerHtml()
         return ret
 
     def pdfa(self,html,parse:str):
+        # 看官方文档才能解决这个问题!!!
+        # https://pyquery.readthedocs.io/en/latest/api.html
         if not parse:
             return []
         if parse.find('&&') > -1:
@@ -78,8 +82,15 @@ class jsoup:
             parse = ' '.join([parse[i] if self.test(':eq|:lt|:gt', parse[i]) or i>=len(parse)-1 else f'{parse[i]}:eq(0)' for i in range(len(parse))])
         # print(f'pdfa:{parse}')
         doc = pq(html)
-        res = [str(item) for item in doc(parse).items()]
+        result = doc(parse)
+        # 节点转字符串
+        # print(str(etree.tostring(result[0], pretty_print=True), 'utf-8'))
+        # res = [item for item in result.items()]
+        res = [item.outerHtml() for item in result.items()] #  这个才是对的！！str() item str(etree.tostring 统统错误
+        # res = [str(item) for item in result.items()]
+        # res = [str(etree.tostring(item, pretty_print=True), 'utf-8') for item in result]
         # print(len(res),res)
+        # print('pdfa执行结果数:',len(res))
         return res
 
     def pd(self,html,parse:str):
