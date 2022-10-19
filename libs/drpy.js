@@ -749,7 +749,10 @@ function verifyCode(url){
             let hhtml = request(yzm_url,{withHeaders:true,toBase64:true},true);
             let json = JSON.parse(hhtml);
             if(!cookie){
-                cookie = json['set-cookie']?json['set-cookie'].split(';')[0]:'';
+                // print(json);
+                let setCk = Object.keys(json).find(it=>it.toLowerCase()==='set-cookie');
+                // cookie = json['set-cookie']?json['set-cookie'].split(';')[0]:'';
+                cookie = setCk?json[setCk].split(';')[0]:'';
             }
             // console.log(hhtml);
             console.log('cookie:'+cookie);
