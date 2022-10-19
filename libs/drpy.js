@@ -628,18 +628,24 @@ const parseTags = {
         },
         pdfa(html, parse) {
             if (!parse || !parse.trim()) {
+                print('!parse');
                 return [];
             }
             let eleFind = typeof html === 'object';
+            // print('parse前:'+parse);
             if (parse.indexOf('&&') > -1) {
                 let sp = parse.split('&&');
                 for (let i in sp) {
                     if (!SELECT_REGEX_A.test(sp[i]) && i < sp.length - 1) {
-                        sp[i] = sp[i] + ':eq(0)';
+                        if(sp[i]!=='body'){
+                            // sp[i] = sp[i] + ':eq(0)';
+                            sp[i] = sp[i] + ':first';
+                        }
                     }
                 }
                 parse = sp.join(' ');
             }
+            // print('parse后:'+parse);
             const $ = eleFind ? html.rr : cheerio.load(html);
             let ret = eleFind ? ($(html.ele).is(parse) ? html.ele : $(html.ele).find(parse)) : $(parse);
             let result = [];
@@ -648,6 +654,7 @@ const parseTags = {
             if (ret) {
                 ret.each(function (idx, ele) {
                     result.push({ rr: $, ele: ele });
+                    // result.push({ rr: $, ele: $(ele).prop("outerHTML")}); // 性能贼差
                 });
             }
             return result;
@@ -1081,6 +1088,7 @@ function homeVodParse(homeVodObj){
     MY_URL = homeVodObj.homeUrl;
     // setItem('MY_URL',MY_URL);
     console.log(MY_URL);
+    let t1 = (new Date()).getTime();
     let p = homeVodObj.推荐;
     print('p:'+p);
     if(p==='*' && rule.一级){
@@ -1224,6 +1232,8 @@ function homeVodParse(homeVodObj){
 
         }
     }
+    let t2 = (new Date()).getTime();
+    console.log('加载首页推荐耗时:'+(t2-t1)+'毫秒');
     // console.log(JSON.stringify(d));
     return JSON.stringify({
         list:d

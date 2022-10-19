@@ -11,7 +11,9 @@ class_url:'1&2&3&4&16&13&15&14',
 play_parse:true,
 lazy:'',
 limit:6,
+// 推荐:'ul.myui-vodlist;ul li;*;*;*;*',
 推荐:'ul.myui-vodlist;li;*;*;*;*',
+// 推荐:'ul.myui-vodlist;ul&&li;*;*;*;*', // 此写法本地js无效
 double:true, // 推荐内容是否双层定位
 一级:'.myui-vodlist__box;a&&title;.lazyload&&data-original;.tag&&Text;a&&href',
 二级:{"title":"h1&&Text;.stui-content__detail&&p&&Text","img":".lazyload&&data-original","desc":".data:eq(0)&&Text;.data:eq(1)&&Text;.data:eq(2)&&Text;.data:eq(3)&&Text","content":".desc&&Text","tabs":".stui-pannel__head.bottom-line h3","lists":".stui-content__playlist:eq(#id) li"},
