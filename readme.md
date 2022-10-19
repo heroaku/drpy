@@ -47,6 +47,11 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm) 
+###### 2022/10/19
+- [X] 源增加 filter_def 属性用于指定不同分类下的默认筛选条件
+- [X] 修改搭建文档给出armv7设备的drpy运行兼容方案
+- [X] 增加厂长资源,just live等多个源,其中just live这个源用到了新特性 filter_def
+- [X] 版本更新至 3.9.11
 ###### 2022/10/18
 - [ ] 没有二级只有一级的情况下想办法把标题和图片带进去二级。(这个想法实现难度太大了,直接放弃,不要瞎搞了)
 - [X] 3.9.10 (修复js模式1搜索不到结果,修复js模式0二级选集和线路异常,优化drpy聚搜)
@@ -320,6 +325,17 @@ var rule = {
     quickSearch:0,//是否启用快速搜索,
     filterable:0,//是否启用筛选,
     filter:{},// 筛选条件字典
+    // 默认筛选条件字典(不同分类可以指定同样筛选参数的不同默认值)
+    filter_def:{
+        douyu:{
+        area:'一起看',
+        other:'..'
+        },
+        huya:{
+        area:'影音馆',
+        other:'..'
+        }
+    }, 
     // 筛选网站传参,会自动传到分类链接下(本示例中的url参数)-url里参数为fyfilter,可参考蓝莓影视.js
     filter_url:'style={{fl.style}}&zone={{fl.zone}}&year={{fl.year}}&fee={{fl.fee}}&order={{fl.order}}',
     // 注意,由于猫有配置缓存,搜索配置没法热加载，修改了js不需要重启服务器

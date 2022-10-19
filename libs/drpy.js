@@ -1252,6 +1252,21 @@ function categoryParse(cateObj) {
         }
         // console.log('filter:'+cateObj.filter);
         let fl = cateObj.filter?cateObj.extend:{};
+        // 自动合并 不同分类对应的默认筛选
+        if(rule.filter_def && typeof(rule.filter_def)==='object'){
+            try {
+                if(Object.keys(rule.filter_def).length>0 && rule.filter_def.hasOwnProperty(cateObj.tid)){
+                    let self_fl_def = rule.filter_def[cateObj.tid];
+                    if(self_fl_def && typeof(self_fl_def)==='object'){
+                        // 引用传递转值传递,避免污染self变量
+                        let fl_def = JSON.parse(JSON.stringify(self_fl_def));
+                        fl = Object.assign(fl_def,fl);
+                    }
+                }
+            }catch (e) {
+                print('合并不同分类对应的默认筛选出错:'+e.message);
+            }
+        }
         let new_url;
         new_url = cheerio.jinja2(url,{fl:fl});
         // console.log('jinjia2执行后的new_url类型为:'+typeof(new_url));

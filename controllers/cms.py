@@ -8,6 +8,9 @@ import json
 import requests
 import re
 import math
+
+import ujson
+
 from utils.web import *
 from utils.system import getHost
 from utils.config import playerConfig
@@ -206,6 +209,7 @@ class CMS:
         self.encoding = encoding
         self.timeout = round(int(timeout)/1000,2)
         self.filter = rule.get('filter',[])
+        self.filter_def = rule.get('filter_def',{})
         self.extend = rule.get('extend',[])
         self.d = self.getObject()
 
@@ -692,6 +696,16 @@ class CMS:
 
         if fl is None:
             fl = {}
+        if self.filter_def and isinstance(self.filter_def,dict):
+            try:
+                if self.filter_def.get(fyclass) and isinstance(self.filter_def[fyclass],dict):
+                    self_filter_def = self.filter_def[fyclass]
+                    filter_def = ujson.loads(ujson.dumps(self_filter_def))
+                    filter_def.update(fl)
+                    fl = filter_def
+            except Exception as e:
+                print(f'合并不同分类对应的默认筛选出错:{e}')
+        # print(fl)
         result = {}
         # urlParams = ["", "", "", "", "", "", "", "", "", "", "", ""]
         # urlParams = [""] * 12
