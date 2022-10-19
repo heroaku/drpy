@@ -9,7 +9,7 @@ WORKDIR /root/sd/pywork/dr_py
 COPY . /root/sd/pywork/dr_py
 
 # 执行指令，安装依赖
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.txt && pip3 uninstall quickjs && pip3 install ./whl/quickjs-1.19.2-cp37-cp37m-linux_armv7l.whl
 
 # 设置语言支持中文打印
 # ENV LANG C.UTF-8
