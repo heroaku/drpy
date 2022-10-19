@@ -643,6 +643,8 @@ const parseTags = {
             const $ = eleFind ? html.rr : cheerio.load(html);
             let ret = eleFind ? ($(html.ele).is(parse) ? html.ele : $(html.ele).find(parse)) : $(parse);
             let result = [];
+            // print('outerHTML:');
+            // print($(ret[0]).prop("outerHTML"));
             if (ret) {
                 ret.each(function (idx, ele) {
                     result.push({ rr: $, ele: ele });
@@ -1080,6 +1082,7 @@ function homeVodParse(homeVodObj){
     // setItem('MY_URL',MY_URL);
     console.log(MY_URL);
     let p = homeVodObj.推荐;
+    print('p:'+p);
     if(p==='*' && rule.一级){
         p = rule.一级;
         homeVodObj.double = false;
@@ -1817,6 +1820,7 @@ function home(filter) {
  * @returns {string}
  */
 function homeVod(params) {
+    console.log("homeVod");
     let homeVodObj = {
         推荐:rule.推荐,
         double:rule.double,
