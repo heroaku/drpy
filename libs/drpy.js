@@ -707,7 +707,10 @@ function readFile(filePath){
 function dealJson(html) {
     try {
         // html = html.match(/[\w|\W|\s|\S]*?(\{[\w|\W|\s|\S]*\})/).group[1];
-        html = '{'+html.match(/.*?\{(.*)\}/)[1]+'}';
+        html = html.trim();
+        if(!((html.startsWith('{') && html.endsWith('}'))||(html.startsWith('[') && html.endsWith(']')))){
+            html = '{'+html.match(/.*?\{(.*)\}/m)[1]+'}';
+        }
     } catch (e) {
     }
     try {
@@ -1425,7 +1428,7 @@ function searchParse(searchObj) {
         _pd = _ps.pd;
         let is_json = p0.startsWith('json:');
         p0 = p0.replace(/^(jsp:|json:|jq:)/,'');
-        // print('1381 p0:'+p0);
+        print('1381 p0:'+p0);
         try {
             let html = getHtml(MY_URL);
             if (html) {
@@ -1445,9 +1448,14 @@ function searchParse(searchObj) {
                     console.log(html);
                 }
                 if(is_json){
+                    // console.log(html);
                     html = dealJson(html);
                 }
+                console.log(JSON.stringify(html));
+                console.log(html);
                 let list = _pdfa(html, p0);
+                print(list.length);
+                print(list);
                 list.forEach(it => {
                     let p1 = getPP(p, 1, pp, 1);
                     let p2 = getPP(p, 2, pp, 2);
