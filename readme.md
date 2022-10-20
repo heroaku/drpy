@@ -50,6 +50,7 @@
 ###### 2022/10/20
 - [X] 新增了几个源
 - [X] 修复乐猪TV源并记录已知问题
+- [X] 升级版本至:3.9.12 二级增加新特性 tab_text:'body&&Text',list_text:'body&&Text',list_url:'a&&href'
 ###### 2022/10/19
 - [X] 源增加 filter_def 属性用于指定不同分类下的默认筛选条件
 - [X] 修改搭建文档给出armv7设备的drpy运行兼容方案
@@ -371,7 +372,7 @@ var rule = {
     // 二级可以是*,表示规则无二级,直接拿一级的链接进行嗅探
     // 二级 title: 片名;类型
     // 二级 desc: 主要信息;年代;地区;演员;导演
-    // 或者 {title:'',img:'',desc:'',content:'',tabs:'',lists:''} 同海阔dr二级
+    // 或者 {title:'',img:'',desc:'',content:'',tabs:'',lists:'',tab_text:'body&&Text',list_text:'body&&Text',list_url:'a&&href'} 同海阔dr二级
     二级:'*',
     // 搜索可以是*,集成一级，或者跟一级一样的写法 列表;标题;图片;描述;链接;详情
     搜索:'*',

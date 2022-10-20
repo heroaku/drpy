@@ -24,6 +24,11 @@ class jsoup:
         if not parse:
             return ''
         doc = pq(html)
+        if parse == 'body&&Text' or parse == 'Text':
+            text = doc.text()
+            return text
+        elif parse == 'body&&Html' or parse == 'Html':
+            return doc.html()
         option = None
         if parse.find('&&') > -1:
             option = parse.split('&&')[-1]

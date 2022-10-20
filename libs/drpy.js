@@ -1598,12 +1598,13 @@ function detailParse(detailObj){
                 playFrom = TABS;
             }else{
                 let p_tab = p.tabs.split(';')[0];
-                console.log(p_tab);
+                // console.log(p_tab);
                 let vHeader = _pdfa(html, p_tab);
-
                 console.log(vHeader.length);
+                let tab_text = p.tab_text||'body&&Text';
+                // print('tab_text:'+tab_text);
                 for(let v of vHeader){
-                    let v_title = _pdfh(v,'body&&Text').trim();
+                    let v_title = _pdfh(v,tab_text).trim();
                     console.log(v_title);
                     if(tab_exclude&& (new RegExp(tab_exclude)).test(v_title)){
                         continue;
@@ -1630,9 +1631,14 @@ function detailParse(detailObj){
                 eval(p.lists.replace('js:',''));
                 vod_play_url = LISTS.map(it=>it.join('#')).join(vod_play_url);
             }else{
+                let list_text = p.list_text||'body&&Text';
+                let list_url = p.list_url||'a&&href';
+                // print('list_text:'+list_text);
+                // print('list_url:'+list_url);
+                let is_tab_js = p.tabs.trim().startsWith('js:');
                 for(let i=0;i<playFrom.length;i++){
                     let tab_name = playFrom[i];
-                    let tab_ext =  p.tabs.split(';').length > 1 ? p.tabs.split(';')[1] : '';
+                    let tab_ext =  p.tabs.split(';').length > 1 && !is_tab_js ? p.tabs.split(';')[1] : '';
                     let p1 = p.lists.replaceAll('#idv', tab_name).replaceAll('#id', i);
                     tab_ext = tab_ext.replaceAll('#idv', tab_name).replaceAll('#id', i);
                     console.log(p1);
@@ -1645,6 +1651,7 @@ function detailParse(detailObj){
                         // console.log(e.message);
                     }
                     let new_vod_list = [];
+                    // print('tab_ext:'+tab_ext);
                     let tabName = tab_ext?_pdfh(html, tab_ext):tab_name;
                     console.log(tabName);
                     // console.log('cheerio解析Text');
@@ -1652,7 +1659,8 @@ function detailParse(detailObj){
                         // 请注意,这里要固定pdfh解析body&&Text,不需要下划线,没写错
                         // new_vod_list.push(pdfh(it,'body&&Text')+'$'+_pd(it,'a&&href',MY_URL));
                         // new_vod_list.push(cheerio.load(it).text()+'$'+_pd(it,'a&&href',MY_URL));
-                        new_vod_list.push(_pdfh(it, 'body&&Text').trim() + '$' + _pd(it, 'a&&href', MY_URL));
+                        // new_vod_list.push(_pdfh(it, list_text).trim() + '$' + _pd(it, list_url, MY_URL));
+                        new_vod_list.push(_pdfh(it, list_text).trim() + '$' + _pd(it, list_url, MY_URL));
                     });
                     let vlist = new_vod_list.join('#');
                     vod_tab_list.push(vlist);

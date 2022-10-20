@@ -977,10 +977,13 @@ class CMS:
                     # print(str(etree.tostring(vHeader[0], pretty_print=True), 'utf-8'))
                     from lxml.html import tostring as html2str
                     # print(html2str(vHeader[0].root).decode('utf-8'))
+                    tab_text = p.get('tab_text','') or 'body&&Text'
+                    # print('tab_text:'+tab_text)
                     if not is_json:
                         for v in vHeader:
                             # 过滤排除掉线路标题
-                            v_title = pq(v).text()
+                            # v_title = pq(v).text()
+                            v_title = pdfh(v,tab_text).strip()
                             # print(v_title)
                             if self.tab_exclude and jsp.test(self.tab_exclude, v_title):
                                 continue
@@ -1017,24 +1020,30 @@ class CMS:
 
                     vod_play_url = vod_play_url.join(list(map(lambda x:'#'.join(x),vlists)))
                 else:
+                    list_text = p.get('list_text','') or 'body&&Text'
+                    list_url = p.get('list_url','') or 'a&&href'
+                    print('list_text:' + list_text)
+                    print('list_url:' + list_url)
+                    is_tab_js = p['tabs'].strip().startswith('js:')
                     for i in range(len(vodHeader)):
                         tab_name = str(vodHeader[i])
                         # print(tab_name)
-                        tab_ext = p['tabs'].split(';')[1] if len(p['tabs'].split(';')) > 1 else ''
+                        tab_ext = p['tabs'].split(';')[1] if len(p['tabs'].split(';')) > 1 and not is_tab_js else ''
                         p1 = p['lists'].replace('#idv', tab_name).replace('#id', str(i))
                         tab_ext = tab_ext.replace('#idv', tab_name).replace('#id', str(i))
                         # print(p1)
                         vodList = pdfa(html, p1)  # 1条线路的选集列表
                         # print(vodList)
                         # vodList = [pq(i).text()+'$'+pd(i,'a&&href') for i in vodList]  # 拼接成 名称$链接
+                        # pq(i).text()
                         if self.play_parse:  # 自动base64编码
                             vodList = [(pdfh(html, tab_ext) if tab_ext else tab_name) + '$' + self.play_url + encodeUrl(i) for i
                                        in vodList] if is_json else \
-                                [pq(i).text() + '$' + self.play_url + encodeUrl(pd(i, 'a&&href')) for i in vodList]  # 拼接成 名称$链接
+                                [pdfh(i,list_text) + '$' + self.play_url + encodeUrl(pd(i, list_url)) for i in vodList]  # 拼接成 名称$链接
                         else:
                             vodList = [(pdfh(html, tab_ext) if tab_ext else tab_name) + '$' + self.play_url + i for i in
                                        vodList] if is_json else \
-                                [pq(i).text() + '$' + self.play_url + pd(i, 'a&&href') for i in vodList]  # 拼接成 名称$链接
+                                [pdfh(i,list_text) + '$' + self.play_url + pd(i, list_url) for i in vodList]  # 拼接成 名称$链接
                         vlist = '#'.join(vodList)  # 拼多个选集
                         vod_tab_list.append(vlist)
                     vod_play_url = vod_play_url.join(vod_tab_list)
