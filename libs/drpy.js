@@ -76,6 +76,7 @@ var log;
 var rule_fetch_params;
 var fetch_params; // 每个位置单独的
 var oheaders;
+// var play_url; // 二级详情页注入变量,为了适配js模式0 (不在这里定义了,直接二级里定义了个空字符串)
 var _pdfh;
 var _pdfa;
 var _pd;
@@ -1511,6 +1512,7 @@ function detailParse(detailObj){
     }else if(typeof(p)==='string'&&p.trim().startsWith('js:')){
         const TYPE = 'detail';
         var input = MY_URL;
+        var play_url = '';
         eval(p.trim().replace('js:',''));
         vod = VOD;
         console.log(JSON.stringify(vod));

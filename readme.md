@@ -47,6 +47,8 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm) 
+###### 2022/10/20
+- [X] 新增了几个源
 ###### 2022/10/19
 - [X] 源增加 filter_def 属性用于指定不同分类下的默认筛选条件
 - [X] 修改搭建文档给出armv7设备的drpy运行兼容方案
