@@ -46,6 +46,7 @@ if(/优酷/.test(name)&&video_lists.length>0){//获取简介详情
             log('海报渲染发生错误:'+e.message);
             print(json);
             VOD.vod_remarks = name;
+            VOD.vod_id = input;
         }
     }
 }
