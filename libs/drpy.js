@@ -899,13 +899,16 @@ function request(url,obj,ocr_flag){
             obj.headers["Content-Type"] = 'text/html; charset='+rule.encoding;
         }
     }
-    if(typeof(obj.headers.body)!='undefined'&&obj.headers.body&&typeof (obj.headers.body)==='string'){
+    if(typeof(obj.body)!='undefined'&&obj.body&&typeof (obj.body)==='string'){
         let data = {};
-        obj.headers.body.split('&').forEach(it=>{
+        obj.body.split('&').forEach(it=>{
             data[it.split('=')[0]] = it.split('=')[1]
         });
         obj.data = data;
-        delete obj.headers.body
+        delete obj.body
+    }else if(typeof(obj.body)!='undefined'&&obj.body&&typeof (obj.body)==='object'){
+        obj.data = obj.body;
+        delete obj.body
     }
     if(!url){
         return obj.withHeaders?'{}':''
@@ -927,6 +930,17 @@ function request(url,obj,ocr_flag){
     }else{
         return html
     }
+}
+
+/**
+ *  快捷post请求
+ * @param url 地址
+ * @param obj 对象
+ * @returns {string|DocumentFragment|*}
+ */
+function post(url,obj){
+    obj.method = 'POST';
+    return request(url,obj);
 }
 
 fetch = request;

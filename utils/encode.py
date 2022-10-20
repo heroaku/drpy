@@ -226,6 +226,12 @@ def dealObj(obj=None):
         'withHeaders':withHeaders
     }
 
+def coverDict2form(data:dict):
+    forms = []
+    for k,v in data.items():
+        forms.append(f'{k}={v}')
+    return '&'.join(forms)
+
 def base_request(url,obj):
     # verify=False 关闭证书验证
     # print(obj)
@@ -243,6 +249,10 @@ def base_request(url,obj):
         if method.lower() == 'get':
             r = requests.get(url, headers=obj['headers'], params=obj['body'], timeout=obj['timeout'],verify=False)
         else:
+            # if isinstance(obj['body'],dict):
+            #     obj['body'] = coverDict2form(obj['body'])
+            # print(obj['body'])
+            # 亲测不需要转换data 格式的dict 为 form都正常 (gaze规则和奇优搜索)
             r = requests.post(url, headers=obj['headers'], data=obj['body'], timeout=obj['timeout'],verify=False)
         # r = requests.get(url, timeout=timeout)
         # r = requests.get(url)

@@ -51,6 +51,8 @@
 - [X] 新增了几个源
 - [X] 修复乐猪TV源并记录已知问题
 - [X] 升级版本至:3.9.12 二级增加新特性 tab_text:'body&&Text',list_text:'body&&Text',list_url:'a&&href'
+- [X] drpy.js增加post方法,优化调用逻辑,修复奇优搜索
+- [X] 新增gaze源,只完成了推荐和一级
 ###### 2022/10/19
 - [X] 源增加 filter_def 属性用于指定不同分类下的默认筛选条件
 - [X] 修改搭建文档给出armv7设备的drpy运行兼容方案
