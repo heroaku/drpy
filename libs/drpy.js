@@ -1685,6 +1685,9 @@ function detailParse(detailObj){
         }
         vod.vod_play_url = vod_play_url;
     }
+    if(!vod.vod_id){
+        vod.vod_id = detailObj.orId;
+    }
     // print(vod);
     return JSON.stringify({
         list: [vod]

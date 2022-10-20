@@ -18,7 +18,7 @@ var pd = jsp.pd;
 try{
 let json = JSON.parse(html);
 VOD = {
-    vod_id:json.c.vid,
+    // vod_id:json.c.vid,
     vod_url:input,
     vod_name:json.c.title,
     type_name:json.typ.join(','),

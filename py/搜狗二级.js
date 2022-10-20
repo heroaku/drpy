@@ -1,6 +1,7 @@
 js:
 // let d = [];
-VOD = {vod_id:input};
+// VOD = {vod_id:input};
+VOD = {};
 let html = request(input);
 
 function adhead(url){

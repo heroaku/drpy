@@ -868,6 +868,7 @@ class CMS:
             vod['vod_actor'] = '没有二级,只有一级链接直接嗅探播放'
             # vod['vod_content'] = url if not show_name else f'({self.id}) {url}'
             vod['vod_content'] = url
+            vod['vod_id'] = detailUrl
             vod['vod_play_url'] = '嗅探播放$' + self.play_url + url
 
         elif not p or (not isinstance(p, dict) and not isinstance(p, str)) or (isinstance(p, str) and not str(p).startswith('js:')):
@@ -1105,7 +1106,8 @@ class CMS:
                 vod = self.二级渲染(p,detailUrl=detailUrl,url=url,vod=vod,show_name=show_name,jsp=jsp,fyclass=fyclass)
         except Exception as e:
             logger.info(f'{self.getName()}获取单个详情页{detailUrl}出错{e}')
-
+        if not vod.get('vod_id'):
+            vod['vod_id'] = detailUrl
         return vod
 
     def detailContent(self, fypage, array,show_name=False):
