@@ -1635,6 +1635,7 @@ function detailParse(detailObj){
                 let list_url = p.list_url||'a&&href';
                 // print('list_text:'+list_text);
                 // print('list_url:'+list_url);
+                // print('list_parse:'+p.lists);
                 let is_tab_js = p.tabs.trim().startsWith('js:');
                 for(let i=0;i<playFrom.length;i++){
                     let tab_name = playFrom[i];
