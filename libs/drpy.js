@@ -33,7 +33,7 @@ function init_test(){
 }
 
 let rule = {};
-const VERSION = '3.9.13beta2';
+const VERSION = '3.9.14';
 /** 已知问题记录
  * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)[影魔牛逼，最新的文件发现这问题已经解决了]
  * Array.prototype.append = Array.prototype.push; 这种js执行后有毛病,for in 循环列表会把属性给打印出来 (这个大毛病需要重点排除一下)
@@ -958,7 +958,11 @@ print = function (data){
             console.log('print:'+e.message)
         }
     }
-    console.log(data);
+    if(typeof(data)!=='string'){
+        console.log(typeof(data)+':'+data.length);
+    }else{
+        console.log(data);
+    }
 }
 log = print;
 /**
@@ -1430,7 +1434,7 @@ function searchParse(searchObj) {
         _pd = _ps.pd;
         let is_json = p0.startsWith('json:');
         p0 = p0.replace(/^(jsp:|json:|jq:)/,'');
-        print('1381 p0:'+p0);
+        // print('1381 p0:'+p0);
         try {
             let html = getHtml(MY_URL);
             if (html) {
@@ -1456,8 +1460,8 @@ function searchParse(searchObj) {
                 console.log(JSON.stringify(html));
                 console.log(html);
                 let list = _pdfa(html, p0);
-                print(list.length);
-                print(list);
+                // print(list.length);
+                // print(list);
                 list.forEach(it => {
                     let p1 = getPP(p, 1, pp, 1);
                     let p2 = getPP(p, 2, pp, 2);
@@ -1695,9 +1699,9 @@ function detailParse(detailObj){
         }
         vod.vod_play_url = vod_play_url;
     }
-    if(!vod.vod_id){
-        vod.vod_id = detailObj.orId;
-    }
+    // if(!vod.vod_id){
+    //     vod.vod_id = detailObj.orId;
+    // }
     // print(vod);
     return JSON.stringify({
         list: [vod]
