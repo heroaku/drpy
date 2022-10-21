@@ -33,7 +33,7 @@ function init_test(){
 }
 
 let rule = {};
-const VERSION = '3.9.14beta1';
+const VERSION = '3.9.14beta2';
 /** 已知问题记录
  * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)[影魔牛逼，最新的文件发现这问题已经解决了]
  * Array.prototype.append = Array.prototype.push; 这种js执行后有毛病,for in 循环列表会把属性给打印出来 (这个大毛病需要重点排除一下)
@@ -1619,7 +1619,9 @@ function detailParse(detailObj){
             if(p.tabs.startsWith('js:')){
                 print('开始执行tabs代码:'+p.tabs);
                 if(html&&typeof (html)!=='string'){
-                    html = html.rr(html.ele).toString();
+                    try { // 假装是jq的对象拿来转换一下字符串,try为了防止json的情况报错
+                        html = html.rr(html.ele).toString();
+                    }catch (e) {}
                 }
                 var input = MY_URL;
                 eval(p.tabs.replace('js:',''));
@@ -1653,9 +1655,13 @@ function detailParse(detailObj){
             if(p.lists.startsWith('js:')){
                 print('开始执行lists代码:'+p.lists);
                 if(html&&typeof (html)!=='string'){
-                    html = html.rr(html.ele).toString();
+                    // 假装是jq的对象拿来转换一下字符串,try为了防止json的情况报错
+                    try {
+                        html = html.rr(html.ele).toString();
+                    }catch (e) {}
                 }
                 var input = MY_URL;
+                var play_url = '';
                 eval(p.lists.replace('js:',''));
                 vod_play_url = LISTS.map(it=>it.join('#')).join(vod_play_url);
             }else{
@@ -1761,12 +1767,16 @@ function playParse(playObj){
     }else{
         lazy_play =  common_play;
     }
+    // print('play_json:'+typeof(rule.play_json));
+    // console.log(Array.isArray(rule.play_json));
     if(Array.isArray(rule.play_json) && rule.play_json.length >0){ // 数组情况判断长度大于0
         let web_url = lazy_play.url;
         for(let pjson of rule.play_json){
             if(pjson.re && (pjson.re==='*'||web_url.match(new RegExp(pjson.re)))){
                 if(pjson.json && typeof(pjson.json)==='object'){
                     let base_json = pjson.json;
+                    // print('开始合并:');
+                    // print(base_json);
                     lazy_play = Object.assign(lazy_play,base_json);
                     break;
                 }

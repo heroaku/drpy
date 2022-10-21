@@ -1053,7 +1053,7 @@ class CMS:
                         vod_tab_list.append(vlist)
                     vod_play_url = vod_play_url.join(vod_tab_list)
 
-            # print(vod_play_url)
+            print(vod_play_url)
             vod['vod_play_from'] = vod_play_from
             # print(vod_play_from)
             vod['vod_play_url'] = vod_play_url
