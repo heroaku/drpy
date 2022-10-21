@@ -363,6 +363,15 @@ var rule = {
     tab_exclude:'',
     // 服务器解析播放
     play_parse:true,
+    // play_json　传数组或者　类　true/false 比如 0,1 如果不传会内部默认处理 不传和传0可能效果不同
+    // 效果等同说明: play_json:[{re:'*', json:{jx:0, parse:1}}], 等同于 play_json:0,
+    play_json:[{
+        re:'*',
+        json:{
+            jx:1,
+            parse:1,
+        },
+    }],
     // 自定义免嗅
     lazy:'',
     // 首页推荐显示数量

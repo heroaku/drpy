@@ -55,13 +55,6 @@
 		"header": {
             "User-Agent": "Mozilla/5.0"
         }
-	},{
-		"name": "🌀Ⓙ",
-		"type": 1,
-		"url": "",
-		"header": {
-            "User-Agent": "Mozilla/5.0"
-        }
 	},
 	{
 		"name": "轮询",

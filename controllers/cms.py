@@ -210,6 +210,7 @@ class CMS:
         self.timeout = round(int(timeout)/1000,2)
         self.filter = rule.get('filter',[])
         self.filter_def = rule.get('filter_def',{})
+        self.play_json = rule['play_json'] if 'play_json' in rule else []
         self.extend = rule.get('extend',[])
         self.d = self.getObject()
 
@@ -862,6 +863,9 @@ class CMS:
         show_name = kwargs.get('show_name','') # 是否显示来源(用于drpy区分)
         jsp = kwargs.get('jsp','')  # jsp = jsoup(self.url) 传递的jsp解析
         fyclass = kwargs.get('fyclass','') # 二级传递的分类名称，可以得知进去的类别
+        play_url = self.play_url
+        if self.play_json:
+            play_url = play_url.replace('&play_url=', '&type=json&play_url=')
         if p == '*':  # 解析表达式为*默认一级直接变播放
             vod['vod_play_from'] = '道长在线'
             vod['vod_remarks'] = detailUrl
@@ -869,7 +873,7 @@ class CMS:
             # vod['vod_content'] = url if not show_name else f'({self.id}) {url}'
             vod['vod_content'] = url
             vod['vod_id'] = detailUrl
-            vod['vod_play_url'] = '嗅探播放$' + self.play_url + url
+            vod['vod_play_url'] = '嗅探播放$' + play_url + url
 
         elif not p or (not isinstance(p, dict) and not isinstance(p, str)) or (isinstance(p, str) and not str(p).startswith('js:')):
             pass
@@ -932,7 +936,7 @@ class CMS:
                     'd': self.d,
                     'getParse': self.d.getParse,
                     'saveParse': self.d.saveParse,
-                    'jsp': jsp, 'setDetail': setDetail,'play_url':self.play_url
+                    'jsp': jsp, 'setDetail': setDetail,'play_url':play_url
                 })
                 init_flag['ctx'] = True
             if p.get('重定向') and str(p['重定向']).startswith('js:'):
@@ -1038,13 +1042,13 @@ class CMS:
                         # vodList = [pq(i).text()+'$'+pd(i,'a&&href') for i in vodList]  # 拼接成 名称$链接
                         # pq(i).text()
                         if self.play_parse:  # 自动base64编码
-                            vodList = [(pdfh(html, tab_ext) if tab_ext else tab_name) + '$' + self.play_url + encodeUrl(i) for i
+                            vodList = [(pdfh(html, tab_ext) if tab_ext else tab_name) + '$' + play_url + encodeUrl(i) for i
                                        in vodList] if is_json else \
-                                [pdfh(i,list_text) + '$' + self.play_url + encodeUrl(pd(i, list_url)) for i in vodList]  # 拼接成 名称$链接
+                                [pdfh(i,list_text) + '$' + play_url + encodeUrl(pd(i, list_url)) for i in vodList]  # 拼接成 名称$链接
                         else:
-                            vodList = [(pdfh(html, tab_ext) if tab_ext else tab_name) + '$' + self.play_url + i for i in
+                            vodList = [(pdfh(html, tab_ext) if tab_ext else tab_name) + '$' + play_url + i for i in
                                        vodList] if is_json else \
-                                [pdfh(i,list_text) + '$' + self.play_url + pd(i, list_url) for i in vodList]  # 拼接成 名称$链接
+                                [pdfh(i,list_text) + '$' + play_url + pd(i, list_url) for i in vodList]  # 拼接成 名称$链接
                         vlist = '#'.join(vodList)  # 拼多个选集
                         vod_tab_list.append(vlist)
                     vod_play_url = vod_play_url.join(vod_tab_list)
@@ -1076,6 +1080,9 @@ class CMS:
             is_js = isinstance(p,str) and str(p).startswith('js:') # 是js
             if is_js:
                 headers['Referer'] = getHome(url)
+                play_url = self.play_url
+                if self.play_json:
+                    play_url = play_url.replace('&play_url=', '&type=json&play_url=')
                 py_ctx.update({
                     'input': url,
                     'TYPE': 'detail',  # 海阔js环境标志
@@ -1087,7 +1094,7 @@ class CMS:
                     'd': self.d,
                     'getParse': self.d.getParse,
                     'saveParse': self.d.saveParse,
-                    'jsp':jsp,'setDetail':setDetail,'play_url':self.play_url
+                    'jsp':jsp,'setDetail':setDetail,'play_url':play_url
                 })
                 ctx = py_ctx
                 # print(ctx)
@@ -1108,6 +1115,7 @@ class CMS:
             logger.info(f'{self.getName()}获取单个详情页{detailUrl}出错{e}')
         if not vod.get('vod_id'):
             vod['vod_id'] = detailUrl
+        # print(vod)
         return vod
 
     def detailContent(self, fypage, array,show_name=False):
@@ -1348,10 +1356,42 @@ class CMS:
                     #     play_url = None
             except Exception as e:
                 logger.info(f'免嗅耗时:{get_interval(t1)}毫秒,并发生错误:{e}')
-            return play_url
+            # return play_url
         else:
             logger.info(f'播放重定向到:{play_url}')
-            return play_url
+            # return play_url
+
+        if self.play_json:
+            # 如果传了 play_json 参数并且是个大于0的列表的话
+            if isinstance(self.play_json,list) and len(self.play_json) > 0:
+                # 获取播放链接
+                web_url = play_url if isinstance(play_url,str) else play_url.get('url')
+                for pjson in self.play_json:
+                    if pjson.get('re') and (pjson['re']=='*' or re.search(pjson['re'],web_url,re.S|re.M)):
+                        if pjson.get('json') and isinstance(pjson['json'], dict):
+                            if isinstance(play_url, str):
+                                base_json = pjson['json']
+                                base_json['url'] = web_url
+                            elif isinstance(play_url, dict):
+                                base_json = pjson['json']
+                                play_url.update(base_json)
+
+                            # 不管有没有效,匹配到了就跑??? (当然不行了,要不然写来干嘛)
+                            break
+
+            else: # 没有指定列表默认表示需要解析,解析播放 (如果不要解析,我想也是没人会去写这个参数)
+                base_json = {
+                    'jx':1,  # 解析开
+                    'parse':1, # 嗅探 关  pluto这个标识有问题 只好双1了
+                }
+                if isinstance(play_url,str):
+                    base_json['url'] = play_url
+                    play_url = base_json
+                elif isinstance(play_url,dict):
+                    play_url.update(base_json)
+
+        logger.info(f'最终返回play_url:{play_url}')
+        return play_url
 
 if __name__ == '__main__':
     print(urljoin('https://api.web.360kan.com/v1/f',

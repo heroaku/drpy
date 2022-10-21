@@ -22,6 +22,6 @@ var rule = {
 	    推荐:'.swiper-slide;.card-title&&Text;img&&data-src;.badge-default&&Text;a&&href',
 		一级:'',
 	一级:'js:log(input);let d=[];let body={mform:MY_CATE,mcountry:MY_FL.mcountry||"all","tag_arr%5B%5D":MY_FL.mtag||"all",page:MY_PAGE,sort:MY_FL.sort||"updatetime",album:MY_FL.album||"all",title:""};fetch_params.body=body;fetch_params.headers["x-requested-with"]="XMLHttpRequest";let url=input.split("?")[0];let html=post(url,fetch_params);print(html);let data=JSON.parse(html);data.mlist.forEach(function(it){d.push({title:it.title,desc:it.definition+" "+it.grade,url:it.id,img:it.cover_img})});setResult(d);',
-	    二级:{"title":"h4&&Text","img":".poster&&src","desc":".detail_imform_kv:eq(0)&&Text;.detail_imform_kv:eq(1)&&Text;.detail_imform_kv:eq(4)&&Text;.detail_imform_kv:eq(5)&&Text;.detail_imform_kv:eq(6)&&Text;.detail_imform_kv:eq(7)&&Text;.detail_imform_kv:eq(8)&&Text","content":"p&&Text","tabs":"#menu0&&li","lists":".movurl:eq(#id) ul&&li"},
+	    二级:{"title":".playtitle&&Text;.badge&&Text","img":".pimgs&&src","desc":"h5:eq(1)&&Text","content":"h6&&Text","tabs":"","lists":"js:LISTS=[['第1集$1.mp4','第2集$1.mp4']]"},
 	    // 搜索:'*',
 }
