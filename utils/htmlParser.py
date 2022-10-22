@@ -58,14 +58,19 @@ class jsoup:
                         ret = re.search('url\((.*?)\)',ret,re.M|re.S).groups()[0]
                     except:
                         pass
-                pd_list = 'url|src|href|data-original|data-src|data-play'.split('|')
-                # pd_list = 'url|src|href|data-original|data-src'.split('|')
-                if ret and add_url and option in pd_list:
-                    if 'http' in ret:
-                        ret = ret[ret.find('http'):]
-                    else:
-                        ret = urljoin(self.MY_URL,ret)
-                    # print(ret)
+
+                if ret and add_url:
+                    # pd_list = 'url|src|href|data-original|data-src|data-play|data-url'.split('|')
+                    # need_add = option in pd_list
+
+                    need_add = re.search('(url|src|href|-original|-src|-play|-url)$', option, re.M | re.I)
+                    # print(f'option:{option},need_add:{need_add}')
+                    if need_add:
+                        if 'http' in ret:
+                            ret = ret[ret.find('http'):]
+                        else:
+                            ret = urljoin(self.MY_URL,ret)
+                        # print(ret)
         else:
             # ret = doc(parse+':first')
             ret = doc(parse) # 由于是生成器,直接转str就能拿到第一条数据,不需要next

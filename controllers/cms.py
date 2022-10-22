@@ -1021,7 +1021,7 @@ class CMS:
                 vodHeader = ['道长在线']
 
             # print(vodHeader)
-
+            # print(vod)
             for v in vodHeader:
                 playFrom.append(v)
             vod_play_from = vod_play_from.join(playFrom)
