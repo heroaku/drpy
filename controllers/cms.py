@@ -4,7 +4,7 @@
 # Author: DaShenHan&道长-----先苦后甜，任凭晚风拂柳颜------
 # Date  : 2022/8/25
 import json
-
+# import bs4
 import requests
 import re
 import math
@@ -542,7 +542,7 @@ class CMS:
                 'd': self.d,
                 'getParse': self.d.getParse,
                 'saveParse': self.d.saveParse,
-                'jsp': jsp, 'setDetail': setDetail,
+                'jsp': jsp,'jq':jsp,'setDetail': setDetail,
             })
             ctx = py_ctx
             jscode = getPreJs() + p.strip().replace('js:', '', 1)
@@ -608,14 +608,16 @@ class CMS:
                                     desc = ''
                                 p5 = getPP(p,5,pp,4)
                                 links = [pd(item2, _p5) if not self.detailUrl else pdfh(item2, _p5) for _p5 in p5.split('+')]
-                                link = '$'.join(links)
+                                vid = '$'.join(links)
                                 if len(p) > 6 and p[6]:
                                     p6 = getPP(p,6,pp,5)
                                     content = pdfh(item2, p6)
                                 else:
                                     content = ''
+                                if self.二级 == '*':
+                                    vid = vid + '@@' + title + '@@' + img
                                 videos.append({
-                                    "vod_id": link,
+                                    "vod_id": vid,
                                     "vod_name": title,
                                     "vod_pic": img,
                                     "vod_remarks": desc,
@@ -647,14 +649,16 @@ class CMS:
                             p4 = getPP(p,4,pp,4)
                             # link = pd(item, p[4])
                             links = [pd(item, _p5) if not self.detailUrl else pdfh(item, _p5) for _p5 in p4.split('+')]
-                            link = '$'.join(links)
+                            vid = '$'.join(links)
                             if len(p) > 5 and p[5]:
                                 p5 = getPP(p,5,pp,5)
                                 content = pdfh(item, p5)
                             else:
                                 content = ''
+                            if self.二级 == '*':
+                                vid = vid + '@@' + title + '@@' + img
                             videos.append({
-                                "vod_id": link,
+                                "vod_id": vid,
                                 "vod_name": title,
                                 "vod_pic": img,
                                 "vod_remarks": desc,
@@ -673,7 +677,7 @@ class CMS:
                 return self.blank()
 
         result['list'] = videos
-        # print(videos)
+        print(videos)
         result['no_use'] = {
             'code': 1,
             'msg': '数据列表',
@@ -776,7 +780,7 @@ class CMS:
                 'detailUrl':self.detailUrl or '', # 详情页链接
                 'getParse': self.d.getParse,
                 'saveParse': self.d.saveParse,
-                'jsp': jsp, 'setDetail': setDetail,
+                'jsp': jsp,'jq':jsp, 'setDetail': setDetail,
             })
             ctx = py_ctx
             # print(ctx)
@@ -812,6 +816,9 @@ class CMS:
                 if is_json:
                     html = self.dealJson(html)
                     html = json.loads(html)
+                # else:
+                #     soup = bs4.BeautifulSoup(html, 'lxml')
+                #     html = soup.prettify()
                 # print(html)
                 # with open('1.html',mode='w+',encoding='utf-8') as f:
                 #     f.write(html)
@@ -829,8 +836,12 @@ class CMS:
                     link = '$'.join(links)
                     content = '' if len(p) < 6 else pdfh(item, p[5])
                     # sid = self.regStr(sid, "/video/(\\S+).html")
+                    vod_id = f'{fyclass}${link}' if self.detailUrl else link # 分类,播放链接
+                    if self.二级 == '*':
+                        vod_id = vod_id+'@@'+title+'@@'+img
+
                     videos.append({
-                        "vod_id": f'{fyclass}${link}' if self.detailUrl else link,# 分类,播放链接
+                        "vod_id": vod_id,
                         "vod_name": title,
                         "vod_pic": img,
                         "vod_remarks": desc,
@@ -856,7 +867,8 @@ class CMS:
         # *args是不定长参数 列表
         # ** args是不定长参数字典
         p = parse_str  # 二级传递解析表达式 js的obj json对象
-        detailUrl = kwargs.get('detailUrl','') # 不定长字典传递的二级详情页vod_id原始数据
+        detailUrl = kwargs.get('detailUrl','') # 不定长字典传递的二级详情页vod_id详情处理数据
+        orId = kwargs.get('orId','') # 不定长字典传递的二级详情页vod_id原始数据
         url = kwargs.get('url','')  # 不定长字典传递的二级详情页链接智能拼接数据
         vod = kwargs.get('vod',self.blank_vod()) # 最终要返回的二级详情页数据 默认空
         html = kwargs.get('html','')  # 不定长字典传递的源码(如果不传才会在下面程序中去获取)
@@ -864,6 +876,13 @@ class CMS:
         jsp = kwargs.get('jsp','')  # jsp = jsoup(self.url) 传递的jsp解析
         fyclass = kwargs.get('fyclass','') # 二级传递的分类名称，可以得知进去的类别
         play_url = self.play_url
+        vod_name = '片名'
+        vod_pic = ''
+        # print('二级url:',url)
+        if self.二级 == '*':
+            extra = orId.split('@@')
+            vod_name = extra[1] if len(extra) > 1 else vod_name
+            vod_pic = extra[2] if len(extra) > 2 else vod_pic
         if self.play_json:
             play_url = play_url.replace('&play_url=', '&type=json&play_url=')
         if p == '*':  # 解析表达式为*默认一级直接变播放
@@ -872,8 +891,10 @@ class CMS:
             vod['vod_actor'] = '没有二级,只有一级链接直接嗅探播放'
             # vod['vod_content'] = url if not show_name else f'({self.id}) {url}'
             vod['vod_content'] = url
-            vod['vod_id'] = detailUrl
-            vod['vod_play_url'] = '嗅探播放$' + play_url + url
+            vod['vod_id'] = orId
+            vod['vod_name'] = vod_name
+            vod['vod_pic'] = vod_pic
+            vod['vod_play_url'] = '嗅探播放$' + play_url + url.split('@@')[0]
 
         elif not p or (not isinstance(p, dict) and not isinstance(p, str)) or (isinstance(p, str) and not str(p).startswith('js:')):
             pass
@@ -883,8 +904,8 @@ class CMS:
             pdfa = jsp.pjfa if is_json else jsp.pdfa
             pd = jsp.pj if is_json else jsp.pd
             pq = jsp.pq
-            vod['vod_id'] = detailUrl
-            if not html: # 没传递html参数接下来智能获取
+            vod['vod_id'] = orId
+            if not html: # 没传递html参数接detailUrl下来智能获取
                 r = requests.get(url, headers=self.headers, timeout=self.timeout,verify=False)
                 html = self.checkHtml(r)
                 if is_json:
@@ -936,7 +957,7 @@ class CMS:
                     'd': self.d,
                     'getParse': self.d.getParse,
                     'saveParse': self.d.saveParse,
-                    'jsp': jsp, 'setDetail': setDetail,'play_url':play_url
+                    'jsp': jsp,'jq':jsp, 'setDetail': setDetail,'play_url':play_url
                 })
                 init_flag['ctx'] = True
             if p.get('重定向') and str(p['重定向']).startswith('js:'):
@@ -1064,7 +1085,8 @@ class CMS:
 
     def detailOneVod(self,id,fyclass='',show_name=False):
         vod = self.blank_vod()
-        detailUrl = str(id)
+        orId = str(id)
+        detailUrl = orId.split('@@')[0]
         # print(detailUrl)
         if not detailUrl.startswith('http') and not '/' in detailUrl:
             url = self.detailUrl.replace('fyid', detailUrl).replace('fyclass',fyclass)
@@ -1076,7 +1098,7 @@ class CMS:
         logger.info(f'进入详情页: {url}')
         try:
             p = self.二级  # 解析
-            jsp = jsoup(self.url)
+            jsp = jsoup(url) if url.startswith('http') else jsoup(self.url)
             is_js = isinstance(p,str) and str(p).startswith('js:') # 是js
             if is_js:
                 headers['Referer'] = getHome(url)
@@ -1094,7 +1116,7 @@ class CMS:
                     'd': self.d,
                     'getParse': self.d.getParse,
                     'saveParse': self.d.saveParse,
-                    'jsp':jsp,'setDetail':setDetail,'play_url':play_url
+                    'jsp':jsp,'jq':jsp,'setDetail':setDetail,'play_url':play_url
                 })
                 ctx = py_ctx
                 # print(ctx)
@@ -1110,11 +1132,11 @@ class CMS:
                 else:
                     vod = self.blank_vod()
             else:
-                vod = self.二级渲染(p,detailUrl=detailUrl,url=url,vod=vod,show_name=show_name,jsp=jsp,fyclass=fyclass)
+                vod = self.二级渲染(p,detailUrl=detailUrl,orId=orId,url=url,vod=vod,show_name=show_name,jsp=jsp,fyclass=fyclass)
         except Exception as e:
             logger.info(f'{self.getName()}获取单个详情页{detailUrl}出错{e}')
         if not vod.get('vod_id'):
-            vod['vod_id'] = detailUrl
+            vod['vod_id'] = orId
         # print(vod)
         return vod
 
@@ -1124,6 +1146,7 @@ class CMS:
         :param array:
         :return:
         """
+        # print('进入二级')
         t1 = time()
         array = array if len(array) <= self.limit else array[(fypage-1)*self.limit:min(self.limit*fypage,len(array))]
         thread_pool = ThreadPoolExecutor(min(self.limit,len(array)))  # 定义线程池来启动多线程执行此任务
@@ -1163,7 +1186,7 @@ class CMS:
         # p = self.一级.split(';') if self.搜索 == '*' and self.一级 else self.搜索.split(';')  # 解析
         p = self.一级 if self.搜索 == '*' and self.一级 else self.搜索
         pp = self.一级.split(';')
-        jsp = jsoup(self.url)
+        jsp = jsoup(url) if url.startswith('http') else jsoup(self.url)
         videos = []
         is_js = isinstance(p, str) and str(p).startswith('js:')  # 是js
 
@@ -1184,7 +1207,7 @@ class CMS:
                 # 详情页链接
                 'getParse': self.d.getParse,
                 'saveParse': self.d.saveParse,
-                'jsp': jsp, 'setDetail': setDetail,
+                'jsp': jsp,'jq':jsp, 'setDetail': setDetail,
             })
             ctx = py_ctx
             # print(ctx)
@@ -1261,8 +1284,11 @@ class CMS:
                         link = '$'.join(links)
                         # print(content)
                         # sid = self.regStr(sid, "/video/(\\S+).html")
+                        vod_id = link
+                        if self.二级 == '*':
+                            vod_id = vod_id + '@@' + title + '@@' + img
                         videos.append({
-                            "vod_id": link,
+                            "vod_id": vod_id,
                             "vod_name": title,
                             "vod_pic": img,
                             "vod_remarks": desc,
@@ -1335,6 +1361,7 @@ class CMS:
                         'getParse':self.d.getParse,
                         'saveParse':self.d.saveParse,
                         'jsp': jsp,
+                        'jq': jsp,
                         'pdfh': self.d.jsp.pdfh,
                         'pdfa': self.d.jsp.pdfa, 'pd': self.d.jsp.pd,'play_url':self.play_url
                     })

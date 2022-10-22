@@ -58,7 +58,9 @@ class jsoup:
                         ret = re.search('url\((.*?)\)',ret,re.M|re.S).groups()[0]
                     except:
                         pass
-                if ret and add_url and option in ['url','src','href','data-original','data-src']:
+                pd_list = 'url|src|href|data-original|data-src|data-play'.split('|')
+                # pd_list = 'url|src|href|data-original|data-src'.split('|')
+                if ret and add_url and option in pd_list:
                     if 'http' in ret:
                         ret = ret[ret.find('http'):]
                     else:
@@ -91,6 +93,7 @@ class jsoup:
         # 节点转字符串
         # print(str(etree.tostring(result[0], pretty_print=True), 'utf-8'))
         # res = [item for item in result.items()]
+        # print(res)
         res = [item.outerHtml() for item in result.items()] #  这个才是对的！！str() item str(etree.tostring 统统错误
         # res = [str(item) for item in result.items()]
         # res = [str(etree.tostring(item, pretty_print=True), 'utf-8') for item in result]

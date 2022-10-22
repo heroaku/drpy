@@ -47,6 +47,12 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/10/22
+- [X] 新增几个直播源
+- [X] 优化没有二级的情况自动带入一级图片和标题 @@分割
+- [X] 修复 JRKAN直播 二级智能拼接链接不正常的问题
+- [X] 学生录像一级用js重写(urljoin没毛病.网址结构有问题,只能如此了,仅支持js1)
+- [X] 完善荐片源的筛选
 ###### 2022/10/21
 - [X] 源新增了play_json属性和与之对应的哔哩直播,jrs看直播等源
 - [X] 修复俊版无法搜索问题(还需要壳子彻底解决console.log函数问题,无法打印大数据)
