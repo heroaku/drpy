@@ -1,4 +1,4 @@
-let jxUrl = 'https://jx.80k.tv/jxplayer.php?v=';
+let jxUrl = 'https://80k.tv/jxplayer.php?v=';
 fetch_params.headers.Referer = 'https://1080p.tv';
 fetch_params.headers['User-Agent'] = MOBILE_UA;
 try {
