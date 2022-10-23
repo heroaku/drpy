@@ -206,6 +206,7 @@ class CMS:
         self.二级 = rule.get('二级','')
         self.搜索 = rule.get('搜索','')
         self.推荐 = rule.get('推荐','')
+        self.图片来源 = rule.get('图片来源','')
         self.encoding = encoding
         self.timeout = round(int(timeout)/1000,2)
         self.filter = rule.get('filter',[])
@@ -675,9 +676,12 @@ class CMS:
             except Exception as e:
                 logger.info(f'首页内容获取失败:{e}')
                 return self.blank()
-
+        if self.图片来源:
+            for video in videos:
+                if video.get('vod_pic','') and str(video['vod_pic']).startswith('http'):
+                    video['vod_pic'] = f"{video['vod_pic']}{self.图片来源}"
         result['list'] = videos
-        print(videos)
+        # print(videos)
         result['no_use'] = {
             'code': 1,
             'msg': '数据列表',
@@ -850,7 +854,12 @@ class CMS:
                 except Exception as e:
                     print(f'发生了错误:{e}')
                     pass
-        # print(videos)
+
+        if self.图片来源:
+            for video in videos:
+                if video.get('vod_pic','') and str(video['vod_pic']).startswith('http'):
+                    video['vod_pic'] = f"{video['vod_pic']}{self.图片来源}"
+        print(videos)
         limit = 40
         cnt = 9999 if len(videos) > 0 else 0
         result['list'] = videos
@@ -1135,6 +1144,9 @@ class CMS:
                 vod = self.二级渲染(p,detailUrl=detailUrl,orId=orId,url=url,vod=vod,show_name=show_name,jsp=jsp,fyclass=fyclass)
         except Exception as e:
             logger.info(f'{self.getName()}获取单个详情页{detailUrl}出错{e}')
+        if self.图片来源:
+            if vod.get('vod_pic','') and str(vod['vod_pic']).startswith('http'):
+                vod['vod_pic'] = f"{vod['vod_pic']}{self.图片来源}"
         if not vod.get('vod_id'):
             vod['vod_id'] = orId
         # print(vod)
@@ -1300,6 +1312,10 @@ class CMS:
                 # print(videos)
             except Exception as e:
                 logger.info(f'搜索{self.getName()}发生错误:{e}')
+        if self.图片来源:
+            for video in videos:
+                if video.get('vod_pic','') and str(video['vod_pic']).startswith('http'):
+                    video['vod_pic'] = f"{video['vod_pic']}{self.图片来源}"
         if show_name and len(videos) > 0:
             for video in videos:
                 video['vod_name'] = self.id + ' '+video['vod_name']
