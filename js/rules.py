@@ -113,7 +113,7 @@ def getRules(path='cache',js_mode=0):
         js = js_path[i]
         with open(js,encoding='utf-8') as f:
             code = f.read()
-            new_code = 'var muban = JSON.parse(JSON.stringify(mubanDict));\n'+code.replace('rule',f'rule{i}',1)+f'\nif (rule{i}.模板 && muban.hasOwnProperty(rule{i}.模板))'+'{'+f'rule{i} = Object.assign(muban[rule{i}.模板], rule{i});'+'}'
+            new_code = 'var muban = JSON.parse(JSON.stringify(mubanDict));\n'+code.replace('var rule',f'var rule{i}',1)+f'\nif (rule{i}.模板 && muban.hasOwnProperty(rule{i}.模板))'+'{'+f'rule{i} = Object.assign(muban[rule{i}.模板], rule{i});'+'}'
             # new_code = ''+code.replace('rule',f'rule{i}',1)
             codes.append(new_code)
     newCodes = before + '\n'+ '\n'.join(codes)
@@ -145,8 +145,8 @@ def getRules(path='cache',js_mode=0):
         # print(new_rule_list)
         rules = {'list': new_rule_list, 'count': len(rule_list)}
     except Exception as e:
-        logger.info(f'装载js内置源列表失败,置空内置源')
-        rules = []
+        logger.info(f'装载js内置源列表失败,置空内置源:{e}')
+        rules = {'list': [], 'count': 0}
     logger.info(f'自动配置装载耗时:{get_interval(t1)}毫秒')
     return rules
 
