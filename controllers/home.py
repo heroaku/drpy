@@ -224,6 +224,7 @@ def config_render(mode):
     host = getHost(mode)
     # ali_token = lsg.getItem('ALI_TOKEN')
     ali_token = new_conf.ALI_TOKEN
+    xr_mode = new_conf.XR_MODE
     js_mode = int(new_conf.JS_MODE or 0)
     print(f'{type(js_mode)} jsmode:{js_mode}')
     # print(ali_token)
@@ -240,7 +241,7 @@ def config_render(mode):
     rules = getRules('js',js_mode)
     rules = get_multi_rules(rules)
     # html = render_template('config.txt',rules=getRules('js'),host=host,mode=mode,jxs=jxs,base64Encode=base64Encode,config=new_conf)
-    html = render_template('config.txt',UA=UA,ISTVB=ISTVB,pys=pys,rules=rules,host=host,mode=mode,js_mode=js_mode,jxs=jxs,alists=alists,alists_str=alists_str,live_url=live_url,config=new_conf)
+    html = render_template('config.txt',UA=UA,xr_mode=xr_mode,ISTVB=ISTVB,pys=pys,rules=rules,host=host,mode=mode,js_mode=js_mode,jxs=jxs,alists=alists,alists_str=alists_str,live_url=live_url,config=new_conf)
     merged_config = custom_merge(parseText(html),customConfig)
     # print(merged_config['sites'])
 

@@ -47,6 +47,9 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/10/23
+- [X] 新增几个源 包括虎牙直播
+- [X] 设置中心增加仙人模式开关(自动识别不同设备返回不同的drpy接口,关闭的话只会走drpy.min.js)
 ###### 2022/10/22
 - [X] 新增几个直播源
 - [X] 优化没有二级的情况自动带入一级图片和标题 @@分割
