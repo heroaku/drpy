@@ -48,7 +48,8 @@
 </script>
 
 <script type="text/html" id="barDemo">
-  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+<!--  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
+  <a class="layui-btn layui-btn-xs" lay-event="set_top">置顶</a>
   <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">隐藏</a>
 </script>
 
@@ -96,6 +97,34 @@ layui.use(['table', 'dropdown'], function(){
        });
   }
 
+  function setOrder(data,to_set_order){
+    if(data.length < 1){
+      return layer.msg('请至少选择一行');
+    }
+    to_set_order = to_set_order||0;
+    console.log(data);
+    let site_names = data.map(it=>it.site_name);
+    let site_names_str = site_names.join(',');
+    console.log('准备将'+site_names_str+'的显示状态设置为:'+to_set_order);
+    let params = {"names":site_names_str};
+    console.log(params);
+    $.post("/admin/rule_order/"+to_set_order,params,function(data,status){
+               console.log(data);
+               if(data.code === 200){
+                   // alert(data.msg);
+                  // location.reload();
+                 table.reload('test', {
+                    // page: {
+                    //     curr: 3 //重新从第 1 页开始
+                    // }
+                });
+               }else{
+                   console.log('修改失败了...');
+                   return false
+               }
+       });
+  }
+
   // 创建渲染实例
   table.render({
     elem: '#test'
@@ -111,11 +140,11 @@ layui.use(['table', 'dropdown'], function(){
     // ,totalRow: true // 开启合计行
     ,page: true
     ,limit:12
-    ,limits:[10,12,15,20,40,60,80,100,150,200]
+    ,limits:[10,12,15,20,40,60,80,100,150,200,300,500]
     ,cols: [[
       {type: 'checkbox', fixed: 'left'}
       // ,{field: 'id', fixed: 'left',title: 'ID', width: 20, sort: true,totalRowText: '合计：'}
-      ,{field: 'id',title: 'ID', width: 20, sort: true}
+      ,{field: 'id',title: 'ID', width: 60, sort: true}
       ,{field: 'site_name', title: '存储名称', width: 120}
       , {
       field: 'state', title: '显示状态', minWidth: 100, templet: function (res) {
@@ -219,20 +248,34 @@ layui.use(['table', 'dropdown'], function(){
         elem: '#moreTest' //可绑定在任意元素中，此处以上述按钮为例
         ,data: [{
           id: 'show',
-          title: '显示'
+          title: '🟢显示'
         },{
           id: 'hide',
-          title: '隐藏'
-        },{
-          id: 'add',
-          title: '添加'
-        },{
-          id: 'update',
-          title: '编辑'
-        },{
-          id: 'delete',
-          title: '删除'
-        }]
+          title: '🔴隐藏'
+        },
+          {
+            id:'set_top',
+            title: '⬆️置顶',
+          },
+          {
+            id:'set_order_number',
+            title: '↕️指定序号',
+          },
+          {
+            id:'set_bottom',
+            title: '⬇️置底',
+          },
+        //   {
+        //   id: 'add',
+        //   title: '添加'
+        // },{
+        //   id: 'update',
+        //   title: '编辑'
+        // },{
+        //   id: 'delete',
+        //   title: '删除'
+        // }
+        ]
         //菜单被点击的事件
         ,click: function(obj){
           var checkStatus = table.checkStatus(id)
@@ -244,7 +287,35 @@ layui.use(['table', 'dropdown'], function(){
               break;
             case 'hide':
               // console.log(obj);
-              setState(data,0)
+              setState(data,0);
+              break;
+            case 'set_top':
+              // console.log(obj);
+              setOrder(data,0);
+              break;
+            case 'set_order_number':
+              layer.prompt({
+                  formType: 0,
+                  value: '',
+                  title: '请输入指定的排序序号,数字越小排名越靠前',
+                  btn: ['确定','取消'], //按钮，
+                  btnAlign: 'c'
+              }, function(value,index){
+                  console.log('value:'+value);
+                  var reg = /^[\d]+$/;
+                  if(!reg.test(value)){
+                    layer.msg('请输入有效数字!',{time:500});
+                  }else{
+                    setOrder(data,Number(value));
+                    layer.close(index);
+                    layer.msg('请设置顺序为'+value,{time:1000});
+                  }
+              });
+              // setOrder(data,0);
+              break;
+            case 'set_bottom':
+              // console.log(obj);
+              setOrder(data,9999)
               break;
             case 'add':
               layer.open({
@@ -360,6 +431,30 @@ layui.use(['table', 'dropdown'], function(){
         area: ['80%','80%'],
         content: '<div style="padding: 16px;">自定义表单元素</div>'
       });
+    }else if(obj.event === 'set_top'){
+      let obj_name;
+      try{
+        obj_name = obj.data.api.match(/rule=(.*)/)[1].split('&')[0];
+      }catch (e){
+        obj_name = obj.data.key;
+      }
+      console.log(obj);
+      let params = {"names":[obj_name].join(',')};
+      console.log(params);
+      $.post("/admin/rule_order/0",params,function(res,status){
+           console.log(res);
+           if(res.code === 200){
+             data.order = 0;
+             obj.update({
+                  order: data.order
+              });
+             layer.msg('已置顶');
+           }else{
+               console.log('修改失败了...');
+               layer.msg('置顶失败,具体错误看日志');
+               return false
+           }
+     });
     }
   });
 

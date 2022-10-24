@@ -44,7 +44,9 @@ def layui_rule_list():
     # print(pys)
     alists = []
     live_url = []
-    html = render_template('config.txt', pys=pys, rules=getRules('js'), host=host, mode=2, jxs=jxs, alists=alists,
+    local_rules = getRules('js')
+    # print(local_rules)
+    html = render_template('config.txt', pys=pys, rules=local_rules, host=host, mode=2, jxs=jxs, alists=alists,
                            alists_str='[]', live_url=live_url, config=new_conf)
     merged_config = custom_merge(parseText(html), customConfig)
     sites = merged_config['sites']
@@ -52,7 +54,8 @@ def layui_rule_list():
     rule_list = rules.query_all()
     rule_names = list(map(lambda x:x['name'],rule_list))
     # print(rule_list)
-    # print(rule_names)
+    print(rule_names)
+    # print(sites)
     for i in range(len(sites)):
         sites[i]['id'] = i+1
         site_name = sites[i]['api'].split('rule=')[1].split('&')[0] if 'rule=' in sites[i]['api'] else sites[i]['key']
@@ -66,6 +69,7 @@ def layui_rule_list():
             sites[i]['order'] = 0
         sites[i]['site_name'] = site_name
 
+    sites.sort(key=lambda x:x['order'],reverse=False)
     new_sites = sites[(page-1)*limit:page*limit]
     # print(new_sites)
     return layuiBack('获取成功',new_sites,count=len(sites))

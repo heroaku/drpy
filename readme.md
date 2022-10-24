@@ -47,6 +47,10 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/10/24
+- [X] v3.9.17
+- [X] drpy(道长) 服务端聚搜支持自动排除未来功能里隐藏的源  
+- [X] 未来功能增加源置顶和置底功能 测试性增加排序功能(指定输入数字)
 ###### 2022/10/23
 - [X] 新增几个源 包括虎牙直播
 - [X] 设置中心增加仙人模式开关(自动识别不同设备返回不同的drpy接口,关闭的话只会走drpy.min.js)

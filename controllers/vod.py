@@ -18,7 +18,7 @@ from base.database import db
 from models.ruleclass import RuleClass
 from models.playparse import PlayParse
 from js.rules import getRules
-from controllers.service import storage_service
+from controllers.service import storage_service,rules_service
 from concurrent.futures import ThreadPoolExecutor,as_completed,thread  # 引入线程池
 from quickjs import Function,Context
 import ujson
@@ -116,6 +116,25 @@ def multi_search2(wd):
     return jsonify(result)
 
 
+def merged_hide(merged_rules):
+    t1 = time()
+    store_rule = rules_service()
+    hide_rules = store_rule.getHideRules()
+    hide_rule_names = list(map(lambda x: x['name'], hide_rules))
+    # print('隐藏:',hide_rule_names)
+    all_cnt = len(merged_rules)
+
+    def filter_show(x):
+        # name = x['api'].split('rule=')[1].split('&')[0] if 'rule=' in x['api'] else x['key'].replace('dr_','')
+        name = x
+        # print(name)
+        return name not in hide_rule_names
+
+    merged_rules = list(filter(filter_show, merged_rules))
+    # print('隐藏后:',merged_rules)
+    logger.info(f'数据库筛选隐藏规则耗时{get_interval(t1)}毫秒,共计{all_cnt}条规则,隐藏后可渲染{len(merged_rules)}条规则')
+    return merged_rules
+
 def multi_search(wd):
     lsg = storage_service()
     t1 = time()
@@ -128,31 +147,35 @@ def multi_search(wd):
     rules_exclude = ['drpy']
     new_rules = list(filter(lambda x: x.get('searchable', 0) and x.get('name', '') not in rules_exclude, rules))
     search_sites = [new_rule['name'] for new_rule in new_rules]
+    # print(search_sites)
     nosearch_sites = set(rule_names) ^ set(search_sites)
     nosearch_sites.remove('drpy')
     # print(nosearch_sites)
     logger.info(f'开始聚搜{wd},共计{len(search_sites)}个规则,聚搜超时{timeout}秒')
     logger.info(f'不支持聚搜的规则,共计{len(nosearch_sites)}个规则:{",".join(nosearch_sites)}')
+    search_sites = merged_hide(search_sites)
     # print(search_sites)
+    # search_sites = []
     res = []
-    with open('js/模板.js', encoding='utf-8') as f:
-        before = f.read().split('export')[0]
-    with ThreadPoolExecutor(max_workers=len(search_sites)) as executor:
-        to_do = []
-        for site in search_sites:
-            future = executor.submit(search_one, site, wd, before)
-            to_do.append(future)
-        try:
-            for future in as_completed(to_do, timeout=timeout):  # 并发执行
-                ret = future.result()
-                # print(ret)
-                if ret and isinstance(ret,dict) and ret.get('list'):
-                    res.extend(ret['list'])
-        except Exception as e:
-            print(f'发生错误:{e}')
-            import atexit
-            atexit.unregister(thread._python_exit)
-            executor.shutdown = lambda wait: None
+    if len(search_sites) > 0:
+        with open('js/模板.js', encoding='utf-8') as f:
+            before = f.read().split('export')[0]
+        with ThreadPoolExecutor(max_workers=len(search_sites)) as executor:
+            to_do = []
+            for site in search_sites:
+                future = executor.submit(search_one, site, wd, before)
+                to_do.append(future)
+            try:
+                for future in as_completed(to_do, timeout=timeout):  # 并发执行
+                    ret = future.result()
+                    # print(ret)
+                    if ret and isinstance(ret,dict) and ret.get('list'):
+                        res.extend(ret['list'])
+            except Exception as e:
+                print(f'发生错误:{e}')
+                import atexit
+                atexit.unregister(thread._python_exit)
+                executor.shutdown = lambda wait: None
     logger.info(f'drpy聚搜{len(search_sites)}个源共计耗时{get_interval(t1)}毫秒')
     return jsonify({
         "list": res

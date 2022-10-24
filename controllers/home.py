@@ -210,6 +210,7 @@ def merged_hide(merged_config):
 @home.route('/config/<int:mode>')
 def config_render(mode):
     # print(dict(app.config))
+    tt = time()
     UA = request.headers['User-Agent']
     ISTVB = 'okhttp/3' in UA
     logger.info(UA)
@@ -244,14 +245,45 @@ def config_render(mode):
     html = render_template('config.txt',UA=UA,xr_mode=xr_mode,ISTVB=ISTVB,pys=pys,rules=rules,host=host,mode=mode,js_mode=js_mode,jxs=jxs,alists=alists,alists_str=alists_str,live_url=live_url,config=new_conf)
     merged_config = custom_merge(parseText(html),customConfig)
     # print(merged_config['sites'])
-
     merged_hide(merged_config)
     # response = make_response(html)
     # print(len(merged_config['sites']))
+    # print(merged_config['sites'])
+    merged_config['sites'] = sort_sites_by_order(merged_config['sites'],js_mode)
     response = make_response(json.dumps(merged_config,ensure_ascii=False,indent=1))
     # response = make_response(str(merged_config))
     response.headers['Content-Type'] = 'application/json; charset=utf-8'
+    logger.info(f'自动生成动态配置共计耗时:{get_interval(tt)}毫秒')
     return response
+
+def sort_sites_by_order(sites,js_mode=0):
+    rules = rules_service()
+    rule_list = rules.query_all()
+    # print(rule_list)
+    rule_names = list(map(lambda x: x['name'], rule_list))
+    # print(rule_names)
+    # print(sites)
+    for i in range(len(sites)):
+        # sites[i]['id'] = i+1
+        site_name = sites[i]['api'].split('rule=')[1].split('&')[0] if 'rule=' in sites[i]['api'] else sites[i]['key']
+        if js_mode and str(site_name).startswith('dr'):
+            site_name = site_name.replace('dr_','')
+        # print(site_name)
+        if site_name in rule_names:
+            site_rule = rule_list[rule_names.index(site_name)]
+            sites[i]['state'] = 1 if site_rule['state'] is None else site_rule['state']
+            sites[i]['order'] = 0 if site_rule['order'] is None else site_rule['order']
+        else:
+            sites[i]['state'] = 1
+            sites[i]['order'] = 0
+        # sites[i]['site_name'] = site_name
+    # print(sites)
+    sites.sort(key=lambda x: x['order'], reverse=False)
+    # print(sites)
+    for site in sites:
+        del site['state']
+        del site['order']
+    return sites
 
 @home.route('/configs')
 def config_gen():
@@ -285,12 +317,14 @@ def config_gen():
             customConfig = getCustonDict(host0,ali_token)
             set_dict = custom_merge(parseText(set_local), customConfig)
             merged_hide(set_dict)
+            set_dict['sites'] = sort_sites_by_order(set_dict['sites'], js_mode)
             # set_dict = json.loads(set_local)
             f.write(json.dumps(set_dict,ensure_ascii=False,indent=4))
         with open('txt/pycms1.json','w+',encoding='utf-8') as f:
             customConfig = getCustonDict(host1,ali_token)
             set_dict = custom_merge(parseText(set_area), customConfig)
             merged_hide(set_dict)
+            set_dict['sites'] = sort_sites_by_order(set_dict['sites'], js_mode)
             # set_dict = json.loads(set_area)
             f.write(json.dumps(set_dict,ensure_ascii=False,indent=4))
 
@@ -298,6 +332,7 @@ def config_gen():
             customConfig = getCustonDict(host2,ali_token)
             set_dict = custom_merge(parseText(set_online), customConfig)
             merged_hide(set_dict)
+            set_dict['sites'] = sort_sites_by_order(set_dict['sites'], js_mode)
             # set_dict = json.loads(set_online)
             f.write(json.dumps(set_dict,ensure_ascii=False,indent=4))
         files = [os.path.abspath(rf'txt\pycms{i}.json') for i in range(3)]

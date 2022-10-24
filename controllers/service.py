@@ -109,6 +109,22 @@ class rules_service(object):
             print(f'发生了错误:{e}')
             return None
 
+    def setOrder(self,key,order=0):
+        res = RuleClass.query.filter(RuleClass.name == key).first()
+        if res:
+            res.order = order
+            db.session.add(res)
+        else:
+            res = RuleClass(name=key, order=order)
+            db.session.add(res)
+            db.session.flush()  # 获取id
+        try:
+            db.session.commit()
+            return res.id
+        except Exception as e:
+            print(f'发生了错误:{e}')
+            return None
+
     @staticmethod
     def getHideRules():
         res = RuleClass.query.filter(RuleClass.state == 0).all()
