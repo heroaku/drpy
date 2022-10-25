@@ -1052,7 +1052,11 @@ class CMS:
                     vlists = loader.eval('LISTS')
                     if isinstance(vod, JsObjectWrapper):
                         vlists = vlists.to_list() # [['第1集$http://1.mp4','第2集$http://2.mp4'],['第3集$http://1.mp4','第4集$http://2.mp4']]
-
+                    for i in range(len(vlists)):
+                        try:
+                            vlists[i] = list(map(lambda x:'$'.join(x.split('$')[:2]),vlists[i]))
+                        except Exception as e:
+                            logger.info(f'LISTS格式化发生错误:{e}')
                     vod_play_url = vod_play_url.join(list(map(lambda x:'#'.join(x),vlists)))
                 else:
                     list_text = p.get('list_text','') or 'body&&Text'

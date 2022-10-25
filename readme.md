@@ -47,6 +47,8 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/10/25
+- [X] v3.9.17beta1 增加海盗听书源
 ###### 2022/10/24
 - [X] v3.9.17
 - [X] drpy(道长) 服务端聚搜支持自动排除未来功能里隐藏的源  

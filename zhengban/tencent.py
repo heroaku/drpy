@@ -20,8 +20,9 @@ class tencent:
 
     def parse_cookie(self):
         if self.cookie:
-            for i in self.cookie.split(";"):
+            for i in self.cookie.rstrip(';').split(";"):
                 kv = i.split("=")
+                print(kv)
                 self.cookie_dict[kv[0].strip()] = kv[1]
         print(self.cookie_dict)
 
@@ -172,10 +173,27 @@ if __name__ == '__main__':
     cookie = """
     pgv_pvid=5805499462; iip=0; RK=yQaYRyNLbG; ptcz=2a0d041daba2e1e3872184cd999e01bf90678c0e492c5900527c802251d224ad; tvfe_boss_uuid=53b5e88a3ebeba2c; ts_uid=8123938908; tvfe_search_uid=225c6955-d257-4d4a-97d0-cc327ffea211; txv_boss_uuid=95755769-e482-3a22-3e9f-6f8d842da1a7; pgv_pvi=1381712896; logTrackKey=613d40c3fea04aafb45fc9642dd67b99; video_platform=2; main_login=qq; vqq_vuserid=1260982452; vqq_openid=406CA2296D6A3B970597D6CF1605B6B7; vqq_appid=101483052; qq_nick=feng; pgv_info=ssid=s1368217315; pac_uid=1_434857005; vversion_name=8.2.95; video_guid=3419ca23530808d22bb278e881e46647; video_omgid=3419ca23530808d22bb278e881e46647; _qpsvr_localtk=0.710205836458567; compared_guid=bc772040638cf0da; vqq_access_token=88AEE1A8BC32318537BC7D81586E44A4; o_cookie=434857005; qv_als=vzJJwNyUEiCeDF1UA11662524934RoBNzA==; video_bucketid=4; fqm_pvqid=0a2a19f9-b09d-48d2-835a-cee916bdb63f; fqm_sessionid=a2c625f7-98e9-4d69-adb4-ad82846832bc; uin=o0434857005; skey=@rZMv3mYSR; tab_experiment_str=8752038#9047927#8752037#9040406#9099387; bucket_id=9231009; last_refresh_time=1666604352564; last_refresh_vuserid=1260982452; ts_refer=m.v.qq.com/; qq_head=http://thirdqq.qlogo.cn/g?b=sdk&k=llMfAicCbslpBk4funDukzg&s=100&t=318; vqq_vusession=sj85gfjn1ZL5jGI_RW5lLA.N; ptag=m_v_qq_com|channel; tab_experiment_data=exp_id=9099387&status=1; ts_last=v.qq.com/x/cover/m441e3rjq9kwpsc.html
     """.strip()
-    # print(cookie)
+    login_token = """
+    vqq_appid=101483052; vqq_openid=406CA2296D6A3B970597D6CF1605B6B7; vqq_vuserid=1260982452;vqq_vusession=Xd5bba2m9ByWls30Vi2FSQ.N; vqq_refresh_token=2D85975A29FB056EB6F9A338CB8F1EF5;vqq_next_refresh_time=6530;vqq_access_token=88AEE1A8BC32318537BC7D81586E44A4;main_login=qq;
+    """.strip()
+    auth_token = """
+    vqq_appid=101483052; vqq_openid=406CA2296D6A3B970597D6CF1605B6B7; vqq_vuserid=1260982452;vqq_vusession=
+    """.strip()
+    cookie = login_token
+    print(cookie)
+
+    # refresh_url = 'https://access.video.qq.com/user/auth_refresh?vappid=11059694&vsecret=fdf61a6be0aad57132bc5cdf78ac30145b6cd2c1470b0cfe&type=qq&g_tk=1698594290&g_vstk=270754686&g_actk=2412125&callback=jQuery191028559957521840595_1666665357793&_=1666665357794'
+    # headers = {
+    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36",
+    #     "Referer":"https://v.qq.com/",
+    #     # "cookie":cookie,
+    #     "cookie":auth_token,
+    # }
+    # r = requests.get(refresh_url,headers=headers)
+    # print(r.text)
     # 斗罗大陆
     url = 'https://v.qq.com/x/cover/m441e3rjq9kwpsc/c00442r6ry6.html'
     # 复仇者联盟
-    url = 'https://v.qq.com/x/cover/v2098lbuihuqs11/m00314jtw6k.html'
+    # url = 'https://v.qq.com/x/cover/v2098lbuihuqs11/m00314jtw6k.html'
     vqq = tencent(url=url,cookie=cookie)
     vqq.start()
