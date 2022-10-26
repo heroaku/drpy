@@ -40,7 +40,7 @@
 </a>
 
 [JS引擎的选择](./python最强js引擎.md)  
-[搭建教程](./安卓本地搭建说明.md) | [install_help](./安卓本地搭建说明.md)  |[goorm](./道长乱说.md) |[大佬地盘](./大佬友链.md) 
+[搭建教程](./安卓本地搭建说明.md) | [install_help](https://jason-ray.notion.site/jason-ray/Pluto-TVB-706da08332804a19ab012b4f8385df64)  |[goorm](./道长乱说.md) |[大佬地盘](./大佬友链.md)   
 [dr项目QQ官群](https://qm.qq.com/cgi-bin/qm/qr?k=H2KwcXrMdiR5M2blHR5gjZzPfN_S3N_C&jump_from=webapi)  
 [参考T4](https://github.com/sec-an/TV_Spider/blob/main/spider/sp360.py)  
 [golang最好的js引擎-otto](https://github.com/robertkrimen/otto)   
