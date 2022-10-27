@@ -47,6 +47,9 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/10/27
+- [X] v3.9.18 js1 增加 预处理:, 可以在预处理里写js代码实现操作rule变量和 rule_fetch_params 变量  
+比如 rule_fetch_params.headers.Cookie = 'xxxx'; 当然这个cookie是通过js代码获取到的
 ###### 2022/10/25
 - [X] v3.9.17beta1 增加海盗听书源
 ###### 2022/10/24
@@ -404,6 +407,9 @@ var rule = {
     // 对图片加了referer验证的有效,海阔专用,普通规则请勿填写此键值
     图片来源:'@Referer=http://www.jianpianapp.com@User-Agent=jianpian-version350',
     
+    // js写法，仅js模式1有效.可以用于代码动态获取全局cookie之类的
+    // 可操作变量有 rule_fetch_params,rule,以及基础的网页访问request,post等操作
+    预处理:'rule_fetch_params.headers.Cookie = "xxxx";',
     // 类似海阔一级 列表;标题;图片;描述;链接;详情 其中最后一个参数选填
     // 如果是双层定位的话,推荐的第2段分号代码也是第2层定位列表代码
     推荐:'.col-sm-6;h3&&Text;img&&data-src;.date&&Text;a&&href',
