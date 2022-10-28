@@ -232,7 +232,7 @@ def config_render(mode):
     js_mode = int(new_conf.JS_MODE or 0)
     print(f'{type(js_mode)} jsmode:{js_mode}')
     # print(ali_token)
-    customConfig = getCustonDict(host,ali_token)
+    customConfig = getCustonDict(host,ali_token,js0_password)
     # print(customConfig)
     jxs = getJxs(host=host)
     use_py = lsg.getItem('USE_PY')
@@ -333,14 +333,14 @@ def config_gen():
         set_online = render_template('config.txt',js0_password=js0_password,pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,2),mode=1,js_mode=js_mode,host=host2,jxs=jxs)
         ali_token = new_conf.ALI_TOKEN
         with open('txt/pycms0.json','w+',encoding='utf-8') as f:
-            customConfig = getCustonDict(host0,ali_token)
+            customConfig = getCustonDict(host0,ali_token,js0_password)
             set_dict = custom_merge(parseText(set_local), customConfig)
             merged_hide(set_dict)
             set_dict['sites'] = sort_sites_by_order(set_dict['sites'], js_mode)
             # set_dict = json.loads(set_local)
             f.write(json.dumps(set_dict,ensure_ascii=False,indent=4))
         with open('txt/pycms1.json','w+',encoding='utf-8') as f:
-            customConfig = getCustonDict(host1,ali_token)
+            customConfig = getCustonDict(host1,ali_token,js0_password)
             set_dict = custom_merge(parseText(set_area), customConfig)
             merged_hide(set_dict)
             set_dict['sites'] = sort_sites_by_order(set_dict['sites'], js_mode)
@@ -348,7 +348,7 @@ def config_gen():
             f.write(json.dumps(set_dict,ensure_ascii=False,indent=4))
 
         with open('txt/pycms2.json','w+',encoding='utf-8') as f:
-            customConfig = getCustonDict(host2,ali_token)
+            customConfig = getCustonDict(host2,ali_token,js0_password)
             set_dict = custom_merge(parseText(set_online), customConfig)
             merged_hide(set_dict)
             set_dict['sites'] = sort_sites_by_order(set_dict['sites'], js_mode)

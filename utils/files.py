@@ -96,7 +96,7 @@ def custom_merge(original:dict,custom:dict):
     logger.info(f'合并配置共有解析数量:{len(original.get("parses"))}')
     return original
 
-def getCustonDict(host,ali_token=''):
+def getCustonDict(host,ali_token='',js0_password=''):
     customFile = 'base/custom.conf'
     if not os.path.exists(customFile):
         with open(customFile, 'w+', encoding='utf-8') as f:
@@ -105,7 +105,7 @@ def getCustonDict(host,ali_token=''):
     try:
         with open(customFile,'r',encoding='utf-8') as f:
             text = f.read()
-            customConfig = parseText(render_template_string(text,host=host,ali_token=ali_token))
+            customConfig = parseText(render_template_string(text,host=host,ali_token=ali_token,js0_password=js0_password))
     except Exception as e:
         logger.info(f'用户自定义配置加载失败:{e}')
     return customConfig
