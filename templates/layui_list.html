@@ -49,8 +49,11 @@
 
 <script type="text/html" id="barDemo">
 <!--  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
-  <a class="layui-btn layui-btn-xs" lay-event="set_top">置顶</a>
-  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">隐藏</a>
+  <a class="layui-btn layui-btn-xs" lay-event="set_top">顶</a>
+  <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="set_bottom">底</a>
+  <a class="layui-btn layui-btn-xs layui-btn-info" lay-event="set_order">输</a>
+
+<!--  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">隐藏</a>-->
 </script>
 
 
@@ -118,6 +121,7 @@ layui.use(['table', 'dropdown'], function(){
                     //     curr: 3 //重新从第 1 页开始
                     // }
                 });
+                 layer.msg('已设置顺序为'+to_set_order,{time:1000});
                }else{
                    console.log('修改失败了...');
                    return false
@@ -170,7 +174,7 @@ layui.use(['table', 'dropdown'], function(){
       //   var td = obj.td(this.field); //获取当前 td
       //   return td.find('select').val();
       // }}
-      ,{fixed: 'right', title:'操作', width: 125, minWidth: 125, toolbar: '#barDemo'}
+      ,{fixed: 'right', title:'操作', width: 130, minWidth: 130, toolbar: '#barDemo'}
     ]]
     ,done: function(){
       var id = this.id;
@@ -308,7 +312,6 @@ layui.use(['table', 'dropdown'], function(){
                   }else{
                     setOrder(data,Number(value));
                     layer.close(index);
-                    layer.msg('请设置顺序为'+value,{time:1000});
                   }
               });
               // setOrder(data,0);
@@ -390,6 +393,32 @@ layui.use(['table', 'dropdown'], function(){
   table.on('tool(test)', function(obj){ // 双击 toolDouble
     var data = obj.data;
     //console.log(obj)
+    function setPos(od,msg){
+      let obj_name;
+      try{
+        obj_name = obj.data.api.match(/rule=(.*)/)[1].split('&')[0];
+      }catch (e){
+        obj_name = obj.data.key;
+      }
+      console.log(obj);
+      let params = {"names":[obj_name].join(',')};
+      console.log(params);
+      $.post("/admin/rule_order/"+od,params,function(res,status){
+           console.log(res);
+           if(res.code === 200){
+             data.order = od;
+             // console.log(obj);
+             obj.update({
+                  order: data.order
+              });
+             layer.msg('已'+msg);
+           }else{
+               console.log('修改失败了...');
+               layer.msg(msg+'失败,具体错误看日志');
+               return false
+           }
+     });
+    }
     if(obj.event === 'del'){
       let obj_name;
       try{
@@ -432,29 +461,26 @@ layui.use(['table', 'dropdown'], function(){
         content: '<div style="padding: 16px;">自定义表单元素</div>'
       });
     }else if(obj.event === 'set_top'){
-      let obj_name;
-      try{
-        obj_name = obj.data.api.match(/rule=(.*)/)[1].split('&')[0];
-      }catch (e){
-        obj_name = obj.data.key;
-      }
-      console.log(obj);
-      let params = {"names":[obj_name].join(',')};
-      console.log(params);
-      $.post("/admin/rule_order/0",params,function(res,status){
-           console.log(res);
-           if(res.code === 200){
-             data.order = 0;
-             obj.update({
-                  order: data.order
+      setPos(0,'置顶');
+    }else if(obj.event === 'set_bottom'){
+      setPos(9999,'置底');
+    }else if(obj.event === 'set_order'){
+      layer.prompt({
+                  formType: 0,
+                  value: '',
+                  title: '请输入指定的排序序号,数字越小排名越靠前',
+                  btn: ['确定','取消'], //按钮，
+                  btnAlign: 'c'
+              }, function(value,index){
+                  console.log('value:'+value);
+                  var reg = /^[\d]+$/;
+                  if(!reg.test(value)){
+                    layer.msg('请输入有效数字!',{time:500});
+                  }else{
+                    setPos(Number(value),'指定顺序');
+                    layer.close(index);
+                  }
               });
-             layer.msg('已置顶');
-           }else{
-               console.log('修改失败了...');
-               layer.msg('置顶失败,具体错误看日志');
-               return false
-           }
-     });
     }
   });
 

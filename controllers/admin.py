@@ -37,12 +37,13 @@ def admin_index():  # 管理员界面
     lsg = storage_service()
     live_url = lsg.getItem('LIVE_URL')
     use_py = lsg.getItem('USE_PY')
+    js0_password = lsg.getItem('JS0_PASSWORD')
     # print(f'live_url:', live_url)
     rules = getRules('js')
     # print(rules)
     cache_count = getCacheCount()
     # print(cache_count)
-    return render_template('admin.html', pystate=use_py,rules=rules,cache_count=cache_count, ver=getLocalVer(), live_url=live_url)
+    return render_template('admin.html',js0_password=js0_password, pystate=use_py,rules=rules,cache_count=cache_count, ver=getLocalVer(), live_url=live_url)
 
 @admin.route('/settings')
 def admin_settings():  # 管理员界面
@@ -158,6 +159,7 @@ def admin_rule_order(order=0):  # 管理员修改规则顺序
     # print(rules.getState(rule_list[0]))
     # print(rule_list)
     success_list = []
+    rule_list.reverse() # 倒序解决时间多重排序问题
     for rule in rule_list:
         try:
             res_id = rules.setOrder(rule,order)

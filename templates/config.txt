@@ -10,7 +10,7 @@
     "key":"dr_{{ rule.name }}",
     "name":"{{ rule.name }}(道长)",
     "type":1,
-    "api":"{{ host }}/vod?rule={{ rule.name }}",
+    "api":"{{ host }}/vod?{% if js0_password %}pwd={{js0_password}}&{% endif %}rule={{ rule.name }}",
     "searchable": {{ rule.searchable }},
     "quickSearch": {{ rule.quickSearch }},
     "filterable": {{ rule.filterable }}
@@ -30,7 +30,7 @@
     "key":"js_drpy",
     "name":"drpy(道长)",
     "type":1,
-    "api":"{{ host }}/vod?rule=drpy",
+    "api":"{{ host }}/vod?{% if js0_password %}pwd={{js0_password}}&{% endif %}rule=drpy",
     "searchable": 1,
     "quickSearch": 1,
     "filterable": 1

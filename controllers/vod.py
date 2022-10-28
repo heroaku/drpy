@@ -5,7 +5,7 @@
 # Date  : 2022/9/6
 import json
 
-from flask import Blueprint,request,render_template,jsonify,make_response,redirect
+from flask import Blueprint,abort,request,render_template,jsonify,make_response,redirect
 from time import time
 from utils.web import getParmas,get_interval
 from utils.cfg import cfg
@@ -183,6 +183,16 @@ def multi_search(wd):
 
 @vod.route('/vod')
 def vod_home():
+    lsg = storage_service()
+    js0_disable = lsg.getItem('JS0_DISABLE',cfg.get('JS0_DISABLE',0))
+    if js0_disable:
+        abort(403)
+    js0_password = lsg.getItem('JS0_PASSWORD', cfg.get('JS0_PASSWORD', ''))
+    # print('js0_password:',js0_password)
+    if js0_password:
+        pwd = getParmas('pwd')
+        if pwd != js0_password:
+            abort(403)
     t0 = time()
     rule = getParmas('rule')
     ac = getParmas('ac')

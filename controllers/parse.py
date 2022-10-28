@@ -9,6 +9,7 @@ import os
 from utils.cfg import cfg
 from utils.log import logger
 from utils.encode import OcrApi
+from controllers.service import storage_service
 from utils.pyctx import py_ctx,getPreJs,runJScode,JsObjectWrapper,PyJsString,parseText,jsoup,time
 import base64
 
@@ -106,7 +107,8 @@ def parse_home(filename):
 
 @parse.route('/ocr',methods=['POST'])
 def base64_ocr():
-    ocr_api = cfg.OCR_API
+    lsg = storage_service()
+    ocr_api = lsg.getItem('OCR_API',cfg.OCR_API)
     # print(ocr_api)
     # print('params:',getParmas())
     img = getParmas('img')

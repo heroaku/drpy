@@ -22,7 +22,7 @@
 
         $(".view_home").click(function(){
             let rule = this.getAttribute('value').trim();
-            location.href = '/vod?rule='+rule;
+            location.href = '/vod?{% if js0_password %}pwd={{js0_password}}&{% endif %}rule='+rule;
         });
 
         $("#checkUpdate").click(function(){

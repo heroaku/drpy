@@ -24,6 +24,7 @@ from utils.update import getLocalVer,getHotSuggest
 from js.rules import getJxs
 import random
 from utils.web import getParmas
+import functools
 
 
 home = Blueprint("home", __name__,static_folder='/static')
@@ -221,18 +222,19 @@ def config_render(mode):
     lsg = storage_service()
     store_conf_dict = lsg.getStoreConfDict()
     new_conf.update(store_conf_dict)
+    # print(new_conf)
     # print(type(new_conf),new_conf)
     host = getHost(mode)
     # ali_token = lsg.getItem('ALI_TOKEN')
     ali_token = new_conf.ALI_TOKEN
     xr_mode = new_conf.XR_MODE
+    js0_password = new_conf.JS0_PASSWORD
     js_mode = int(new_conf.JS_MODE or 0)
     print(f'{type(js_mode)} jsmode:{js_mode}')
     # print(ali_token)
     customConfig = getCustonDict(host,ali_token)
     # print(customConfig)
     jxs = getJxs(host=host)
-    lsg = storage_service()
     use_py = lsg.getItem('USE_PY')
     pys = getPys() if use_py else []
     # print(pys)
@@ -242,7 +244,7 @@ def config_render(mode):
     rules = getRules('js',js_mode)
     rules = get_multi_rules(rules)
     # html = render_template('config.txt',rules=getRules('js'),host=host,mode=mode,jxs=jxs,base64Encode=base64Encode,config=new_conf)
-    html = render_template('config.txt',UA=UA,xr_mode=xr_mode,ISTVB=ISTVB,pys=pys,rules=rules,host=host,mode=mode,js_mode=js_mode,jxs=jxs,alists=alists,alists_str=alists_str,live_url=live_url,config=new_conf)
+    html = render_template('config.txt',js0_password=js0_password,UA=UA,xr_mode=xr_mode,ISTVB=ISTVB,pys=pys,rules=rules,host=host,mode=mode,js_mode=js_mode,jxs=jxs,alists=alists,alists_str=alists_str,live_url=live_url,config=new_conf)
     merged_config = custom_merge(parseText(html),customConfig)
     # print(merged_config['sites'])
     merged_hide(merged_config)
@@ -273,16 +275,32 @@ def sort_sites_by_order(sites,js_mode=0):
             site_rule = rule_list[rule_names.index(site_name)]
             sites[i]['state'] = 1 if site_rule['state'] is None else site_rule['state']
             sites[i]['order'] = 0 if site_rule['order'] is None else site_rule['order']
+            sites[i]['write_date'] = 0 if site_rule['write_date'] is None else site_rule['write_date'].timestamp()
         else:
             sites[i]['state'] = 1
             sites[i]['order'] = 0
+            sites[i]['write_date'] = 0
         # sites[i]['site_name'] = site_name
     # print(sites)
-    sites.sort(key=lambda x: x['order'], reverse=False)
+    def comp(x, y):
+        if x['order'] > y['order']:
+            return 1
+        elif x['order'] < y['order']:
+            return - 1
+        else:
+            if x['write_date'] < y['write_date']:
+                return 1
+            elif x['write_date'] > y['write_date']:
+                return -1
+            else:
+                return 0
+    # sites.sort(key=lambda x: x['order'], reverse=False)
+    sites.sort(key=functools.cmp_to_key(comp), reverse=False)
     # print(sites)
     for site in sites:
         del site['state']
         del site['order']
+        del site['write_date']
     return sites
 
 @home.route('/configs')
@@ -296,6 +314,7 @@ def config_gen():
     try:
         use_py = lsg.getItem('USE_PY')
         js_mode = int(new_conf.JS_MODE or 0)
+        js0_password = new_conf.JS0_PASSWORD
         pys = getPys() if use_py else False
         alists = getAlist()
         alists_str = json.dumps(alists,ensure_ascii=False)
@@ -303,15 +322,15 @@ def config_gen():
         rules = get_multi_rules(rules)
         host0 = getHost(0)
         jxs = getJxs(host=host0)
-        set_local = render_template('config.txt',pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,0),mode=0,js_mode=js_mode,host=host0,jxs=jxs)
+        set_local = render_template('config.txt',js0_password=js0_password,pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,0),mode=0,js_mode=js_mode,host=host0,jxs=jxs)
         # print(set_local)
         host1 = getHost(1)
         jxs = getJxs(host=host1)
-        set_area = render_template('config.txt',pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,1),mode=1,js_mode=js_mode,host=host1,jxs=jxs)
+        set_area = render_template('config.txt',js0_password=js0_password,pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,1),mode=1,js_mode=js_mode,host=host1,jxs=jxs)
         host2 = getHost(2) or host1
         # print('远程地址:'+host2)
         jxs = getJxs(host=host2)
-        set_online = render_template('config.txt',pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,2),mode=1,js_mode=js_mode,host=host2,jxs=jxs)
+        set_online = render_template('config.txt',js0_password=js0_password,pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,2),mode=1,js_mode=js_mode,host=host2,jxs=jxs)
         ali_token = new_conf.ALI_TOKEN
         with open('txt/pycms0.json','w+',encoding='utf-8') as f:
             customConfig = getCustonDict(host0,ali_token)
