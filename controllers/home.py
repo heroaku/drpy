@@ -156,9 +156,12 @@ def get_lives():
     # ?path=base/live.txt
     path = getParmas('path')
     live_path = path or 'base/直播.txt'
+    if not re.search('(txt|json|conf)$',live_path,re.M|re.S) or not re.search('^(txt|base)',live_path,re.M|re.S):
+        abort(403)
     if not os.path.exists(live_path):
-        with open(live_path,mode='w+',encoding='utf-8') as f:
-            f.write('')
+        # with open(live_path,mode='w+',encoding='utf-8') as f:
+        #     f.write('')
+        return ''
 
     with open(live_path,encoding='utf-8') as f:
         live_text = f.read()

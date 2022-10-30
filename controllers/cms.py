@@ -133,7 +133,10 @@ class CMS:
             # print(play_url)
             if self.play_parse:
                 # self.play_url = play_url + self.vod + '?play_url='
-                self.play_url = f'{play_url}{self.vod}?rule={self.id}&ext={ext}&play_url='
+                js0_password = self.lsg.getItem('JS0_PASSWORD')
+                # print(f'js0密码:{js0_password}')
+                js0_password = f'pwd={js0_password}&' if js0_password else ''
+                self.play_url = f'{play_url}{self.vod}?{js0_password}rule={self.id}&ext={ext}&play_url='
                 # logger.info(f'cms重定向链接:{self.play_url}')
             else:
                 self.play_url = ''

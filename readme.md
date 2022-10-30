@@ -47,6 +47,8 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/10/30
+- [X] 3.9.18beta4 修复lives?path=接口漏洞,修复js0设置密码后播放解析没自动带密码Bug
 ###### 2022/10/28
 - [X] 3.9.18beta1 未来功能排序优化,设置中心增加js0防盗用和禁用功能
 ###### 2022/10/27
