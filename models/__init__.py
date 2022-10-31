@@ -7,3 +7,4 @@
 from . import storage
 from . import playparse
 from . import ruleclass
+from . import vipParse
