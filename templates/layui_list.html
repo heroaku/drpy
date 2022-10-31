@@ -35,6 +35,9 @@
     <button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="default-row">
       单行
     </button>
+    <button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="jxs">
+      解析管理
+    </button>
 
   </div>
 </script>
@@ -383,6 +386,9 @@ layui.use(['table', 'dropdown'], function(){
         });
         layer.msg('已设为单行');
       break;
+      case 'jxs':
+        location.href = 'jxs';
+        break;
       case 'LAYTABLE_TIPS':
         layer.alert('Table for layui-v'+ layui.v);
       break;

@@ -3,15 +3,17 @@
 # File  : layui.py
 # Author: DaShenHan&道长-----先苦后甜，任凭晚风拂柳颜------
 # Date  : 2022/9/14
-
+import ujson
 from flask import Blueprint,request,render_template,jsonify,make_response,redirect
+
+from utils.ua import UA
 from utils.web import getParmas,get_interval,layuiBack,verfy_token
 from utils.cfg import cfg
 from controllers.service import storage_service,rules_service
 from utils.system import getHost
 from utils.files import getCustonDict,custom_merge
 from utils.encode import parseText
-from js.rules import getRules,getPys
+from js.rules import getRules,getPys,getJxs
 from operator import itemgetter, attrgetter
 import functools
 
@@ -27,6 +29,13 @@ def layui_index():  # put application's code here
     if not verfy_token():
         return render_template('login.html')
     return render_template('layui_list.html')
+
+@layui.route('/jxs')
+def layui_jxs():  # put application's code here
+    # return render_template('layui_index.html')
+    if not verfy_token():
+        return render_template('login.html')
+    return render_template('layui_jxs.html')
 
 @layui.route('/api/list')
 def layui_rule_list():
@@ -105,3 +114,37 @@ def layui_rule_list():
     new_sites = sites[(page-1)*limit:page*limit]
     # print(new_sites)
     return layuiBack('获取成功',new_sites,count=len(sites))
+
+@layui.route('/api/jx_list')
+def layui_jx_list():
+    # 拖拽排序教程 https://blog.csdn.net/qq_41829337/article/details/126610406
+    host = request.host_url  # 获取当前访问链接对应的host
+    page = int(getParmas('page',1))
+    limit = int(getParmas('limit',10))
+    new_conf = cfg
+    lsg = storage_service()
+    store_conf_dict = lsg.getStoreConfDict()
+    new_conf.update(store_conf_dict)
+    ali_token = new_conf.ALI_TOKEN
+    xr_mode = new_conf.XR_MODE
+    js0_password = new_conf.JS0_PASSWORD
+    js_mode = int(new_conf.JS_MODE or 0)
+    customConfig = getCustonDict(host, ali_token, js0_password)
+    jxs = getJxs(host=host)
+    rules = {'list': [{"key": "dr_MXONE", "name": "MXONE(道长)", "type": 1, "api": "{{host}}/vod?{% if js0_password %}pwd={{js0_password}}&{% endif %}rule=MXONE&ext=txt/js/tg/MXONE.js", "searchable": 2, "quickSearch": 0, "filterable": 0},
+], 'count': 1}
+    html = render_template('config.txt', js0_password=js0_password, UA=UA, xr_mode=xr_mode, ISTVB=False, pys=[],
+                           rules=rules, host=host, mode=2, js_mode=js_mode, jxs=jxs, alists=[],
+                           alists_str='', live_url='', config=new_conf)
+    merged_config = custom_merge(parseText(html), customConfig)
+    parses = merged_config['parses']
+    # print(parses)
+    for i in range(len(parses)):
+        if not parses[i].get('header'):
+            parses[i]['header'] = {'User-Agent': 'Mozilla/5.0'}
+        if isinstance(parses[i].get('header'),dict):
+            parses[i]['header'] = ujson.dumps(parses[i]['header'],ensure_ascii=False)
+        if isinstance(parses[i].get('ext'),dict):
+            parses[i]['ext'] = ujson.dumps(parses[i]['ext'],ensure_ascii=False)
+    new_parses = parses[(page - 1) * limit:page * limit]
+    return layuiBack('获取成功', new_parses, count=len(parses))
