@@ -118,7 +118,7 @@ def layui_rule_list():
 @layui.route('/api/jx_list')
 def layui_jx_list():
     # 拖拽排序教程 https://blog.csdn.net/qq_41829337/article/details/126610406
-    host = request.host_url  # 获取当前访问链接对应的host
+    host = request.host_url.rstrip('/')  # 获取当前访问链接对应的host
     page = int(getParmas('page',1))
     limit = int(getParmas('limit',10))
     new_conf = cfg
