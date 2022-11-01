@@ -44,7 +44,7 @@ LIVE_MODE = 0  # 0 本地 1外网
 # LIVE_URL = 'https://gitcode.net/bd/v/-/raw/main/live/zb.txt'  # 初始化外网直播地址(后续在管理界面改)
 LIVE_URL = 'https://raw.fastgit.org/zhanghong1983/TVBOXZY/main/TV/live.txt'  # 初始化外网直播地址(后续在管理界面改)
 CATE_EXCLUDE = '首页|留言|APP|下载|资讯|新闻|动态|明星|专题|最新|排行|解析'  # 动态分类过滤
-TAB_EXCLUDE = '猜你|喜欢|APP|下载|剧情|简介'  # 动态线路名过滤
+TAB_EXCLUDE = '猜你|喜欢|APP|下载|剧情|简介|排序'  # 动态线路名过滤
 # {% if config.WALL_PAPER %}"wallpaper":"{{ config.WALL_PAPER }}",{% endif %}
 SEARCH_TIMEOUT = 5000 # 聚搜超时毫秒
 MULTI_MODE = 0  # 多源模式
