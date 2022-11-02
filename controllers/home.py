@@ -4,11 +4,12 @@
 # Author: DaShenHan&道长-----先苦后甜，任凭晚风拂柳颜------
 # Date  : 2022/9/6
 import json
+import ujson
 import os
 import re
 
 from flask import Blueprint,abort,render_template,render_template_string,url_for,redirect,make_response,send_from_directory,request
-from controllers.service import storage_service,rules_service
+from controllers.service import storage_service,rules_service,parse_service
 from controllers.classes import getClasses,getClassInfo
 
 from utils.files import getPics,custom_merge,getAlist,get_live_url,get_multi_rules,getCustonDict
@@ -255,11 +256,28 @@ def config_render(mode):
     # print(len(merged_config['sites']))
     # print(merged_config['sites'])
     merged_config['sites'] = sort_sites_by_order(merged_config['sites'],js_mode)
+    # print(merged_config['parses'])
+    parses = sort_parses_by_order(merged_config['parses'],host)
+    # print(parses)
+    merged_config['parses'] = parses
     response = make_response(json.dumps(merged_config,ensure_ascii=False,indent=1))
     # response = make_response(str(merged_config))
     response.headers['Content-Type'] = 'application/json; charset=utf-8'
     logger.info(f'自动生成动态配置共计耗时:{get_interval(tt)}毫秒')
     return response
+
+def comp(x, y):
+    if x['order'] > y['order']:
+        return 1
+    elif x['order'] < y['order']:
+        return - 1
+    else:
+        if x['write_date'] < y['write_date']:
+            return 1
+        elif x['write_date'] > y['write_date']:
+            return -1
+        else:
+            return 0
 
 def sort_sites_by_order(sites,js_mode=0):
     rules = rules_service()
@@ -285,18 +303,6 @@ def sort_sites_by_order(sites,js_mode=0):
             sites[i]['write_date'] = 0
         # sites[i]['site_name'] = site_name
     # print(sites)
-    def comp(x, y):
-        if x['order'] > y['order']:
-            return 1
-        elif x['order'] < y['order']:
-            return - 1
-        else:
-            if x['write_date'] < y['write_date']:
-                return 1
-            elif x['write_date'] > y['write_date']:
-                return -1
-            else:
-                return 0
     # sites.sort(key=lambda x: x['order'], reverse=False)
     sites.sort(key=functools.cmp_to_key(comp), reverse=False)
     # print(sites)
@@ -305,6 +311,44 @@ def sort_sites_by_order(sites,js_mode=0):
         del site['order']
         del site['write_date']
     return sites
+
+def sort_parses_by_order(parses,host):
+    t1 = time()
+    parse = parse_service()
+    parse_list = parse.query_all()
+    parse_url_list = list(map(lambda x: x['url'], parse_list))
+    new_parses = []
+    for i in range(len(parses)):
+        # parses[i]['id'] = i + 1
+        # 去重
+        if parses[i]['url'] in new_parses:
+            continue
+        if str(parses[i]['url']).startswith(host):
+            parses[i]['url'] = parses[i]['url'].replace(host,'')
+        if parses[i]['url'] in parse_url_list:
+            parse_rule = parse_list[parse_url_list.index(parses[i]['url'])]
+            parses[i]['state'] = 1 if parse_rule['state'] is None else parse_rule['state']
+            parses[i]['order'] = 0 if parse_rule['order'] is None else parse_rule['order']
+            parses[i]['write_date'] = 0 if parse_rule['write_date'] is None else parse_rule['write_date'].timestamp()
+        else:
+            parses[i]['state'] = 1
+            parses[i]['order'] = 0
+            parses[i]['write_date'] = 0
+
+        if not parses[i].get('header'):
+            parses[i]['header'] = {'User-Agent': 'Mozilla/5.0'}
+        if str(parses[i]['url']).startswith('/'):
+            parses[i]['url'] = host + parses[i]['url']
+        new_parses.append(parses[i])
+    new_parses.sort(key=functools.cmp_to_key(comp), reverse=False)
+    # print(sites)
+    for par in new_parses:
+        del par['state']
+        del par['order']
+        del par['write_date']
+    # print(new_parses)
+    logger.info(f'{len(parses)}条解析解析排序耗时:{get_interval(t1)}毫秒')
+    return new_parses
 
 @home.route('/configs')
 def config_gen():
@@ -335,11 +379,17 @@ def config_gen():
         jxs = getJxs(host=host2)
         set_online = render_template('config.txt',js0_password=js0_password,pys=pys,rules=rules,alists=alists,alists_str=alists_str,live_url=get_live_url(new_conf,2),mode=1,js_mode=js_mode,host=host2,jxs=jxs)
         ali_token = new_conf.ALI_TOKEN
+        # parses = []
         with open('txt/pycms0.json','w+',encoding='utf-8') as f:
             customConfig = getCustonDict(host0,ali_token,js0_password)
             set_dict = custom_merge(parseText(set_local), customConfig)
             merged_hide(set_dict)
             set_dict['sites'] = sort_sites_by_order(set_dict['sites'], js_mode)
+            # if not parses:
+            #     print('生成静态配置时初始化排序parses')
+            #     parses = sort_parses_by_order(set_dict['parses'])
+            # set_dict['parses'] = parses
+            set_dict['parses'] = sort_parses_by_order(set_dict['parses'],host0)
             # set_dict = json.loads(set_local)
             f.write(json.dumps(set_dict,ensure_ascii=False,indent=4))
         with open('txt/pycms1.json','w+',encoding='utf-8') as f:
@@ -347,6 +397,7 @@ def config_gen():
             set_dict = custom_merge(parseText(set_area), customConfig)
             merged_hide(set_dict)
             set_dict['sites'] = sort_sites_by_order(set_dict['sites'], js_mode)
+            set_dict['parses'] = sort_parses_by_order(set_dict['parses'],host1)
             # set_dict = json.loads(set_area)
             f.write(json.dumps(set_dict,ensure_ascii=False,indent=4))
 
@@ -355,6 +406,7 @@ def config_gen():
             set_dict = custom_merge(parseText(set_online), customConfig)
             merged_hide(set_dict)
             set_dict['sites'] = sort_sites_by_order(set_dict['sites'], js_mode)
+            set_dict['parses'] = sort_parses_by_order(set_dict['parses'],host2)
             # set_dict = json.loads(set_online)
             f.write(json.dumps(set_dict,ensure_ascii=False,indent=4))
         files = [os.path.abspath(rf'txt\pycms{i}.json') for i in range(3)]
