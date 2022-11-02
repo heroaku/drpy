@@ -117,11 +117,11 @@
     table.on('tool(myTable)', function(obj) { // 双击 toolDouble
       console.log(obj);
       if(obj.event === 'del'){
-        layer.msg('未开发功能:删除...')
+        layer.msg('未开发功能:删除...',{time:1000})
       }else if(obj.event === 'set_top'){
-        layer.msg('未开发功能:置顶...')
+        layer.msg('未开发功能:置顶...',{time:1000})
       }else if(obj.event === 'set_bottom'){
-        layer.msg('未开发功能:置底...')
+        layer.msg('未开发功能:置底...',{time:1000})
       }
     });
   // }, null, 'define');
