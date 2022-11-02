@@ -180,10 +180,20 @@ def admin_parse_save_data():  # 管理员保存拖拽排序后的解析数据
     parse = parse_service()
     success_list = []
     data = ujson.loads(data)
-    for i in range(len(data)):
-        d = data[i]
-        if not d.get('url') and d.get('name') != '🌐Ⓤ':
+    new_list = []
+    new_data = []
+    for nd in data:
+        if not nd.get('url') and nd.get('name') != '🌐Ⓤ':
             continue
+        if nd['url'] not in new_list:
+            new_data.append(nd)
+            new_list.append(nd['url'])
+
+    print(f'去重前:{len(data)},去重后:{len(new_data)}')
+    for i in range(len(new_data)):
+        d = new_data[i]
+        # if not d.get('url') and d.get('name') != '🌐Ⓤ':
+        #     continue
         obj = {
             'name':d.get('name', ''),
             'url':d.get('url', ''),
@@ -202,6 +212,7 @@ def admin_parse_save_data():  # 管理员保存拖拽排序后的解析数据
         except Exception as e:
             success_list.append(d["url"])
             print(f'{d["url"]}失败:{e}')
+    # print(len(success_list))
     return R.success(f'修改成功,服务器反馈信息为:{success_list}')
 
 @admin.route('/force_update')
