@@ -5,8 +5,9 @@
 # Date  : 2022/9/6
 import os
 
+import ujson
 from flask import Blueprint,request,render_template,jsonify,make_response
-from controllers.service import storage_service,rules_service
+from controllers.service import storage_service,rules_service,parse_service
 from base.R import R
 from base.database import db
 from utils.log import logger
@@ -167,6 +168,40 @@ def admin_rule_order(order=0):  # 管理员修改规则顺序
         except:
             success_list.append(rule)
 
+    return R.success(f'修改成功,服务器反馈信息为:{success_list}')
+
+@admin.route('/parse/save_data',methods=['POST'])
+def admin_parse_save_data():  # 管理员保存拖拽排序后的解析数据
+    if not verfy_token():
+        return R.error('请登录后再试')
+    data = getParmas('data')
+    if not data:
+        return R.success(f'修改失败,没有传递data参数')
+    parse = parse_service()
+    success_list = []
+    data = ujson.loads(data)
+    for i in range(len(data)):
+        d = data[i]
+        if not d.get('url') and d.get('name') != '🌐Ⓤ':
+            continue
+        obj = {
+            'name':d.get('name', ''),
+            'url':d.get('url', ''),
+            'state':d.get('state',1),
+            'type': d.get('state',0),
+            'order':i+1,
+            'ext':d.get('ext',''),
+            'header':d.get('header',''),
+        }
+        # print(obj)
+        try:
+            parse.saveData(obj)
+            success_list.append(f'parse:{d["url"]}')
+            # print(obj)
+            # print(200,obj)
+        except Exception as e:
+            success_list.append(d["url"])
+            print(f'{d["url"]}失败:{e}')
     return R.success(f'修改成功,服务器反馈信息为:{success_list}')
 
 @admin.route('/force_update')

@@ -9,7 +9,7 @@ from flask import Blueprint,request,render_template,jsonify,make_response,redire
 from utils.ua import UA
 from utils.web import getParmas,get_interval,layuiBack,verfy_token
 from utils.cfg import cfg
-from controllers.service import storage_service,rules_service
+from controllers.service import storage_service,rules_service,parse_service
 from utils.system import getHost
 from utils.files import getCustonDict,custom_merge
 from utils.encode import parseText
@@ -138,7 +138,23 @@ def layui_jx_list():
                            alists_str='', live_url='', config=new_conf)
     merged_config = custom_merge(parseText(html), customConfig)
     parses = merged_config['parses']
-    # print(parses)
+
+    parse = parse_service()
+    parse_list = parse.query_all()
+    parse_url_list = list(map(lambda x:x['url'],parse_list))
+
+    for i in range(len(parses)):
+        parses[i]['id'] = i+1
+        if parses[i]['url'] in parse_url_list:
+            parse_rule = parse_list[parse_url_list.index(parses[i]['url'])]
+            parses[i]['state'] = 1 if parse_rule['state'] is None else parse_rule['state']
+            parses[i]['order'] = 0 if parse_rule['order'] is None else parse_rule['order']
+            parses[i]['write_date'] = 0 if parse_rule['write_date'] is None else parse_rule['write_date'].timestamp()
+        else:
+            parses[i]['state'] = 1
+            parses[i]['order'] = 0
+            parses[i]['write_date'] = 0
+
     for i in range(len(parses)):
         if not parses[i].get('header'):
             parses[i]['header'] = {'User-Agent': 'Mozilla/5.0'}
@@ -146,5 +162,7 @@ def layui_jx_list():
             parses[i]['header'] = ujson.dumps(parses[i]['header'],ensure_ascii=False)
         if isinstance(parses[i].get('ext'),dict):
             parses[i]['ext'] = ujson.dumps(parses[i]['ext'],ensure_ascii=False)
+            # parse.setEverything(parses[i]['url'], parses[i]['name'], parses[i]['state'], parses[i]['type'], parses[i]['order'], parses[i]['ext'], parses[i]['header'])
+
     new_parses = parses[(page - 1) * limit:page * limit]
     return layuiBack('获取成功', new_parses, count=len(parses))
