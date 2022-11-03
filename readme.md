@@ -47,6 +47,8 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/11/03
+- [X] 更换jar,支持海阔二级推送到tvbox
 ###### 2022/11/02
 - [X] 合并小雅代码,未来功能完善解析管理,可正常拖拽排序
 ###### 2022/10/30
