@@ -530,7 +530,8 @@ const parseTags = {
     jsp:{
         pdfh:pdfh2,
         pdfa:pdfa2,
-        pd:pd2,
+        // pd:pd2,
+        pd:pd,
     },
     json:{
         pdfh(html, parse) {
@@ -1578,6 +1579,7 @@ function searchParse(searchObj) {
  * @returns {string}
  */
 function detailParse(detailObj){
+    let t1 = (new Date()).getTime();
     fetch_params = JSON.parse(JSON.stringify(rule_fetch_params));
     let orId = detailObj.orId;
     let vod_name = '片名';
@@ -1609,7 +1611,7 @@ function detailParse(detailObj){
     let tab_exclude = detailObj.tab_exclude;
     let html = detailObj.html||'';
     MY_URL = url;
-    console.log(MY_URL);
+    // console.log(MY_URL);
     // setItem('MY_URL',MY_URL);
     if(p==='*'){
         vod.vod_play_from = '道长在线';
@@ -1785,13 +1787,19 @@ function detailParse(detailObj){
                     let tabName = tab_ext?_pdfh(html, tab_ext):tab_name;
                     console.log(tabName);
                     // console.log('cheerio解析Text');
-                    vodList.forEach(it=>{
+                    // 此处存在性能问题: pt版2000集需要650毫秒,俊版1300毫秒 特么的优化不动 主要后面定位url的我拿他没法
+                    // 主要性能问题在于 _pd(it, list_url, MY_URL)
+                    let tt1 = (new Date()).getTime();
+                    vodList.forEach((it,idex)=>{
                         // 请注意,这里要固定pdfh解析body&&Text,不需要下划线,没写错
                         // new_vod_list.push(pdfh(it,'body&&Text')+'$'+_pd(it,'a&&href',MY_URL));
                         // new_vod_list.push(cheerio.load(it).text()+'$'+_pd(it,'a&&href',MY_URL));
                         // new_vod_list.push(_pdfh(it, list_text).trim() + '$' + _pd(it, list_url, MY_URL));
-                        new_vod_list.push(_pdfh(it, list_text).trim() + '$' + _pd(it, list_url, MY_URL));
+                        // new_vod_list.push(_pdfh(it, list_text).trim() + '$' +idex);
+                        // new_vod_list.push(idex + '$' +_pdfh(it, list_url));
+                        new_vod_list.push(_pdfh(it, list_text).trim() + '$' +_pd(it, list_url,MY_URL));
                     });
+                    console.log(`drpy影响性能代码共计列表数循环次数:${vodList.length},耗时:${(new Date()).getTime()-tt1}毫秒`);
                     let vlist = new_vod_list.join('#');
                     vod_tab_list.push(vlist);
                 }
@@ -1806,6 +1814,8 @@ function detailParse(detailObj){
     if(!vod.vod_id){
         vod.vod_id = vod_id;
     }
+    let t2 = (new Date()).getTime();
+    console.log(`加载二级界面${MY_URL}耗时:${t2-t1}毫秒`);
     // print(vod);
     return JSON.stringify({
         list: [vod]
