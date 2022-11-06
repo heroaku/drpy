@@ -1802,7 +1802,9 @@ function detailParse(detailObj){
                         // new_vod_list.push(idex + '$' +_pdfh(it, list_url));
                         new_vod_list.push(_pdfh(it, list_text).trim() + '$' +_pd(it, list_url,MY_URL));
                     });
-                    console.log(`drpy影响性能代码共计列表数循环次数:${vodList.length},耗时:${(new Date()).getTime()-tt1}毫秒`);
+                    if(vodList.length>0){
+                        console.log(`drpy影响性能代码共计列表数循环次数:${vodList.length},耗时:${(new Date()).getTime()-tt1}毫秒`);
+                    }
                     let vlist = new_vod_list.join('#');
                     vod_tab_list.push(vlist);
                 }
