@@ -7,6 +7,7 @@
 from base.R import copy_utils
 from models.storage import Storage
 from models.ruleclass import RuleClass
+from models.vipParse import VipParse
 from utils.cfg import cfg
 from base.database import db
 from datetime import datetime,timedelta
@@ -135,4 +136,120 @@ class rules_service(object):
     @staticmethod
     def getHideRules():
         res = RuleClass.query.filter(RuleClass.state == 0).all()
+        return copy_utils.obj_to_list(res)
+
+class parse_service(object):
+
+    @staticmethod
+    def query_all():
+        # 查询所有
+        res = VipParse.query.order_by(VipParse.order.asc(),VipParse.write_date.desc()).all()
+        # print(res)
+        # res = RuleClass.query.order_by(RuleClass.write_date.asc()).all()
+        return copy_utils.obj_to_list(res)
+
+    @classmethod
+    def hasItem(self, key):
+        return VipParse.hasItem(key)
+
+    def getState(self,key):
+        res = VipParse.query.filter(VipParse.url == key).first()
+        if not res:
+            return 1
+        # print(res)
+        state = res.state
+        if state is None:
+            state = 1
+        return state or 0
+
+
+    def setState(self,key,state=0):
+        res = VipParse.query.filter(VipParse.url == key).first()
+        if res:
+            res.state = state
+            db.session.add(res)
+        else:
+            res = VipParse(url=key, state=state)
+            db.session.add(res)
+            db.session.flush()  # 获取id
+        try:
+            db.session.commit()
+            return res.id
+        except Exception as e:
+            print(f'发生了错误:{e}')
+            return None
+
+    def setOrder(self,key,order=0):
+        res = VipParse.query.filter(VipParse.url == key).first()
+        if res:
+            res.order = order
+            # print(f'{res.name}设置order为:{order}')
+            if res.order == order:
+                res.write_date = datetime.now()
+                # res.write_date = res.write_date + timedelta(hours=2)
+            db.session.add(res)
+        else:
+            res = VipParse(url=key, order=order)
+            db.session.add(res)
+            db.session.flush()  # 获取id
+        try:
+            db.session.commit()
+            return res.id
+        except Exception as e:
+            print(f'发生了错误:{e}')
+            return None
+
+    def setEverything(self,key,name,state,typeno,order,ext,header):
+        res = VipParse.query.filter(VipParse.url == key).first()
+        if res:
+            res.name = name
+            res.state = state
+            res.type = typeno
+            res.order = order
+            res.ext = ext
+            res.header = header
+            res.write_date = datetime.now()
+            db.session.add(res)
+        else:
+            res = VipParse(name=name,url=key,state=state,type=typeno,order=order,ext=ext,header=header)
+            db.session.add(res)
+            db.session.flush()  # 获取id
+        try:
+            db.session.commit()
+            return res.id
+        except Exception as e:
+            print(f'发生了错误:{e}')
+            return None
+
+    def saveData(self,obj):
+        """
+        db.session.add_all([]) 可以一次性保存多条数据,但是这里用不到,因为涉及修改和新增一起的
+        :param obj:
+        :return:
+        """
+        # res = VipParse.query.filter(VipParse.url == obj['url']).first()
+        res = VipParse.query.filter_by(url=obj['url']).first()
+        if res:
+            # res.update(obj)
+            res.name = obj['name']
+            res.state = obj['state']
+            res.type = obj['type']
+            res.order = obj['order']
+            res.ext = obj['ext']
+            res.header = obj['header']
+            db.session.add(res)
+        else:
+            res = VipParse(**obj)
+            db.session.add(res)
+            db.session.flush()  # 获取id
+        try:
+            db.session.commit()
+            return res.id
+        except Exception as e:
+            print(f'发生了错误:{e}')
+            return None
+
+    @staticmethod
+    def getHideRules():
+        res = VipParse.query.filter(VipParse.state == 0).all()
         return copy_utils.obj_to_list(res)

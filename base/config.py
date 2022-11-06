@@ -42,6 +42,7 @@ JS_MODE = 0 # js模式 0 drpy服务器解析 1 pluto本地解析
 MAX_CONTENT_LENGTH = 1 * 1024 * 100  # 100 kB
 LIVE_MODE = 0  # 0 本地 1外网
 # LIVE_URL = 'https://gitcode.net/bd/v/-/raw/main/live/zb.txt'  # 初始化外网直播地址(后续在管理界面改)
+# LIVE_URL = 'https://agit.ai/hu/hcr/raw/commit/f8e9c10309a533e5b06df133f859c45cb91f4731/0ER.txt'  # 月光直播接口
 LIVE_URL = 'https://raw.fastgit.org/zhanghong1983/TVBOXZY/main/TV/live.txt'  # 初始化外网直播地址(后续在管理界面改)
 CATE_EXCLUDE = '首页|留言|APP|下载|资讯|新闻|动态|明星|专题|最新|排行|解析'  # 动态分类过滤
 TAB_EXCLUDE = '猜你|喜欢|APP|下载|剧情|简介|排序'  # 动态线路名过滤

@@ -8,11 +8,12 @@
   <link rel="stylesheet" href="/static/plugin/layui/ext/soulTable/soulTable.css" media="all"/>
 </head>
 <body>
-<table id="myTable" ></table>
+<table id="myTable" lay-filter="myTable"></table>
 <script type="text/html" id="toolbar">
-  <div>
+  <div class="layui-btn-container">
 <!--    <button class="layui-btn layui-btn-sm" lay-event="clearFilter">清除所有筛选条件</button>-->
-    <button class="layui-btn layui-btn-sm" lay-event="getData">获取当前页数据</button>
+<!--    <button class="layui-btn layui-btn-sm" lay-event="getData">获取当前页数据</button>-->
+    <button class="layui-btn layui-btn-sm" lay-event="saveData">保存拖拽排序结果</button>
   </div>
 </script>
 <script type="text/html" id="bar">
@@ -36,6 +37,7 @@
 
   layui.use(['form', 'table','soulTable'], function () {
     var table = layui.table, soulTable = layui.soulTable;
+    var $ = layui.$;
     soulTable.config({
           rowDrag: true
     });
@@ -51,9 +53,12 @@
     ,limits:[20,40,60,80,100,150,200,300,500]
       ,cols: [[
         {type: 'checkbox', fixed: 'left'},
+        {field: 'id', title: '编号', width: 80, sort: true},
         {field: 'name', title: '名称', width: 200, sort: true, filter: true},
-        {field: 'url', title: '接口', minWidth: 200, sort: true, filter: true},
-        {field: 'type', title: '类型', width: 100 , filter: true},
+        {field: 'state', title: '状态', width: 60},
+        {field: 'order', title: '顺序', width: 80,sort: true},
+        {field: 'url', title: '接口', minWidth: 200, sort: true},
+        {field: 'type', title: '类型', width: 80 , filter: true},
         // {field: 'header', title: '请求头', width: 112,  filter: {split:','}, sort:true},
         {field: 'header', title: '请求头', width: 200, sort:true},
         {field: 'ext', title: '扩展信息', minWidth: 200, sort:true},
@@ -64,26 +69,59 @@
       }
     });
 
+
+    function saveData(data){
+      if(!Array.isArray(data) || data.length < 1){
+      return layer.msg('待保存的数据有误');
+      }
+      let params = {"data":JSON.stringify(data)};
+      // console.log(params);
+      $.post("/admin/parse/save_data",params,function(res,status){
+           console.log(res);
+           if(res.code === 200){
+             table.reload('myTable', {
+                // page: {
+                //     curr: 3 //重新从第 1 页开始
+                // }
+            });
+           }else{
+               console.log('修改失败了...');
+               return false
+           }
+       });
+    }
+
     // 工具栏事件
     table.on('toolbar(myTable)', function(obj){
       var id = obj.config.id;
-      console.log(id);
+      // console.log(id);
       if (obj.event === 'clearFilter') {
         // 清除所有筛选条件并重载表格
         // 参数: tableId
         soulTable.clearFilter('myTable')
       }else if(obj.event === 'getData'){
         var getData = table.getData(id);
-        console.log(getData);
+        // console.log(getData);
         layer.alert(layui.util.escape(JSON.stringify(getData)));
+      }else if(obj.event === 'saveData'){
+        layer.confirm('确定保存当前的排序结果?保存后将刷新数据库和当前页面', function(index){
+          var getData = table.getData(id);
+          // console.log(getData);
+          saveData(getData);
+          layer.close(index);
+        });
       }
     });
 
     //触发单元格工具事件
-    table.on('tool(bar)', function(obj) { // 双击 toolDouble
+    table.on('tool(myTable)', function(obj) { // 双击 toolDouble
       console.log(obj);
       if(obj.event === 'del'){
-        alert('删除...')
+        layer.msg('未开发功能:删除...',{time:1000})
+      }else if(obj.event === 'set_top'){
+        layer.msg('未开发功能:置顶...',{time:1000})
+      }else if(obj.event === 'set_bottom'){
+        layer.msg('未开发功能:置底...',{time:1000})
       }
     });
   // }, null, 'define');

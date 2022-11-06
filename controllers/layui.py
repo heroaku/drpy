@@ -9,7 +9,7 @@ from flask import Blueprint,request,render_template,jsonify,make_response,redire
 from utils.ua import UA
 from utils.web import getParmas,get_interval,layuiBack,verfy_token
 from utils.cfg import cfg
-from controllers.service import storage_service,rules_service
+from controllers.service import storage_service,rules_service,parse_service
 from utils.system import getHost
 from utils.files import getCustonDict,custom_merge
 from utils.encode import parseText
@@ -36,6 +36,20 @@ def layui_jxs():  # put application's code here
     if not verfy_token():
         return render_template('login.html')
     return render_template('layui_jxs.html')
+
+
+def comp(x, y):
+    if x['order'] > y['order']:
+        return 1
+    elif x['order'] < y['order']:
+        return - 1
+    else:
+        if x['write_date'] < y['write_date']:
+            return 1
+        elif x['write_date'] > y['write_date']:
+            return -1
+        else:
+            return 0
 
 @layui.route('/api/list')
 def layui_rule_list():
@@ -95,19 +109,6 @@ def layui_rule_list():
             sites.sort(key=lambda x:x[key], reverse=reverse)
         return sites
 
-    def comp(x, y):
-        if x['order'] > y['order']:
-            return 1
-        elif x['order'] < y['order']:
-            return - 1
-        else:
-            if x['write_date'] < y['write_date']:
-                return 1
-            elif x['write_date'] > y['write_date']:
-                return -1
-            else:
-                return 0
-
     # multisort(sites, (('order', False), ('write_date', True)))
     # sites.sort(key=lambda x:x['order'],reverse=False)
     sites.sort(key=functools.cmp_to_key(comp),reverse=False)
@@ -138,13 +139,32 @@ def layui_jx_list():
                            alists_str='', live_url='', config=new_conf)
     merged_config = custom_merge(parseText(html), customConfig)
     parses = merged_config['parses']
-    # print(parses)
+
+    parse = parse_service()
+    parse_list = parse.query_all()
+    parse_url_list = list(map(lambda x:x['url'],parse_list))
+
     for i in range(len(parses)):
+        parses[i]['id'] = i+1
+        if str(parses[i]['url']).startswith(host):
+            parses[i]['url'] = parses[i]['url'].replace(host,'')
+        if parses[i]['url'] in parse_url_list:
+            parse_rule = parse_list[parse_url_list.index(parses[i]['url'])]
+            parses[i]['state'] = 1 if parse_rule['state'] is None else parse_rule['state']
+            parses[i]['order'] = 0 if parse_rule['order'] is None else parse_rule['order']
+            parses[i]['write_date'] = 0 if parse_rule['write_date'] is None else parse_rule['write_date'].timestamp()
+        else:
+            parses[i]['state'] = 1
+            parses[i]['order'] = 0
+            parses[i]['write_date'] = 0
+
         if not parses[i].get('header'):
             parses[i]['header'] = {'User-Agent': 'Mozilla/5.0'}
         if isinstance(parses[i].get('header'),dict):
             parses[i]['header'] = ujson.dumps(parses[i]['header'],ensure_ascii=False)
         if isinstance(parses[i].get('ext'),dict):
             parses[i]['ext'] = ujson.dumps(parses[i]['ext'],ensure_ascii=False)
+
+    parses.sort(key=functools.cmp_to_key(comp), reverse=False)
     new_parses = parses[(page - 1) * limit:page * limit]
     return layuiBack('获取成功', new_parses, count=len(parses))

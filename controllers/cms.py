@@ -1090,7 +1090,8 @@ class CMS:
                         vod_tab_list.append(vlist)
                     vod_play_url = vod_play_url.join(vod_tab_list)
 
-            print(vod_play_url)
+            vod_play_url_str = vod_play_url[:min(len(vod_play_url),200)]
+            print(vod_play_url_str)
             vod['vod_play_from'] = vod_play_from
             # print(vod_play_from)
             vod['vod_play_url'] = vod_play_url
