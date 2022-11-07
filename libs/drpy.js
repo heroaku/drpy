@@ -982,15 +982,16 @@ function post(url,obj){
 fetch = request;
 print = function (data){
     data = data||'';
-    if(typeof(data)!=='string'){
+    if(typeof(data)=='object'&&!isNaN(data)){
         try {
             data = JSON.stringify(data);
         }catch (e) {
-            console.log('print:'+e.message)
+            // console.log('print:'+e.message);
+            console.log(typeof(data)+':'+data.length);
+            return
         }
-    }
-    if(typeof(data)!=='string'){
-        console.log(typeof(data)+':'+data.length);
+    }else if(typeof(data)=='object'&&isNaN(data)){
+        console.log('null object');
     }else{
         console.log(data);
     }
@@ -1632,26 +1633,39 @@ function detailParse(detailObj){
         vod = VOD;
         console.log(JSON.stringify(vod));
     }else if(p&&typeof(p)==='object'){
+        let tt1 = (new Date()).getTime();
         if(!html){
             html = getHtml(MY_URL);
         }
+        print(`二级${MY_URL}仅获取源码耗时:${(new Date()).getTime()-tt1}毫秒`);
         let _impJQP = true;
         let _ps;
         if(p.is_json){
+            print('二级是json');
             _ps = parseTags.json;
             html = dealJson(html);
             _impJQP = false;
         }else if(p.is_jsp){
+            print('二级是jsp');
             _ps = parseTags.jsp;
+            _impJQP = false;
         }else if(p.is_jq){
+            print('二级是jq');
             _ps = parseTags.jq;
         }else{
+            print('二级默认jq');
             _ps = parseTags.jq;
+            // _ps = parseTags.jsp;
         }
-        if (_impJQP) {
+        if (_impJQP) { // jquery解析提前load(html)
+            let ttt1 = (new Date()).getTime();
             let c$ = cheerio.load(html);
-            html = { rr: c$, ele: c$('html')[0] }
+            // print(`二级${MY_URL}仅c$源码耗时:${(new Date()).getTime()-ttt1}毫秒`);
+            html = { rr: c$, ele: c$('html')[0] };
+            print(`二级${MY_URL}仅cheerio.load源码耗时:${(new Date()).getTime()-ttt1}毫秒`);
         }
+        let tt2 = (new Date()).getTime();
+        print(`二级${MY_URL}获取并装载源码耗时:${tt2-tt1}毫秒`);
         _pdfa = _ps.pdfa;
         _pdfh = _ps.pdfh;
         _pd = _ps.pd;
@@ -1778,7 +1792,8 @@ function detailParse(detailObj){
                     let tab_ext =  p.tabs.split(';').length > 1 && !is_tab_js ? p.tabs.split(';')[1] : '';
                     let p1 = p.lists.replaceAll('#idv', tab_name).replaceAll('#id', i);
                     tab_ext = tab_ext.replaceAll('#idv', tab_name).replaceAll('#id', i);
-                    console.log(p1);
+                    // p1 = p1.replace(':eq(0)',',0').replace(' ','&&');
+                    // console.log(p1);
                     // console.log(html);
                     let vodList = [];
                     try {
