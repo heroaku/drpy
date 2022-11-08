@@ -8,7 +8,6 @@ import json
 import requests
 import re
 import math
-
 import ujson
 
 from utils.web import *
@@ -803,6 +802,7 @@ class CMS:
         else:
             p = p.split(';')  # 解析
             # print(len(p))
+            # print(p)
             if len(p) < 5:
                 return self.blank()
 
@@ -862,7 +862,7 @@ class CMS:
             for video in videos:
                 if video.get('vod_pic','') and str(video['vod_pic']).startswith('http'):
                     video['vod_pic'] = f"{video['vod_pic']}{self.图片来源}"
-        print(videos)
+        print('videos:',videos)
         limit = 40
         cnt = 9999 if len(videos) > 0 else 0
         result['list'] = videos
@@ -923,6 +923,8 @@ class CMS:
                 if is_json:
                     html = self.dealJson(html)
                     html = json.loads(html)
+
+            tt1 = time()
             if p.get('title'):
                 p1 = p['title'].split(';')
                 vod['vod_name'] = pdfh(html, p1[0]).replace('\n', ' ').strip()
@@ -1090,11 +1092,13 @@ class CMS:
                         vod_tab_list.append(vlist)
                     vod_play_url = vod_play_url.join(vod_tab_list)
 
-            vod_play_url_str = vod_play_url[:min(len(vod_play_url),200)]
+            vod_play_url_str = vod_play_url[:min(len(vod_play_url),500)]
             print(vod_play_url_str)
             vod['vod_play_from'] = vod_play_from
             # print(vod_play_from)
             vod['vod_play_url'] = vod_play_url
+
+            logger.info(f'{self.getName()}仅二级渲染{len(vod_play_url.split("$$$")[0].split("$"))}集耗时:{get_interval(tt1)}毫秒,共计{round(len(str(vod)) / 1000, 2)} kb')
 
         if show_name:
             vod['vod_content'] = f'({self.id}){vod.get("vod_content", "")}'
@@ -1196,6 +1200,9 @@ class CMS:
         return result
 
     def searchContent(self, key, fypage=1,show_name=False):
+        if self.encoding and str(self.encoding).startswith('gb'):
+            key = quote(key.encode('utf-8').decode('utf-8').encode(self.encoding,'ignore'))
+            # print(key)
         pg = str(fypage)
         if not self.searchUrl:
             return self.blank()
