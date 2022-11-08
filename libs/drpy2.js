@@ -1,16 +1,6 @@
-// import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/es6py.js';
-// import {是否正版,urlDeal,setResult,setResult2,setHomeResult,maoss,urlencode} from 'http://192.168.10.103:5705/libs/es6py.js';
-// import 'http://192.168.1.124:5705/libs/es6py.js';
 import cheerio from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/cheerio.min.js';
-// import cheerio from 'http://192.168.10.103:5705/libs/cheerio.min.js';
 import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/crypto-js.js';
-import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/drT.js';
-// import 'http://192.168.10.103:5705/libs/drT.js';
-// import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js';
-// import muban from 'http://192.168.10.103:5705/admin/view/模板.js';
 
-// const key = 'drpy_zbk';
-// eval(req('http://192.168.1.124:5705/libs/es6py.js').content);
 function init_test(){
     // console.log(typeof(CryptoJS));
     console.log("init_test_start");
@@ -26,9 +16,6 @@ function init_test(){
     // console.log(JSON.stringify(rule));
     // console.log(request('https://www.baidu.com',{withHeaders:true}));
     // console.log(request('https://www.baidu.com/favicon.ico',{toBase64:true}));
-    // require('http://192.168.10.99:5705/txt/pluto/drT.js');
-    // console.log(typeof(drT));
-    // console.log(drT.renderText('{{fl.cate}},hi, {{fl}}哈哈.{{fl}}',{sort: 1,cate:'movie'},'fl'));
     console.log("init_test_end");
 }
 
@@ -53,7 +40,7 @@ function pre(){
 }
 
 let rule = {};
-const VERSION = '3.9.20beta4';
+const VERSION = 'drpy2 3.9.20beta4';
 /** 已知问题记录
  * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)[影魔牛逼，最新的文件发现这问题已经解决了]
  * Array.prototype.append = Array.prototype.push; 这种js执行后有毛病,for in 循环列表会把属性给打印出来 (这个大毛病需要重点排除一下)
@@ -63,6 +50,7 @@ const VERSION = '3.9.20beta4';
  * 5.需要实现 stringify 函数,比起JSON.stringify函数,它会原封不动保留中文不会编码unicode
  * 6.base64Encode,base64Decode,md5函数还没有实现 (抄影魔代码实现了)
  * 7.eval(getCryptoJS());还没有实现 (可以空实现了,以后遇到能忽略)
+ * drpy2 全局默认html解析库用壳子内置的jsoup实现,比 cheerio 性能大大提升(jsoup可以做内部对象去缓存 load后的html,如果之前的load过就不需要再次load)
  * done:  jsp:{pdfa,pdfh,pd},json:{pdfa,pdfh,pd},jq:{pdfa,pdfh,pd}
  *  * 电脑看日志调试
  adb tcpip 5555
@@ -1357,10 +1345,6 @@ function categoryParse(cateObj) {
         }
         let new_url;
         new_url = cheerio.jinja2(url,{fl:fl});
-        // console.log('jinjia2执行后的new_url类型为:'+typeof(new_url));
-        if(/object Object/.test(new_url)){
-            new_url = drT.renderText(url,fl);
-        }
         url = new_url;
     }
     if(/fypage/.test(url)){
@@ -1651,10 +1635,10 @@ function detailParse(detailObj){
             print('二级是jq');
             _ps = parseTags.jq;
         }else{
-            print('二级默认jq');
-            _ps = parseTags.jq;
-            // print('二级默认jsp');
-            // _ps = parseTags.jsp;
+            // print('二级默认jq');
+            // _ps = parseTags.jq;
+            print('二级默认jsp');
+            _ps = parseTags.jsp;
         }
         if(_ps === parseTags.jq){ // jquery解析提前load(html)
             _impJQP = true;
@@ -1795,8 +1779,8 @@ function detailParse(detailObj){
                     let p1 = p.lists.replaceAll('#idv', tab_name).replaceAll('#id', i);
                     tab_ext = tab_ext.replaceAll('#idv', tab_name).replaceAll('#id', i);
                     // 测试jsp提速
-                    // p1 = p1.replace(':eq(0)',',0').replace(' ','&&');
-                    // console.log(p1);
+                    p1 = p1.replace(':eq(0)',',0').replace(' ','&&');
+                    console.log(p1);
                     // console.log(html);
                     let vodList = [];
                     try {
