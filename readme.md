@@ -49,6 +49,7 @@
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
 ###### 2022/11/08
 - [X] 海盗听书js0空白是触发了网页的cloudfare5秒盾了,暂时无解
+- [X] 3.9.20beta7 修复豆瓣
 ###### 2022/11/04
 - [X] 增加了 /lives?path=txt/lives/18fm.txt 和 /lives?path=txt/lives/月光.txt
 ###### 2022/11/03
