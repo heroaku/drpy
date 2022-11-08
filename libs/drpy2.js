@@ -40,7 +40,7 @@ function pre(){
 }
 
 let rule = {};
-const VERSION = 'drpy2 3.9.20beta4';
+const VERSION = 'drpy2 3.9.20beta7';
 /** 已知问题记录
  * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)[影魔牛逼，最新的文件发现这问题已经解决了]
  * Array.prototype.append = Array.prototype.push; 这种js执行后有毛病,for in 循环列表会把属性给打印出来 (这个大毛病需要重点排除一下)
@@ -919,7 +919,7 @@ function request(url,obj,ocr_flag){
         obj.headers = headers;
     }
     if(rule.encoding&&rule.encoding!=='utf-8'&&!ocr_flag){
-        if(!obj.headers.hasOwnProperty('Content-Type')){ // 手动指定了就不管
+        if(!obj.headers.hasOwnProperty('Content-Type')&&!obj.headers.hasOwnProperty('content-type')){ // 手动指定了就不管
             obj.headers["Content-Type"] = 'text/html; charset='+rule.encoding;
         }
     }

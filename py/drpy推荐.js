@@ -1,7 +1,9 @@
 js:
 let d = [];
-let douban_api_host = 'https://frodo.douban.com/api/v2';
+// let douban_api_host = 'https://frodo.douban.com/api/v2';
+let douban_api_host = 'http://api.douban.com/api/v2';
 let miniapp_apikey = '0ac44ae016490db2204ce0a042db2916';
+// let miniapp_apikey = '054022eaeae0b00e0fc068c0c0a2102a';
 const count = 30;
 
 function miniapp_request(path, query){
