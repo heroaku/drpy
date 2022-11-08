@@ -11,9 +11,16 @@ from urllib.parse import urljoin
 import re
 from jsonpath import jsonpath
 
+PARSE_CACHE = True  # 解析缓存
+
 class jsoup:
     def __init__(self,MY_URL=''):
         self.MY_URL = MY_URL
+        self.pdfh_html = ''
+        self.pdfa_html = ''
+
+        self.pdfh_doc = None
+        self.pdfa_doc = None
 
     def test(self, text:str, string:str):
         searchObj = re.search(rf'{text}', string, re.M | re.I)
@@ -23,7 +30,13 @@ class jsoup:
     def pdfh(self,html,parse:str,add_url=False):
         if not parse:
             return ''
-        doc = pq(html)
+        if PARSE_CACHE:
+            if self.pdfh_html != html:
+                self.pdfh_html = html
+                self.pdfh_doc = pq(html)
+            doc = self.pdfh_doc
+        else:
+            doc = pq(html)
         if parse == 'body&&Text' or parse == 'Text':
             text = doc.text()
             return text
@@ -92,8 +105,15 @@ class jsoup:
             parse = parse.split('&&')  # 带&&的重新拼接
             # print(f"{parse[0]},{self.test(':eq|:lt|:gt', parse[0])}")
             parse = ' '.join([parse[i] if self.test(':eq|:lt|:gt', parse[i]) or i>=len(parse)-1 else f'{parse[i]}:eq(0)' for i in range(len(parse))])
-        # print(f'pdfa:{parse}')
-        doc = pq(html)
+        print(f'pdfa:{parse}')
+        # print(html)
+        if PARSE_CACHE:
+            if self.pdfa_html != html:
+                self.pdfa_html = html
+                self.pdfa_doc = pq(html)
+            doc = self.pdfa_doc
+        else:
+            doc = pq(html)
         result = doc(parse)
         # 节点转字符串
         # print(str(etree.tostring(result[0], pretty_print=True), 'utf-8'))

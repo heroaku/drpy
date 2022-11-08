@@ -1,6 +1,4 @@
-// realUrl = 重定向('http://211.99.99.236:4567/jhjson/ceshi.php?url='+vipUrl);
-// let jxUrl = 'http://211.99.99.236:4567/jhjson/ceshi.php?url=';
-let jxUrl = 'http://jx.vipmv.co/json.php?token=123457&url=';
+let jxUrl = 'http://chaloli.cn/home/api?type=ys&uid=1&key=ekloswzABCGHKLOT58&url=';
 fetch_params.headers.Referer = jxUrl;
 try {
     // realUrl = null;
