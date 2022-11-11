@@ -982,15 +982,16 @@ function post(url,obj){
 fetch = request;
 print = function (data){
     data = data||'';
-    if(typeof(data)=='object'&&!isNaN(data)){
+    if(typeof(data)=='object'&&Object.keys(data).length>0){
         try {
             data = JSON.stringify(data);
+            console.log(data);
         }catch (e) {
             // console.log('print:'+e.message);
             console.log(typeof(data)+':'+data.length);
             return
         }
-    }else if(typeof(data)=='object'&&isNaN(data)){
+    }else if(typeof(data)=='object'&&Object.keys(data).length<1){
         console.log('null object');
     }else{
         console.log(data);
@@ -1795,6 +1796,7 @@ function detailParse(detailObj){
                     let p1 = p.lists.replaceAll('#idv', tab_name).replaceAll('#id', i);
                     tab_ext = tab_ext.replaceAll('#idv', tab_name).replaceAll('#id', i);
                     // 测试jsp提速
+                    // console.log(p1);
                     // p1 = p1.replace(':eq(0)',',0').replace(' ','&&');
                     // console.log(p1);
                     // console.log(html);

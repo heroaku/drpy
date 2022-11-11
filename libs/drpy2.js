@@ -7,15 +7,6 @@ function init_test(){
     console.log("当前版本号:"+VERSION);
     console.log(RKEY);
     console.log(JSON.stringify(rule));
-    // console.log('123456的md5值是:'+md5('123456'));
-    // let aa = base64Encode('编码测试一下')
-    // log(aa);
-    // let bb = base64Decode(aa);
-    // log('bb:'+bb);
-    // clearItem(RULE_CK);
-    // console.log(JSON.stringify(rule));
-    // console.log(request('https://www.baidu.com',{withHeaders:true}));
-    // console.log(request('https://www.baidu.com/favicon.ico',{toBase64:true}));
     console.log("init_test_end");
 }
 
@@ -50,7 +41,6 @@ const VERSION = 'drpy2 3.9.20beta7';
  * 5.需要实现 stringify 函数,比起JSON.stringify函数,它会原封不动保留中文不会编码unicode
  * 6.base64Encode,base64Decode,md5函数还没有实现 (抄影魔代码实现了)
  * 7.eval(getCryptoJS());还没有实现 (可以空实现了,以后遇到能忽略)
- * drpy2 全局默认html解析库用壳子内置的jsoup实现,比 cheerio 性能大大提升(jsoup可以做内部对象去缓存 load后的html,如果之前的load过就不需要再次load)
  * done:  jsp:{pdfa,pdfh,pd},json:{pdfa,pdfh,pd},jq:{pdfa,pdfh,pd}
  *  * 电脑看日志调试
  adb tcpip 5555
@@ -99,7 +89,7 @@ const SELECT_REGEX = /:eq|:lt|:gt|#/g;
 const SELECT_REGEX_A = /:eq|:lt|:gt/g;
 
 /**
-es6py扩展
+ es6py扩展
  */
 if (typeof Object.assign != 'function') {
     Object.assign = function () {
@@ -584,62 +574,43 @@ const parseTags = {
             if (!parse || !parse.trim()) {
                 return ''
             }
-            let eleFind = typeof html === 'object';
+            parse = parse.trim();
+            // print('parse前:'+parse);
             let option = undefined;
-            if (eleFind && parse.startsWith('body&&')) {
-                parse = parse.substr(6);
-                if (parse.indexOf('&&') < 0) {
-                    option = parse.trim();
-                    parse = '*=*';
-                }
-            }
+            // if (parse.startsWith('body&&')) {
+            //     parse = parse.substr(6);
+            // }
             if (parse.indexOf('&&') > -1) {
                 let sp = parse.split('&&');
                 option = sp[sp.length - 1];
                 sp.splice(sp.length - 1);
-                if (sp.length > 1) {
-                    for (let i in sp) {
-                        //Javascript自定义Array.prototype干扰for-in循环
-                        if(sp.hasOwnProperty(i)){
-                            if (!SELECT_REGEX.test(sp[i])) {
-                                sp[i] = sp[i] + ':eq(0)';
-                            }
+                sp.forEach((it,idex)=>{
+                    if(/:eq\((.*?)\)/.test(it)){
+                        let pos = parseInt(it.match(/:eq\((.*?)\)/)[1]);
+                        if(pos >= 0 ){ // jsoup的eq 正整数从1开始
+                            it = it.replace(/:eq\((.*?)\)/,`:eq(${pos+1})`);
+                            sp[idex] = it;
                         }
                     }
-                } else {
-                    if (!SELECT_REGEX.test(sp[0])) {
-                        sp[0] = sp[0] + ':eq(0)';
-                    }
-                }
-                parse = sp.join(' ');
+                });
+                parse = sp.join('&&');
             }
-            let result = '';
-            const $ = eleFind ? html.rr : cheerio.load(html);
-            let ret = eleFind ? ((parse === '*=*' || $(html.ele).is(parse)) ? html.ele : $(html.ele).find(parse)) : $(parse);
             if (option) {
-                if (option === 'Text') {
-                    result = $(ret).text();
+                parse = parse + '&&' + option;
+            }
+            // print('parse后:'+parse);
+            let result = defaultParser.pdfh(html,parse);
+            if(/style/.test(option.toLowerCase())&&/url\(/.test(result)){
+                try {
+                    result =  result.match(/url\((.*?)\)/)[1];
+                }catch (e) {}
+            }
+            if (result && base_url && DOM_CHECK_ATTR.test(option)) {
+                if (/http/.test(result)) {
+                    result = result.substr(result.indexOf('http'));
+                } else {
+                    result = urljoin(base_url, result)
                 }
-                else if (option === 'Html') {
-                    result = $(ret).html();
-                }
-                else {
-                    result = $(ret).attr(option);
-                    if(/style/.test(option.toLowerCase())&&/url\(/.test(result)){
-                        try {
-                            result =  result.match(/url\((.*?)\)/)[1];
-                        }catch (e) {}
-                    }
-                }
-                if (result && base_url && DOM_CHECK_ATTR.test(option)) {
-                    if (/http/.test(result)) {
-                        result = result.substr(result.indexOf('http'));
-                    } else {
-                        result = urljoin(base_url, result)
-                    }
-                }
-            } else {
-                result = $(ret).toString();
             }
             return result;
         },
@@ -648,34 +619,27 @@ const parseTags = {
                 print('!parse');
                 return [];
             }
-            let eleFind = typeof html === 'object';
-            // print('parse前:'+parse);
+            parse = parse.trim();
+            print('parse前:'+parse);
             if (parse.indexOf('&&') > -1) {
                 let sp = parse.split('&&');
-                for (let i in sp) {
-                    if(sp.hasOwnProperty(i)){
-                        if (!SELECT_REGEX_A.test(sp[i]) && i < sp.length - 1) {
-                            if(sp[i]!=='body'){
-                                // sp[i] = sp[i] + ':eq(0)';
-                                sp[i] = sp[i] + ':first';
-                            }
+                sp.forEach((it,idex)=>{
+                    if(/:eq\((.*?)\)/.test(it) && idex < sp.length - 1){
+                        let pos = parseInt(it.match(/:eq\((.*?)\)/)[1]);
+                        if(pos >= 0 ){ // jsoup的eq 正整数从1开始
+                            it = it.replace(/:eq\((.*?)\)/,`:eq(${pos+1})`);
+                            sp[idex] = it;
                         }
                     }
-                }
-                parse = sp.join(' ');
-            }
-            // print('parse后:'+parse);
-            const $ = eleFind ? html.rr : cheerio.load(html);
-            let ret = eleFind ? ($(html.ele).is(parse) ? html.ele : $(html.ele).find(parse)) : $(parse);
-            let result = [];
-            // print('outerHTML:');
-            // print($(ret[0]).prop("outerHTML"));
-            if (ret) {
-                ret.each(function (idx, ele) {
-                    result.push({ rr: $, ele: ele });
-                    // result.push({ rr: $, ele: $(ele).prop("outerHTML")}); // 性能贼差
                 });
+                parse = sp.join('&&');
+            }else if(!parse.startsWith('body')&&!/ |&&/.test(parse)){ // 自动补body
+                parse = 'body&&'+parse;
             }
+            print('parse后:'+parse);
+            let result = defaultParser.pdfa(html,parse);
+            print(result);
+            print(result.length);
             return result;
         },
         pd(html,parse,uri){
@@ -970,15 +934,16 @@ function post(url,obj){
 fetch = request;
 print = function (data){
     data = data||'';
-    if(typeof(data)=='object'&&!isNaN(data)){
+    if(typeof(data)=='object'&&Object.keys(data).length>0){
         try {
             data = JSON.stringify(data);
+            console.log(data);
         }catch (e) {
             // console.log('print:'+e.message);
             console.log(typeof(data)+':'+data.length);
             return
         }
-    }else if(typeof(data)=='object'&&isNaN(data)){
+    }else if(typeof(data)=='object'&&Object.keys(data).length<1){
         console.log('null object');
     }else{
         console.log(data);
@@ -1345,6 +1310,7 @@ function categoryParse(cateObj) {
         }
         let new_url;
         new_url = cheerio.jinja2(url,{fl:fl});
+        // console.log('jinjia2执行后的new_url类型为:'+typeof(new_url));
         url = new_url;
     }
     if(/fypage/.test(url)){
@@ -1622,7 +1588,6 @@ function detailParse(detailObj){
             html = getHtml(MY_URL);
         }
         print(`二级${MY_URL}仅获取源码耗时:${(new Date()).getTime()-tt1}毫秒`);
-        let _impJQP = false;
         let _ps;
         if(p.is_json){
             print('二级是json');
@@ -1635,20 +1600,10 @@ function detailParse(detailObj){
             print('二级是jq');
             _ps = parseTags.jq;
         }else{
-            // print('二级默认jq');
-            // _ps = parseTags.jq;
-            print('二级默认jsp');
-            _ps = parseTags.jsp;
-        }
-        if(_ps === parseTags.jq){ // jquery解析提前load(html)
-            _impJQP = true;
-        }
-        if (_impJQP) {
-            let ttt1 = (new Date()).getTime();
-            let c$ = cheerio.load(html);
-            // print(`二级${MY_URL}仅c$源码耗时:${(new Date()).getTime()-ttt1}毫秒`);
-            html = { rr: c$, ele: c$('html')[0] };
-            print(`二级${MY_URL}仅cheerio.load源码耗时:${(new Date()).getTime()-ttt1}毫秒`);
+            print('二级默认jq');
+            _ps = parseTags.jq;
+            // print('二级默认jsp');
+            // _ps = parseTags.jsp;
         }
         let tt2 = (new Date()).getTime();
         print(`二级${MY_URL}获取并装载源码耗时:${tt2-tt1}毫秒`);
@@ -1695,21 +1650,12 @@ function detailParse(detailObj){
         if(p.重定向&&p.重定向.startsWith('js:')){
             print('开始执行重定向代码:'+p.重定向);
             html = eval(p.重定向.replace('js:',''));
-            if (_impJQP) {
-                let c$ = cheerio.load(html);
-                html = { rr: c$, ele: c$('html')[0] }
-            }
         }
-        
+
 // console.log(2);
         if(p.tabs){
             if(p.tabs.startsWith('js:')){
                 print('开始执行tabs代码:'+p.tabs);
-                if(html&&_impJQP&&typeof (html)!=='string'){
-                    try { // 假装是jq的对象拿来转换一下字符串,try为了防止json的情况报错
-                        html = html.rr(html.ele).toString();
-                    }catch (e) {}
-                }
                 var input = MY_URL;
                 eval(p.tabs.replace('js:',''));
                 playFrom = TABS;
@@ -1742,12 +1688,6 @@ function detailParse(detailObj){
             if(p.lists.startsWith('js:')){
                 print('开始执行lists代码:'+p.lists);
                 try {
-                    if(html&&_impJQP&&typeof (html)!=='string'){
-                        // 假装是jq的对象拿来转换一下字符串,try为了防止json的情况报错
-                        try {
-                            html = html.rr(html.ele).toString();
-                        }catch (e) {}
-                    }
                     var input = MY_URL;
                     var play_url = '';
                     eval(p.lists.replace('js:',''));
@@ -1779,8 +1719,9 @@ function detailParse(detailObj){
                     let p1 = p.lists.replaceAll('#idv', tab_name).replaceAll('#id', i);
                     tab_ext = tab_ext.replaceAll('#idv', tab_name).replaceAll('#id', i);
                     // 测试jsp提速
-                    p1 = p1.replace(':eq(0)',',0').replace(' ','&&');
-                    console.log(p1);
+                    // console.log(p1);
+                    // p1 = p1.replace(':eq(0)',',0').replace(' ','&&');
+                    // console.log(p1);
                     // console.log(html);
                     let vodList = [];
                     try {
@@ -1921,7 +1862,7 @@ function playParse(playObj){
  * js源预处理特定返回对象中的函数
  * @param ext
  */
- function init(ext) {
+function init(ext) {
     console.log('init');
     try {
         // make shared jsContext happy muban不能import,不然会造成换源继承后变量被篡改
@@ -1940,7 +1881,7 @@ function playParse(playObj){
                 if (js){
                     eval(js.replace('var rule', 'rule'));
                 }
-                }
+            }
         } else {
             eval(ext.replace('var rule', 'rule'));
         }
