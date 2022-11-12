@@ -575,11 +575,11 @@ const parseTags = {
                 return ''
             }
             parse = parse.trim();
-            // print('parse前:'+parse);
-            let option = undefined;
-            // if (parse.startsWith('body&&')) {
-            //     parse = parse.substr(6);
-            // }
+            let option = null;
+            if (parse.startsWith('body&&')) {
+                parse = parse.substr(6);
+            }
+            print('pdfh parse前:'+parse);
             if (parse.indexOf('&&') > -1) {
                 let sp = parse.split('&&');
                 option = sp[sp.length - 1];
@@ -591,21 +591,28 @@ const parseTags = {
                             it = it.replace(/:eq\((.*?)\)/,`:eq(${pos+1})`);
                             sp[idex] = it;
                         }
+                    }else if (!SELECT_REGEX.test(it) && it!=='body') {
+                        sp[idex] = it+':eq(1)'; // jsoup的eq从1开始
                     }
                 });
-                parse = sp.join('&&');
+                parse = sp.join(' ');
             }
-            if (option) {
-                parse = parse + '&&' + option;
+            if(parse === 'Text'){
+                parse = 'body';
+                option = 'Text';
+            }else if(parse === 'Html'){
+                parse = 'body';
+                option = 'Html';
             }
-            // print('parse后:'+parse);
-            let result = defaultParser.pdfh(html,parse);
-            if(/style/.test(option.toLowerCase())&&/url\(/.test(result)){
+            print('pdfh parse后:'+parse+',option:'+option);
+            let result = defaultParser.pdfh(html,parse,option);
+            print(result);
+            if(option&&/style/.test(option.toLowerCase())&&/url\(/.test(result)){
                 try {
                     result =  result.match(/url\((.*?)\)/)[1];
                 }catch (e) {}
             }
-            if (result && base_url && DOM_CHECK_ATTR.test(option)) {
+            if (result && base_url && option && DOM_CHECK_ATTR.test(option)) {
                 if (/http/.test(result)) {
                     result = result.substr(result.indexOf('http'));
                 } else {
@@ -620,7 +627,7 @@ const parseTags = {
                 return [];
             }
             parse = parse.trim();
-            print('parse前:'+parse);
+            print('pdfa parse前:'+parse);
             if (parse.indexOf('&&') > -1) {
                 let sp = parse.split('&&');
                 sp.forEach((it,idex)=>{
@@ -630,15 +637,15 @@ const parseTags = {
                             it = it.replace(/:eq\((.*?)\)/,`:eq(${pos+1})`);
                             sp[idex] = it;
                         }
+                    }else if (!SELECT_REGEX_A.test(it) && idex < sp.length - 1 && it!=='body') {
+                        sp[idex] = it+':eq(1)'; // jsoup的eq从1开始
                     }
                 });
-                parse = sp.join('&&');
-            }else if(!parse.startsWith('body')&&!/ |&&/.test(parse)){ // 自动补body
-                parse = 'body&&'+parse;
+                parse = sp.join(' ');
             }
-            print('parse后:'+parse);
+            print('pdfa parse后:'+parse);
             let result = defaultParser.pdfa(html,parse);
-            print(result);
+            // print(result);
             print(result.length);
             return result;
         },
