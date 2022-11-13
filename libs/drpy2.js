@@ -575,27 +575,21 @@ const parseTags = {
                 return ''
             }
             parse = parse.trim();
-            let option = null;
+            let option = '';
+            print('pdfh parse前:'+parse);
             if (parse.startsWith('body&&')) {
                 parse = parse.substr(6);
             }
-            print('pdfh parse前:'+parse);
-            if (parse.indexOf('&&') > -1) {
+            if (parse.includes('&&')) {
                 let sp = parse.split('&&');
                 option = sp[sp.length - 1];
                 sp.splice(sp.length - 1);
                 sp.forEach((it,idex)=>{
-                    if(/:eq\((.*?)\)/.test(it)){
-                        let pos = parseInt(it.match(/:eq\((.*?)\)/)[1]);
-                        if(pos >= 0 ){ // jsoup的eq 正整数从1开始
-                            it = it.replace(/:eq\((.*?)\)/,`:eq(${pos+1})`);
-                            sp[idex] = it;
-                        }
-                    }else if (!SELECT_REGEX.test(it) && it!=='body') {
-                        sp[idex] = it+':eq(1)'; // jsoup的eq从1开始
+                    if (!SELECT_REGEX.test(it)) {
+                        sp[idex] = it+':eq(0)';
                     }
                 });
-                parse = sp.join(' ');
+                parse = sp.join(' ').trim();
             }
             if(parse === 'Text'){
                 parse = 'body';
@@ -605,11 +599,18 @@ const parseTags = {
                 option = 'Html';
             }
             print('pdfh parse后:'+parse+',option:'+option);
-            let result = defaultParser.pdfh(html,parse,option);
-            print(result);
+            let result = defaultParser.pdfh(html,parse + " " + option);
+            // let result='';
+            // try {
+            //     result = defaultParser.pdfh(html,parse + " " + option);
+            // }catch (e) {
+            //     print('xxxxxxxxxxx');
+            //     print('pdfh发生了错误');
+            // }
             if(option&&/style/.test(option.toLowerCase())&&/url\(/.test(result)){
                 try {
                     result =  result.match(/url\((.*?)\)/)[1];
+                    // print(result);
                 }catch (e) {}
             }
             if (result && base_url && option && DOM_CHECK_ATTR.test(option)) {
@@ -618,6 +619,7 @@ const parseTags = {
                 } else {
                     result = urljoin(base_url, result)
                 }
+                // print(result);
             }
             return result;
         },
@@ -627,23 +629,23 @@ const parseTags = {
                 return [];
             }
             parse = parse.trim();
-            print('pdfa parse前:'+parse);
-            if (parse.indexOf('&&') > -1) {
+            print('pdfa=>parse前:'+parse);
+            if (parse.startsWith('body&&')) {
+                parse = parse.substr(6);
+            }
+            if (parse.includes('&&')) {
                 let sp = parse.split('&&');
                 sp.forEach((it,idex)=>{
-                    if(/:eq\((.*?)\)/.test(it) && idex < sp.length - 1){
-                        let pos = parseInt(it.match(/:eq\((.*?)\)/)[1]);
-                        if(pos >= 0 ){ // jsoup的eq 正整数从1开始
-                            it = it.replace(/:eq\((.*?)\)/,`:eq(${pos+1})`);
-                            sp[idex] = it;
-                        }
-                    }else if (!SELECT_REGEX_A.test(it) && idex < sp.length - 1 && it!=='body') {
-                        sp[idex] = it+':eq(1)'; // jsoup的eq从1开始
+                    if (!SELECT_REGEX_A.test(it) && idex < sp.length - 1) {
+                        sp[idex] = it+':eq(0)';
                     }
                 });
-                parse = sp.join(' ');
+                parse = sp.join(' ').trim();
             }
-            print('pdfa parse后:'+parse);
+            // if(!/&&| /.test(parse)){ // 自动补body就是jsoup的无稽之谈
+            //     parse = 'body '+parse;
+            // }
+            print('pdfa=>parse后:'+parse);
             let result = defaultParser.pdfa(html,parse);
             // print(result);
             print(result.length);
@@ -1197,7 +1199,7 @@ function homeVodParse(homeVodObj){
                             // print(vod);
                             d.push(vod);
                         } catch (e) {
-                            console.log('首页列表处理发生错误:'+e.message);
+                            console.log('首页列表双层定位处理发生错误:'+e.message);
                         }
 
                     }
@@ -1249,7 +1251,7 @@ function homeVodParse(homeVodObj){
                         d.push(vod);
 
                     } catch (e) {
-
+                        console.log('首页列表单层定位处理发生错误:'+e.message);
                     }
 
                 }
