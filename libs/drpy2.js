@@ -576,7 +576,7 @@ const parseTags = {
             }
             parse = parse.trim();
             let option = '';
-            print('pdfh parse前:'+parse);
+            // print('pdfh parse前:'+parse);
             if (parse.startsWith('body&&')) {
                 parse = parse.substr(6);
             }
@@ -598,7 +598,7 @@ const parseTags = {
                 parse = 'body';
                 option = 'Html';
             }
-            print('pdfh parse后:'+parse+',option:'+option);
+            // print('pdfh parse后:'+parse+',option:'+option);
             let result = defaultParser.pdfh(html,parse + " " + option);
             // let result='';
             // try {
@@ -629,7 +629,7 @@ const parseTags = {
                 return [];
             }
             parse = parse.trim();
-            print('pdfa=>parse前:'+parse);
+            // print('pdfa=>parse前:'+parse);
             if (parse.startsWith('body&&')) {
                 parse = parse.substr(6);
             }
@@ -645,10 +645,10 @@ const parseTags = {
             // if(!/&&| /.test(parse)){ // 自动补body就是jsoup的无稽之谈
             //     parse = 'body '+parse;
             // }
-            print('pdfa=>parse后:'+parse);
+            // print('pdfa=>parse后:'+parse);
             let result = defaultParser.pdfa(html,parse);
             // print(result);
-            print(result.length);
+            print(`pdfa解析${parse}=>${result.length}`);
             return result;
         },
         pd(html,parse,uri){
