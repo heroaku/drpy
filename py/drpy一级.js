@@ -17,6 +17,7 @@ function miniapp_request(path, query) {
         if(/request_error/.test(html)){
             print(html);
         }
+        // print(html);
         return JSON.parse(html)
     } catch (e) {
         print("发生了错误:" + e.message);
