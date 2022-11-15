@@ -324,3 +324,9 @@ def login_api():
         return response
     else:
         return R.failed('登录失败,用户名或密码错误')
+
+@admin.route('/logtail')
+def admin_logtail():
+    if not verfy_token():
+        return R.failed('请登录后再试')
+    return render_template('logtail.html')
