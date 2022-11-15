@@ -78,10 +78,13 @@
         }
         function getWsUrl() {
             let host = location.host;
+            let hostname = location.hostname;
             let protocol = 'ws:';
-            // let port = location.port;
+            let port = location.port;
             let pathname = '/ws';
+            let ws_port = parseInt(port)+1;
             return protocol+'//'+host+pathname;
+            // return protocol+'//'+hostname+':'+ws_port+pathname;
         }
         // const websocketUrl = 'ws://localhost:8080/log';
         const websocketUrl = getWsUrl();
