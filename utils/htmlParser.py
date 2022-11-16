@@ -11,7 +11,7 @@ import re
 from jsonpath import jsonpath
 
 PARSE_CACHE = True  # 解析缓存
-NOADD_INDEX = ':eq|:lt|:gt|^body$|^#'  # 不自动加eq下标索引
+NOADD_INDEX = ':eq|:lt|:gt|:first|:last|^body$|^#'  # 不自动加eq下标索引
 URLJOIN_ATTR = '(url|src|href|-original|-src|-play|-url)$'  # 需要自动urljoin的属性
 
 
@@ -134,6 +134,11 @@ class jsoup:
                 else:
                     new_parses.append(parse[i])
             parse = ' '.join(new_parses)
+        else:
+            ps = parse.split(' ')[-1]  # 如果带空格就取最后一个元素
+            if not self.test(NOADD_INDEX, ps) and first:
+                parse = f'{parse}:eq(0)'
+
         return parse
 
     def pdfa(self, html, parse: str):
