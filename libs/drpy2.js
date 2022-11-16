@@ -591,22 +591,16 @@ const parseTags = {
                 });
                 parse = sp.join(' ').trim();
             }
-            if(parse === 'Text'){
-                parse = 'body';
-                option = 'Text';
-            }else if(parse === 'Html'){
-                parse = 'body';
-                option = 'Html';
-            }
-            // print('pdfh parse后:'+parse+',option:'+option);
-            let result = defaultParser.pdfh(html,parse + " " + option);
-            // let result='';
-            // try {
-            //     result = defaultParser.pdfh(html,parse + " " + option);
-            // }catch (e) {
-            //     print('xxxxxxxxxxx');
-            //     print('pdfh发生了错误');
+            // if(parse === 'Text'){
+            //     parse = 'body';
+            //     option = 'Text';
+            // }else if(parse === 'Html'){
+            //     parse = 'body';
+            //     option = 'Html';
             // }
+            // print('pdfh parse后:'+parse+',option:'+option);
+            // let result = defaultParser.pdfh(html,parse + " " + option);
+            let result = defaultParser.pdfh(html,parse,option);
             if(option&&/style/.test(option.toLowerCase())&&/url\(/.test(result)){
                 try {
                     result =  result.match(/url\((.*?)\)/)[1];
