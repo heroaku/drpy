@@ -330,3 +330,29 @@ def admin_logtail():
     if not verfy_token():
         return R.failed('请登录后再试')
     return render_template('logtail.html')
+
+@admin.route('/lives')
+def admin_lives():
+    if not verfy_token():
+        return R.failed('请登录后再试')
+    # print(dir(request))
+    # 完整地址: request.base_url url
+    # 带http的前缀 host_url root_url
+    # 不带http的前缀 host
+    # 当前路径 path
+    host_url = request.host_url
+    def get_lives():
+        base_path = os.path.dirname(os.path.abspath(__file__))  # 当前文件所在目录
+        # print(base_path)
+        live_path = os.path.join(base_path, '../txt/lives')
+        # print(live_path)
+        files = os.listdir(live_path)
+        # print(files)
+        files = list(filter(lambda x: str(x).endswith('.txt') and str(x).find('模板') < 0, files))
+        files = [f'{host_url}lives?path=txt/lives/{file}' for file in files]
+        return files
+
+    files = '\n'.join(get_lives())
+    response = make_response(files)
+    response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+    return response

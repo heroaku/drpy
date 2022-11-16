@@ -184,6 +184,10 @@
             location.href = '/admin/logtail';
         });
 
+        $('#lives').click(function (){
+            location.href = '/admin/lives'
+        });
+
 });
 function getFileSize(fileObj) {
    $('#file_size').text('文件大小为:'+fileObj.files[0].size/1024+'kb');
@@ -211,7 +215,10 @@ function getFileSize(fileObj) {
     <button type="button" class="yongyin3"><a href="javascript:void(0);" class="funcbtn"
             id="use_py">已{% if pystate=='1' %}启用{% else %}关闭{% endif %}py源</a></button>
     <button type="button" class="yongyin"><a href="javascript:void(0);" class="funcbtn"
+            id="lives">直播列表</a></button>
+    <button type="button" class="yongyin"><a href="javascript:void(0);" class="funcbtn"
             id="logtail">在线日志</a></button>
+
 
     <input id="live_url" value="{{live_url}}" style="display: none">
     <p class="box">你可以在此界面在线管理JS目录里规则文件的上传/删除</p>
