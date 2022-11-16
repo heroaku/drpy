@@ -1,7 +1,8 @@
-﻿var rule = Object.assign(muban.vfed,{
+﻿var rule = Object.assign(muban.默认,{
 title:'兰花影院',
-host:'https://www.lanhua.tv/',
-'User-Agent':'MOBILE_UA',
+host:'https://www.lanhua.tv',
+url:'/vodshow/fyclass--------fypage---.html',
+searchUrl:'/vodsearch/-------------.html?wd=**',
 class_parse:'ul.top_nav&&li;a&&Text;a&&href;./(\\d+).html',
 cate_exclude:'午夜影院|VIP蓝光影院|电视直播',
 推荐:'.cbox_list;ul&&li;a&&title;.lazyload&&data-original;.pic_text.text_right&&Text;a&&href',
