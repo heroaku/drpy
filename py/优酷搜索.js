@@ -2,6 +2,7 @@ js:
 var d = [];
 let html=request(input);
 let json = JSON.parse(html);
+// print(json);
 json.pageComponentList.forEach(function (it){
     if (it.hasOwnProperty('commonData')) {
         it = it.commonData;

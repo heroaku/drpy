@@ -102,10 +102,11 @@ class jsoup:
                 nparse_index = int(nparse_index)
             except:
                 nparse_index = 0
+            # print(nparse_index)
             if not ret:
                 ret = doc(nparse_rule).eq(nparse_index)
             else:
-                ret = ret(nparse_rule)
+                ret = ret(nparse_rule).eq(nparse_index)
         else:
             if not ret:
                 ret = doc(nparse)
