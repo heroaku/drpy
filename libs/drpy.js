@@ -1519,9 +1519,9 @@ function searchParse(searchObj) {
                 if(is_json){
                     // console.log(html);
                     html = dealJson(html);
+                    // console.log(JSON.stringify(html));
                 }
-                console.log(JSON.stringify(html));
-                console.log(html);
+                // console.log(html);
                 let list = _pdfa(html, p0);
                 // print(list.length);
                 // print(list);
