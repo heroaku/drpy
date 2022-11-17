@@ -15,6 +15,7 @@ PARSE_CACHE = True  # 解析缓存
 NOADD_INDEX = ':eq|:lt|:gt|:first|:last|^body$|^#'  # 不自动加eq下标索引
 URLJOIN_ATTR = '(url|src|href|-original|-src|-play|-url)$'  # 需要自动urljoin的属性
 
+
 class jsoup:
     def __init__(self, MY_URL=''):
         self.MY_URL = MY_URL
@@ -62,7 +63,7 @@ class jsoup:
 
         return parse
 
-    def getParseInfo(self,nparse):
+    def getParseInfo(self, nparse):
         """
         根据传入的单规则获取 parse规则，索引位置,排除列表  -- 可以用于剔除元素,支持多个，按标签剔除，按id剔除等操作
         :param nparse:
@@ -70,7 +71,7 @@ class jsoup:
         """
         excludes = []  # 定义排除列表默认值为空
         nparse_index = 0  # 定义位置索引默认值为0
-        nparse_rule = nparse # 定义规则默认值为本身
+        nparse_rule = nparse  # 定义规则默认值为本身
         if self.test(':eq', nparse):
             nparse_rule = nparse.split(':eq')[0]
             nparse_pos = nparse.split(':eq')[1]
@@ -88,7 +89,7 @@ class jsoup:
                 nparse_index = 0
             if nparse_index > 0:
                 print(f'nparse_rule:{nparse_rule},nparse_index:{nparse_index},excludes:{excludes}')
-            return nparse_rule,nparse_index,excludes
+            return nparse_rule, nparse_index, excludes
         else:
             if self.test('--', nparse):
                 nparse_rule = nparse.split('--')[0]
@@ -115,7 +116,7 @@ class jsoup:
                 # if nparse_index > 4:
                 #     print('2nparse_index',ret)
             if excludes and ret:
-                ret = ret.clone() # 克隆一个,免得直接remove会影响doc的缓存
+                ret = ret.clone()  # 克隆一个,免得直接remove会影响doc的缓存
                 for exclude in excludes:
                     ret.remove(exclude)
         else:
@@ -125,7 +126,7 @@ class jsoup:
             else:
                 ret = ret(nparse_rule)
             if excludes and ret:
-                ret = ret.clone() # 克隆一个,免得直接remove会影响doc的缓存
+                ret = ret.clone()  # 克隆一个,免得直接remove会影响doc的缓存
                 for exclude in excludes:
                     ret.remove(exclude)
         return ret
@@ -150,7 +151,7 @@ class jsoup:
         ret = None
         for nparse in parses:
             ret = self.parseOneRule(doc, nparse, ret)
-            if not ret: # 可能循环取值后ret 对应eq取完无值了，pdfa直接返回空列表
+            if not ret:  # 可能循环取值后ret 对应eq取完无值了，pdfa直接返回空列表
                 return []
         res = [item.outerHtml() for item in ret.items()]
         return res
@@ -183,7 +184,7 @@ class jsoup:
         for nparse in parses:
             ret = self.parseOneRule(doc, nparse, ret)
             # print(nparse,ret)
-            if not ret: # 可能循环取值后ret 对应eq取完无值了，pdfh直接返回空字符串
+            if not ret:  # 可能循环取值后ret 对应eq取完无值了，pdfh直接返回空字符串
                 return ''
 
         if option:
