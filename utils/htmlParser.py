@@ -3,6 +3,7 @@
 # File  : htmlParser.py
 # Author: DaShenHan&道长-----先苦后甜，任凭晚风拂柳颜------
 # Date  : 2022/8/25
+# upDate  : 2022/11/17 支持 -- 剔除元素 多个剔除
 
 import ujson
 from pyquery import PyQuery as pq
@@ -35,85 +36,6 @@ class jsoup:
         test_ret = True if searchObj else False
         return test_ret
 
-    def pdfh(self, html, parse: str, add_url=False):
-        if not all([html, parse]):
-            return ''
-        if PARSE_CACHE:
-            if self.pdfh_html != html:
-                self.pdfh_html = html
-                self.pdfh_doc = pq(html)
-            doc = self.pdfh_doc
-        else:
-            doc = pq(html)
-        if parse == 'body&&Text' or parse == 'Text':
-            text = doc.text()
-            return text
-        elif parse == 'body&&Html' or parse == 'Html':
-            return doc.html()
-
-        option = None
-        if parse.find('&&') > -1:
-            option = parse.split('&&')[-1]
-            parse = '&&'.join(parse.split('&&')[:-1])
-        parse = self.parseHikerToJq(parse, True)
-        # print(f'pdfh:{parse},option:{option}')
-        parses = parse.split(' ')
-        ret = None
-        for nparse in parses:
-            ret = self.parseOneRule(doc, nparse, ret)
-            # print(nparse,ret)
-
-        if option:
-            if option == 'Text':
-                ret = ret.text()
-            elif option == 'Html':
-                ret = ret.html()
-            else:
-                ret = ret.attr(option) or ''
-                if option.lower().find('style') > -1 and ret.find('url(') > -1:
-                    try:
-                        ret = re.search('url\((.*?)\)', ret, re.M | re.S).groups()[0]
-                    except:
-                        pass
-
-                if ret and add_url:
-                    need_add = re.search(URLJOIN_ATTR, option, re.M | re.I)
-                    if need_add:
-                        if 'http' in ret:
-                            ret = ret[ret.find('http'):]
-                        else:
-                            ret = urljoin(self.MY_URL, ret)
-        else:
-            ret = ret.outerHtml()
-        return ret
-
-    def parseOneRule(self, doc, nparse, ret=None):
-        """
-        解析空格分割后的原生表达式中的一条记录,正确处理eq的索引，返回处理后的ret
-        :param doc: pq(html) load 后的pq对象
-        :param nparse: 当前单个解析表达式
-        :param ret: pd对象结果
-        :return:
-        """
-        if self.test(':eq', nparse):
-            nparse_rule = nparse.split(':eq')[0]
-            nparse_index = nparse.split(':eq')[1].split('(')[1].split(')')[0]
-            try:
-                nparse_index = int(nparse_index)
-            except:
-                nparse_index = 0
-            # print(nparse_index)
-            if not ret:
-                ret = doc(nparse_rule).eq(nparse_index)
-            else:
-                ret = ret(nparse_rule).eq(nparse_index)
-        else:
-            if not ret:
-                ret = doc(nparse)
-            else:
-                ret = ret(nparse)
-        return ret
-
     def parseHikerToJq(self, parse, first=False):
         """
          海阔解析表达式转原生表达式,自动补eq,如果传了first就最后一个也取eq(0)
@@ -141,6 +63,74 @@ class jsoup:
 
         return parse
 
+    def getParseInfo(self, nparse):
+        """
+        根据传入的单规则获取 parse规则，索引位置,排除列表  -- 可以用于剔除元素,支持多个，按标签剔除，按id剔除等操作
+        :param nparse:
+        :return:
+        """
+        excludes = []  # 定义排除列表默认值为空
+        nparse_index = 0  # 定义位置索引默认值为0
+        nparse_rule = nparse  # 定义规则默认值为本身
+        if self.test(':eq', nparse):
+            nparse_rule = nparse.split(':eq')[0]
+            nparse_pos = nparse.split(':eq')[1]
+            # print(nparse_rule)
+            if self.test('--', nparse_rule):
+                excludes = nparse_rule.split('--')[1:]
+                nparse_rule = nparse_rule.split('--')[0]
+            elif self.test('--', nparse_pos):
+                excludes = nparse_pos.split('--')[1:]
+                nparse_pos = nparse_pos.split('--')[0]
+            try:
+                nparse_index = nparse_pos.split('(')[1].split(')')[0]
+                nparse_index = int(nparse_index)
+            except:
+                nparse_index = 0
+            if nparse_index > 0:
+                print(f'nparse_rule:{nparse_rule},nparse_index:{nparse_index},excludes:{excludes}')
+            return nparse_rule, nparse_index, excludes
+        else:
+            if self.test('--', nparse):
+                nparse_rule = nparse.split('--')[0]
+                excludes = nparse.split('--')[1:]
+            # print(f'nparse_rule:{nparse_rule},nparse_index:{nparse_index},excludes:{excludes}')
+            return nparse_rule, nparse_index, excludes
+
+    def parseOneRule(self, doc, nparse, ret=None):
+        """
+        解析空格分割后的原生表达式中的一条记录,正确处理eq的索引，返回处理后的ret
+        :param doc: pq(html) load 后的pq对象
+        :param nparse: 当前单个解析表达式
+        :param ret: pd对象结果
+        :return:
+        """
+        if self.test(':eq', nparse):
+            nparse_rule, nparse_index, excludes = self.getParseInfo(nparse)
+            if not ret:
+                ret = doc(nparse_rule).eq(nparse_index)
+                # if nparse_index > 4:
+                #     print('1nparse_index',ret,not ret)
+            else:
+                ret = ret(nparse_rule).eq(nparse_index)
+                # if nparse_index > 4:
+                #     print('2nparse_index',ret)
+            if excludes and ret:
+                ret = ret.clone()  # 克隆一个,免得直接remove会影响doc的缓存
+                for exclude in excludes:
+                    ret.remove(exclude)
+        else:
+            nparse_rule, nparse_index, excludes = self.getParseInfo(nparse)
+            if not ret:
+                ret = doc(nparse_rule)
+            else:
+                ret = ret(nparse_rule)
+            if excludes and ret:
+                ret = ret.clone()  # 克隆一个,免得直接remove会影响doc的缓存
+                for exclude in excludes:
+                    ret.remove(exclude)
+        return ret
+
     def pdfa(self, html, parse: str):
         # 看官方文档才能解决这个问题!!!
         # https://pyquery.readthedocs.io/en/latest/api.html
@@ -157,12 +147,69 @@ class jsoup:
             doc = pq(html)
 
         parses = parse.split(' ')
+        # print(parses)
         ret = None
         for nparse in parses:
             ret = self.parseOneRule(doc, nparse, ret)
-            # print(len(ret),nparse)
+            if not ret:  # 可能循环取值后ret 对应eq取完无值了，pdfa直接返回空列表
+                return []
         res = [item.outerHtml() for item in ret.items()]
         return res
+
+    def pdfh(self, html, parse: str, add_url=False):
+        if not all([html, parse]):
+            return ''
+        if PARSE_CACHE:
+            if self.pdfh_html != html:
+                self.pdfh_html = html
+                self.pdfh_doc = pq(html)
+            doc = self.pdfh_doc
+        else:
+            doc = pq(html)
+        if parse == 'body&&Text' or parse == 'Text':
+            text = doc.text()
+            return text
+        elif parse == 'body&&Html' or parse == 'Html':
+            return doc.html()
+
+        option = None
+        if parse.find('&&') > -1:
+            option = parse.split('&&')[-1]
+            parse = '&&'.join(parse.split('&&')[:-1])
+        parse = self.parseHikerToJq(parse, True)
+        # print(f'pdfh:{parse},option:{option}')
+        parses = parse.split(' ')
+        # print(parses)
+        ret = None
+        for nparse in parses:
+            ret = self.parseOneRule(doc, nparse, ret)
+            # print(nparse,ret)
+            if not ret:  # 可能循环取值后ret 对应eq取完无值了，pdfh直接返回空字符串
+                return ''
+
+        if option:
+            if option == 'Text':
+                ret = ret.text()
+            elif option == 'Html':
+                ret = ret.html()
+            else:
+                ret = ret.attr(option) or ''
+                if option.lower().find('style') > -1 and ret.find('url(') > -1:
+                    try:
+                        ret = re.search('url\((.*?)\)', ret, re.M | re.S).groups()[0]
+                    except:
+                        pass
+
+                if ret and add_url:
+                    need_add = re.search(URLJOIN_ATTR, option, re.M | re.I)
+                    if need_add:
+                        if 'http' in ret:
+                            ret = ret[ret.find('http'):]
+                        else:
+                            ret = urljoin(self.MY_URL, ret)
+        else:
+            ret = ret.outerHtml()
+        return ret
 
     def pd(self, html, parse: str):
         return self.pdfh(html, parse, True)
