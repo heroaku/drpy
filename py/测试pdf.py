@@ -65,7 +65,31 @@ def main2():
     a = jsp.pdfa(html, 'h1')
     print(a)
 
+def main3():
+    html = """
+    <div>
+<p>内容1<span id='exd1'>我不获取的内容1</span><span id='exd2'>我不获取的内容2</span>内容2</p>
+</div>
+    """
+    jsp = jsoup('https://www.cnblogs.com/lizhibk/p/8623543.html')
+    a = jsp.pdfh(html, 'div p:eq(0)--span&&Text')
+    print(a)
+    a = jsp.pdfh(html,'div p--span&&Text')
+    print(a)
+    a = jsp.pdfh(html, 'div p:eq(0)--#exd1&&Text')
+    print(a)
+    a = jsp.pdfh(html, 'div p:eq(0)--#exd2&&Text')
+    print(a)
+    a = jsp.pdfh(html, 'div p:eq(0)--#exd2--#exd1&&Text')
+    print(a)
+    # a = jsp.pdfh(html, 'div p--#exd1&&Text')
+    a = jsp.pdfh(html, 'div p--#exd1')
+    print(a)
+    a = jsp.pdfh(html, 'div p:first--#exd1')
+    print(a)
+
 if __name__ == '__main__':
     # main()
     # main1()
-    main2()
+    # main2()
+    main3()
