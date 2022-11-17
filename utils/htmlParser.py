@@ -118,7 +118,8 @@ class jsoup:
             if excludes and ret:
                 ret = ret.clone()  # 克隆一个,免得直接remove会影响doc的缓存
                 for exclude in excludes:
-                    ret.remove(exclude)
+                    # ret.remove(exclude)
+                    ret(exclude).remove()
         else:
             nparse_rule, nparse_index, excludes = self.getParseInfo(nparse)
             if not ret:
@@ -128,7 +129,8 @@ class jsoup:
             if excludes and ret:
                 ret = ret.clone()  # 克隆一个,免得直接remove会影响doc的缓存
                 for exclude in excludes:
-                    ret.remove(exclude)
+                    # ret.remove(exclude)
+                    ret(exclude).remove()
         return ret
 
     def pdfa(self, html, parse: str):
