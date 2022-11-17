@@ -31,7 +31,7 @@ function pre(){
 }
 
 let rule = {};
-const VERSION = 'drpy2 3.9.20beta7';
+const VERSION = 'drpy2 3.7.8 20221117';
 /** 已知问题记录
  * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)[影魔牛逼，最新的文件发现这问题已经解决了]
  * Array.prototype.append = Array.prototype.push; 这种js执行后有毛病,for in 循环列表会把属性给打印出来 (这个大毛病需要重点排除一下)
@@ -85,6 +85,8 @@ var _pdfa;
 var _pd;
 // const DOM_CHECK_ATTR = ['url', 'src', 'href', 'data-original', 'data-src'];
 const DOM_CHECK_ATTR = /(url|src|href|-original|-src|-play|-url)$/;
+const NOADD_INDEX = /:eq|:lt|:gt|:first|:last|^body$|^#/;  // 不自动加eq下标索引
+const URLJOIN_ATTR = /(url|src|href|-original|-src|-play|-url)$/;  // 需要自动urljoin的属性
 const SELECT_REGEX = /:eq|:lt|:gt|#/g;
 const SELECT_REGEX_A = /:eq|:lt|:gt/g;
 
@@ -423,6 +425,33 @@ var urljoin2 = urljoin;
 const defaultParser = {
     pdfh:pdfh,
     pdfa:pdfa,
+    parseHikerToJq(parse,first){
+        // 海阔解析表达式转原生表达式,自动补eq,如果传了first就最后一个也取eq(0)
+        first = first||false;
+        if(parse.includes('&&')){
+            parse = parse.split('&&');  //带&&的重新拼接
+            let new_parses = [];  // 构造新的解析表达式列表
+            parse.forEach((it,i)=>{
+                let ps = it.split(' ').slice(-1)[0];  // 如果分割&&后带空格就取最后一个元素
+                if(!NOADD_INDEX.test(ps)){
+                    if(!first&&i>=parse.length-1){
+                        new_parses.push(it);
+                    }else{
+                        new_parses.push(`${it}:eq(0)`);
+                    }
+                }else{
+                    new_parses.push(it);
+                }
+            });
+            parse = new_parses.join(' ');
+        }else{
+            let ps = parse.split(' ').slice(-1)[0];  // 如果带空格就取最后一个元素
+            if(!NOADD_INDEX.test(ps) && first){
+                parse = `${parse}:eq(0)`;
+            }
+        }
+        return parse;
+    },
     pd(html,parse,uri){
         let ret = this.pdfh(html,parse);
         if(typeof(uri)==='undefined'||!uri){
@@ -571,35 +600,20 @@ const parseTags = {
     },
     jq:{
         pdfh(html, parse, base_url) {
-            if (!parse || !parse.trim()) {
+            if (!html||!parse || !parse.trim()) {
                 return ''
             }
             parse = parse.trim();
+            let reparse = ['body&&Text','Text','body&&Html','Html'];
+            if(reparse.includes(reparse)){
+                return defaultParser.pdfh(html,parse)
+            }
             let option = '';
-            // print('pdfh parse前:'+parse);
-            if (parse.startsWith('body&&')) {
-                parse = parse.substr(6);
+            if(parse.includes('&&')){
+                option = parse.split('&&').slice(-1)[0];
+                parse =  parse.split('&&').slice(0,-1).join('&&');
             }
-            if (parse.includes('&&')) {
-                let sp = parse.split('&&');
-                option = sp[sp.length - 1];
-                sp.splice(sp.length - 1);
-                sp.forEach((it,idex)=>{
-                    if (!SELECT_REGEX.test(it)) {
-                        sp[idex] = it+':eq(0)';
-                    }
-                });
-                parse = sp.join(' ').trim();
-            }
-            // if(parse === 'Text'){
-            //     parse = 'body';
-            //     option = 'Text';
-            // }else if(parse === 'Html'){
-            //     parse = 'body';
-            //     option = 'Html';
-            // }
-            // print('pdfh parse后:'+parse+',option:'+option);
-            // let result = defaultParser.pdfh(html,parse + " " + option);
+            parse = defaultParser.parseHikerToJq(parse, true);
             let result = defaultParser.pdfh(html,parse,option);
             if(option&&/style/.test(option.toLowerCase())&&/url\(/.test(result)){
                 try {
@@ -618,28 +632,11 @@ const parseTags = {
             return result;
         },
         pdfa(html, parse) {
-            if (!parse || !parse.trim()) {
-                print('!parse');
+            if (!html||!parse || !parse.trim()) {
                 return [];
             }
             parse = parse.trim();
-            // print('pdfa=>parse前:'+parse);
-            if (parse.startsWith('body&&')) {
-                parse = parse.substr(6);
-            }
-            if (parse.includes('&&')) {
-                let sp = parse.split('&&');
-                sp.forEach((it,idex)=>{
-                    if (!SELECT_REGEX_A.test(it) && idex < sp.length - 1) {
-                        sp[idex] = it+':eq(0)';
-                    }
-                });
-                parse = sp.join(' ').trim();
-            }
-            // if(!/&&| /.test(parse)){ // 自动补body就是jsoup的无稽之谈
-            //     parse = 'body '+parse;
-            // }
-            // print('pdfa=>parse后:'+parse);
+            parse = defaultParser.parseHikerToJq(parse)
             let result = defaultParser.pdfa(html,parse);
             // print(result);
             print(`pdfa解析${parse}=>${result.length}`);
