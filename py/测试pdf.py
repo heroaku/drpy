@@ -29,8 +29,10 @@ def main():
     print(a)
     a = jsp.pdfh(lis[0], 'a:eq(1) li img')
     print(a)
-    a = jsp.pd(lis[0], 'a&&li&&img&&src')
-    print(a)
+    a = jsp.pd(lis[0], 'a:eq(1)&&li&&img&&src')
+    print('src:',a)
+    a = jsp.pd(lis[0], 'a&&href')
+    print('href:', a)
 
 def main1():
     url = 'https://www.lanhua.tv/voddetail/7420.html'
@@ -89,7 +91,7 @@ def main3():
     print(a)
 
 if __name__ == '__main__':
-    # main()
+    main()
     # main1()
     # main2()
-    main3()
+    # main3()
