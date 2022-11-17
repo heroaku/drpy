@@ -116,6 +116,7 @@ class jsoup:
                 # if nparse_index > 4:
                 #     print('2nparse_index',ret)
             if excludes and ret:
+                # print(excludes)
                 ret = ret.clone()  # 克隆一个,免得直接remove会影响doc的缓存
                 for exclude in excludes:
                     # ret.remove(exclude)
@@ -127,6 +128,7 @@ class jsoup:
             else:
                 ret = ret(nparse_rule)
             if excludes and ret:
+                # print(excludes)
                 ret = ret.clone()  # 克隆一个,免得直接remove会影响doc的缓存
                 for exclude in excludes:
                     # ret.remove(exclude)
