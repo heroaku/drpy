@@ -1365,7 +1365,7 @@ class CMS:
                 if type(self.lazy) == JsObjectWrapper:
                     logger.info(f'lazy非纯文本免嗅失败耗时:{get_interval(t1)}毫秒,播放地址:{play_url}')
 
-                elif not str(self.lazy).startswith('js:'):
+                elif str(self.lazy).startswith('py:'):
                     pycode = runPy(self.lazy)
                     if pycode:
                         # print(pycode)
@@ -1378,7 +1378,7 @@ class CMS:
                         if isinstance(lazy_url,str) and lazy_url.startswith('http'):
                             play_url = lazy_url
                 else:
-                    jscode = str(self.lazy).split('js:')[1]
+                    jscode = str(self.lazy).strip().replace('js:', '', 1) if str(self.lazy).startswith('js:') else js_code
                     jsp = jsoup(self.url)
                     # jscode = f'var input={play_url};{jscode}'
                     # print(jscode)

@@ -48,6 +48,10 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/11/17
+- [X] 海盗听书js0播放bug修复
+- [X] 升级至 3.9.21
+- [X] 设置中心增加源代理,提高js1搜索速度
 ###### 2022/11/08
 - [X] 海盗听书js0空白是触发了网页的cloudfare5秒盾了,暂时无解
 - [X] 3.9.20beta7 修复豆瓣
