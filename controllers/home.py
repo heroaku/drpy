@@ -232,6 +232,7 @@ def config_render(mode):
     # ali_token = lsg.getItem('ALI_TOKEN')
     ali_token = new_conf.ALI_TOKEN
     xr_mode = new_conf.XR_MODE
+    js_proxy = new_conf.JS_PROXY
     js0_password = new_conf.JS0_PASSWORD
     js_mode = int(new_conf.JS_MODE or 0)
     print(f'{type(js_mode)} jsmode:{js_mode}')
@@ -260,7 +261,15 @@ def config_render(mode):
     parses = sort_parses_by_order(merged_config['parses'],host)
     # print(parses)
     merged_config['parses'] = parses
-    response = make_response(json.dumps(merged_config,ensure_ascii=False,indent=1))
+    config_text = json.dumps(merged_config,ensure_ascii=False,indent=1)
+    if js_proxy:
+        # print('js_proxy:',js_proxy)
+        if '=>' in js_proxy:
+            oldsrc = js_proxy.split('=>')[0]
+            newsrc = js_proxy.split('=>')[1]
+            print(f'js1源代理已启用,全局替换{oldsrc}为{newsrc}')
+            config_text = config_text.replace(oldsrc,newsrc)
+    response = make_response(config_text)
     # response = make_response(str(merged_config))
     response.headers['Content-Type'] = 'application/json; charset=utf-8'
     logger.info(f'自动生成动态配置共计耗时:{get_interval(tt)}毫秒')
