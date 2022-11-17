@@ -160,7 +160,7 @@ class jsoup:
         res = [item.outerHtml() for item in ret.items()]
         return res
 
-    def pdfh(self, html, parse: str, add_url=False, base_url: str = ''):
+    def pdfh(self, html, parse: str, base_url: str = ''):
         if not all([html, parse]):
             return ''
         if PARSE_CACHE:
@@ -204,21 +204,21 @@ class jsoup:
                     except:
                         pass
 
-                if ret and add_url:
+                if ret and base_url:
                     need_add = re.search(URLJOIN_ATTR, option, re.M | re.I)
                     if need_add:
                         if 'http' in ret:
                             ret = ret[ret.find('http'):]
                         else:
-                            if not base_url:
-                                base_url = self.MY_URL
                             ret = urljoin(base_url, ret)
         else:
             ret = ret.outerHtml()
         return ret
 
     def pd(self, html, parse: str, base_url: str = ''):
-        return self.pdfh(html, parse, True, base_url)
+        if not base_url:
+            base_url = self.MY_URL
+        return self.pdfh(html, parse, base_url)
 
     def pq(self, html: str):
         return pq(html)
