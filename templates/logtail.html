@@ -23,6 +23,7 @@
         #title{
             background: #000000;
             color: #5dc2f1;
+            padding:3px 1px 3px 1px;
         }
         #height{
             margin-left: 10px;
@@ -40,9 +41,24 @@
             /*上右下左*/
             padding:1px 2px 10px 2px;
         }
-        #clearLog{
+        .btn{
             background: #f06e57;
             color: #FFFFFF;
+            margin: 0 5px 0 0;
+            border: 2px solid #aaaaaa;
+            border-radius: 2px;
+        }
+        .input{
+            width: 70%;
+            height: 20px;
+        }
+
+        #inputMsg{
+            background: #333;
+            padding:5px 1px 5px 1px;
+        }
+        #inputMsg span{
+            color:#5dc2f1 ;
         }
     </style>
 </head>
@@ -51,7 +67,15 @@
     <div id="title">
         <strong>tvbox实时日志 by道长</strong>
         <span id="height"></span>
-        <button id="clearLog">清空日志</button>
+        <button id="clearLog" class="btn">清空日志</button>
+        <button id="showInput" class="btn">显示输入框</button>
+        <button id="clearInput" class="btn">清空输入框</button>
+        <button id="autoClearInput" class="btn">自动清空</button>
+    </div>
+    <div id="inputMsg">
+        <span>输入</span>
+        <input type="text" class="input">
+        <button id="sendMsg" class="btn">发送</button>
     </div>
     <div id="log-container">
 		<div id="msg">
@@ -93,10 +117,38 @@
         const reconnect_time = 5000;
         var lockReconnect = false;//避免重复连接
         var ws = null; //WebSocket的引用
-
+        var showInput;
+        var autoClearInput;
+        showInput = !!(localStorage.showInput && localStorage.showInput === '1');
+        autoClearInput = !!(localStorage.autoClearInput && localStorage.autoClearInput === '1');
+        var btn_showInput = $('#showInput');
+        var btn_autoClearInput = $('#autoClearInput');
+        if(!showInput){
+            $('#inputMsg').hide();
+            $('#clearInput').hide();
+            $('#autoClearInput').hide();
+            btn_showInput.text('显示输入框');
+            btn_showInput[0].style.borderStyle = 'outset';
+        }else{
+            $('#inputMsg').show();
+            $('#clearInput').show();
+            $('#autoClearInput').show();
+            btn_showInput.text('隐藏输入框');
+            btn_showInput[0].style.borderStyle = 'inset';
+        }
+        if(autoClearInput){
+            btn_autoClearInput.text('自动清空');
+            btn_autoClearInput[0].style.borderStyle = 'inset';
+        }else{
+            btn_autoClearInput.text('手动清空');
+            btn_autoClearInput[0].style.borderStyle = 'outset';
+        }
         function initHeight(){//动态刷新日志框高度自适应设备
             var div_height = window.screen.availHeight;
 	        var height = Math.ceil(div_height*0.75);
+	        if(showInput){
+	            height-=35;
+            }
 	        $('#height').text('日志窗口高度:'+height);
 	        $("#log-container").height(height);
         }
@@ -149,6 +201,7 @@
                     ws = new WebSocket(websocketUrl);
                     initEventHandle();
                 }catch (e) {
+                    ws = null;
                     reconnect();
                 }
             }
@@ -179,6 +232,7 @@
             };
             ws.onclose = function(event) {
                 addMsg('websocket连接关闭');
+                ws = null;
                 reconnect();
             };
             ws.onerror = function(event){
@@ -188,6 +242,7 @@
                 // console.log(event);
                 console.log(msg);
                 addMsg(msg);
+                ws = null;
                 reconnect();
             }
         }
@@ -231,6 +286,62 @@
                         }
                     }
                 });
+            });
+
+            $('#clearInput').click(function (){
+                $('.input').val('');
+            });
+
+            $('#showInput').click(function (){
+                // console.log(localStorage.showInput);
+               if(!showInput){
+                    showInput = true;
+                    localStorage.showInput = '1';
+                    $('#inputMsg').show();
+                    $('#clearInput').show();
+                    $('#autoClearInput').show();
+                    btn_showInput.text('隐藏输入框');
+                    btn_showInput[0].style.borderStyle = 'inset';
+                }else{
+                   showInput = false;
+                   localStorage.showInput = '0';
+                    $('#inputMsg').hide();
+                    $('#clearInput').hide();
+                    $('#autoClearInput').hide();
+                    btn_showInput.text('显示输入框');
+                    btn_showInput[0].style.borderStyle = 'outset';
+                }
+               initHeight();
+            });
+
+            $('#autoClearInput').click(function (){
+                if(!autoClearInput){
+                    autoClearInput = true;
+                    localStorage.autoClearInput = '1';
+                    btn_autoClearInput.text('自动清空');
+                    btn_autoClearInput[0].style.borderStyle = 'inset';
+                }else{
+                   autoClearInput = false;
+                   localStorage.autoClearInput = '0';
+                    btn_autoClearInput.text('手动清空');
+                    btn_autoClearInput[0].style.borderStyle = 'outset';
+                }
+            });
+
+            $('#sendMsg').click(function (){
+                let text_input = $('.input');
+               let msg = text_input.val();
+               if(msg){
+                   if(ws){
+                       addMsg('主动发送文本消息:'+msg);
+                       ws.send(msg);
+                       if(autoClearInput){
+                            text_input.val('');
+                        }
+                   }else{
+                       addMsg('ws未正常连接,待发送消息无效:'+msg);
+                   }
+               }
             });
         });
 </script>
