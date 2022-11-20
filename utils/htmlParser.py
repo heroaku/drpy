@@ -36,6 +36,10 @@ class jsoup:
         test_ret = True if searchObj else False
         return test_ret
 
+    def contains(self, text: str, match: str):
+        # return match in text
+        return text.find(match) > -1
+
     def parseHikerToJq(self, parse, first=False):
         """
          海阔解析表达式转原生表达式,自动补eq,如果传了first就最后一个也取eq(0)
@@ -43,7 +47,7 @@ class jsoup:
         :param first:
         :return:
         """
-        if parse.find('&&') > -1:
+        if self.contains(parse, '&&'):
             parse = parse.split('&&')  # 带&&的重新拼接
             new_parses = []  # 构造新的解析表达式列表
             for i in range(len(parse)):
@@ -72,30 +76,28 @@ class jsoup:
         excludes = []  # 定义排除列表默认值为空
         nparse_index = 0  # 定义位置索引默认值为0
         nparse_rule = nparse  # 定义规则默认值为本身
-        if self.test(':eq', nparse):
+        if self.contains(nparse, ':eq'):
             nparse_rule = nparse.split(':eq')[0]
             nparse_pos = nparse.split(':eq')[1]
             # print(nparse_rule)
-            if self.test('--', nparse_rule):
+            if self.contains(nparse_rule, '--'):
                 excludes = nparse_rule.split('--')[1:]
                 nparse_rule = nparse_rule.split('--')[0]
-            elif self.test('--', nparse_pos):
+            elif self.contains(nparse_pos, '--'):
                 excludes = nparse_pos.split('--')[1:]
                 nparse_pos = nparse_pos.split('--')[0]
             try:
-                nparse_index = nparse_pos.split('(')[1].split(')')[0]
-                nparse_index = int(nparse_index)
+                nparse_index = int(nparse_pos.split('(')[1].split(')')[0])
             except:
-                nparse_index = 0
-            if nparse_index > 0:
-                print(f'nparse_rule:{nparse_rule},nparse_index:{nparse_index},excludes:{excludes}')
-            return nparse_rule, nparse_index, excludes
-        else:
-            if self.test('--', nparse):
-                nparse_rule = nparse.split('--')[0]
-                excludes = nparse.split('--')[1:]
-            # print(f'nparse_rule:{nparse_rule},nparse_index:{nparse_index},excludes:{excludes}')
-            return nparse_rule, nparse_index, excludes
+                pass
+
+        elif self.contains(nparse, '--'):
+            nparse_rule = nparse.split('--')[0]
+            excludes = nparse.split('--')[1:]
+
+        # if nparse_index > 0:
+        #     print(f'nparse_rule:{nparse_rule},nparse_index:{nparse_index},excludes:{excludes}')
+        return nparse_rule, nparse_index, excludes
 
     def parseOneRule(self, doc, nparse, ret=None):
         """
@@ -105,34 +107,23 @@ class jsoup:
         :param ret: pd对象结果
         :return:
         """
-        if self.test(':eq', nparse):
-            nparse_rule, nparse_index, excludes = self.getParseInfo(nparse)
-            if not ret:
-                ret = doc(nparse_rule).eq(nparse_index)
-                # if nparse_index > 4:
-                #     print('1nparse_index',ret,not ret)
-            else:
-                ret = ret(nparse_rule).eq(nparse_index)
-                # if nparse_index > 4:
-                #     print('2nparse_index',ret)
-            if excludes and ret:
-                # print(excludes)
-                ret = ret.clone()  # 克隆一个,免得直接remove会影响doc的缓存
-                for exclude in excludes:
-                    # ret.remove(exclude)
-                    ret(exclude).remove()
+        nparse_rule, nparse_index, excludes = self.getParseInfo(nparse)
+        if not ret:
+            ret = doc(nparse_rule)
         else:
-            nparse_rule, nparse_index, excludes = self.getParseInfo(nparse)
-            if not ret:
-                ret = doc(nparse_rule)
-            else:
-                ret = ret(nparse_rule)
-            if excludes and ret:
-                # print(excludes)
-                ret = ret.clone()  # 克隆一个,免得直接remove会影响doc的缓存
-                for exclude in excludes:
-                    # ret.remove(exclude)
-                    ret(exclude).remove()
+            ret = ret(nparse_rule)
+
+        if self.contains(nparse, ':eq'):
+            ret = ret.eq(nparse_index)
+            # if nparse_index > 4:
+            #     print('nparse_index',ret,not ret)
+
+        if excludes and ret:
+            # print(excludes)
+            ret = ret.clone()  # 克隆一个,免得直接remove会影响doc的缓存
+            for exclude in excludes:
+                # ret.remove(exclude)
+                ret(exclude).remove()
         return ret
 
     def pdfa(self, html, parse: str):
@@ -177,7 +168,7 @@ class jsoup:
             return doc.html()
 
         option = None
-        if parse.find('&&') > -1:
+        if self.contains(parse, '&&'):
             option = parse.split('&&')[-1]
             parse = '&&'.join(parse.split('&&')[:-1])
         parse = self.parseHikerToJq(parse, True)
@@ -198,14 +189,15 @@ class jsoup:
                 ret = ret.html()
             else:
                 ret = ret.attr(option) or ''
-                if option.lower().find('style') > -1 and ret.find('url(') > -1:
+                if self.contains(option.lower(), 'style') and self.contains(ret, 'url('):
                     try:
                         ret = re.search('url\((.*?)\)', ret, re.M | re.S).groups()[0]
                     except:
                         pass
 
                 if ret and base_url:
-                    need_add = re.search(URLJOIN_ATTR, option, re.M | re.I)
+                    # need_add = re.search(URLJOIN_ATTR, option, re.M | re.I)
+                    need_add = self.test(URLJOIN_ATTR, option)
                     if need_add:
                         if 'http' in ret:
                             ret = ret[ret.find('http'):]
