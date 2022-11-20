@@ -48,6 +48,10 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/11/20
+- [X] 维护一波可用的自建解析
+- [X] 未来功能-解析管理中心增加了对解析的点击访问测试
+- [X] 升级至3.9.21beta2
 ###### 2022/11/17
 - [X] 海盗听书js0播放bug修复
 - [X] 升级至 3.9.21
