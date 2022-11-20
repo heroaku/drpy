@@ -327,10 +327,12 @@ def sort_parses_by_order(parses,host):
     parse_list = parse.query_all()
     parse_url_list = list(map(lambda x: x['url'], parse_list))
     new_parses = []
+    new_parses_url = []
     for i in range(len(parses)):
         # parses[i]['id'] = i + 1
         # 去重
-        if parses[i]['url'] in new_parses:
+        if parses[i]['url'] in new_parses_url:
+            # print(f"重复的解析:{parses[i]['name']},{parses[i]['url']}")
             continue
         if str(parses[i]['url']).startswith(host):
             parses[i]['url'] = parses[i]['url'].replace(host,'')
@@ -349,6 +351,7 @@ def sort_parses_by_order(parses,host):
         if str(parses[i]['url']).startswith('/'):
             parses[i]['url'] = host + parses[i]['url']
         new_parses.append(parses[i])
+        new_parses_url.append(parses[i]['url'])
     new_parses.sort(key=functools.cmp_to_key(comp), reverse=False)
     # print(sites)
     for par in new_parses:
@@ -356,7 +359,7 @@ def sort_parses_by_order(parses,host):
         del par['order']
         del par['write_date']
     # print(new_parses)
-    logger.info(f'{len(parses)}条解析解析排序耗时:{get_interval(t1)}毫秒')
+    logger.info(f'{len(new_parses)}/{len(parses)}条解析解析排序耗时:{get_interval(t1)}毫秒')
     return new_parses
 
 @home.route('/configs')

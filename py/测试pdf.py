@@ -90,8 +90,12 @@ def main3():
     a = jsp.pdfh(html, 'div p:first--#exd1')
     print(a)
 
+    html = requests.get('https://www.leyupro.com/lyd/139451.html').text
+    a = jsp.pdfa(html,'.yunplay&&.downtitle&&ul li')
+    print(a)
+
 if __name__ == '__main__':
-    main()
+    # main()
     # main1()
     # main2()
-    # main3()
+    main3()
