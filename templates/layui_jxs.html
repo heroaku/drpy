@@ -14,12 +14,14 @@
 <!--    <button class="layui-btn layui-btn-sm" lay-event="clearFilter">清除所有筛选条件</button>-->
 <!--    <button class="layui-btn layui-btn-sm" lay-event="getData">获取当前页数据</button>-->
     <button class="layui-btn layui-btn-sm" lay-event="saveData">保存拖拽排序结果</button>
+    <button class="layui-btn layui-btn-sm" lay-event="setTestVideo">设置解析测试视频</button>
   </div>
 </script>
 <script type="text/html" id="bar">
   <a class="layui-btn layui-btn-xs" lay-event="set_top">顶</a>
   <a class="layui-btn layui-btn-xs" lay-event="set_bottom">底</a>
-  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删</a>
+<!--  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删</a>-->
+  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="test">测</a>
 </script>
 <script src="/static/plugin/layui/layui.js"></script>
 <script>
@@ -110,6 +112,18 @@
           saveData(getData);
           layer.close(index);
         });
+      }else if(obj.event === 'setTestVideo'){
+        let test_video = localStorage.test_video||'https://v.qq.com/x/cover/m441e3rjq9kwpsc/d00448tl6se.html';
+        layer.prompt({
+          formType: 2,
+          value: test_video,
+          title: '请输入待测试的视频地址',
+          area: ['360px', '120px'] //自定义文本域宽高
+	}, function(value, index, elem){
+	      console.log(value); //得到value
+          localStorage.test_video = value;
+          layer.close(index);
+      });
       }
     });
 
@@ -118,6 +132,11 @@
       console.log(obj);
       if(obj.event === 'del'){
         layer.msg('未开发功能:删除...',{time:1000})
+      }else if(obj.event === 'test'){
+        let test_video = localStorage.test_video||'https://v.qq.com/x/cover/m441e3rjq9kwpsc/d00448tl6se.html';
+        let url = obj.data.url+test_video;
+        layer.msg('开始测试:'+url,{time:1000});
+        window.open(url);
       }else if(obj.event === 'set_top'){
         layer.msg('未开发功能:置顶...',{time:1000})
       }else if(obj.event === 'set_bottom'){
