@@ -40,6 +40,7 @@
 </a>
 
 [JS引擎的选择](./python最强js引擎.md)  
+[我的豆瓣](./static/img/豆瓣.png)  
 [搭建教程](./安卓本地搭建说明.md) | [install_help](https://jason-ray.notion.site/jason-ray/Pluto-TVB-706da08332804a19ab012b4f8385df64)  |[goorm](./道长乱说.md) |[大佬地盘](./大佬友链.md)   
 [dr项目QQ官群](https://qm.qq.com/cgi-bin/qm/qr?k=H2KwcXrMdiR5M2blHR5gjZzPfN_S3N_C&jump_from=webapi)  
 [参考T4](https://github.com/sec-an/TV_Spider/blob/main/spider/sp360.py)  
@@ -53,6 +54,8 @@
 - [X] 设置中心增加自定义环境变量,演示源:007影视.js
 - [X] 界面优化，升级至3.9.22
 - [X] 修复自建鸿途解析
+- [X] 增加我的豆瓣配置,环境变量为 douban 例如 {"douban":"自己的豆瓣id"}
+- [X] 增加新源by海王
 ###### 2022/11/20
 - [X] 维护一波可用的自建解析
 - [X] 未来功能-解析管理中心增加了对解析的点击访问测试

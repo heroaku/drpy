@@ -13,6 +13,8 @@ function miniapp_request(path, query) {
         query.apikey = miniapp_apikey;
         fetch_params.headers = oheaders;
         url = buildUrl(url, query);
+        // print(url);
+        // print(fetch_params);
         let html = fetch(url, fetch_params);
         if(/request_error/.test(html)){
             print(html);
@@ -30,6 +32,7 @@ function cate_filter(d, douban) {
     try {
         let res = {};
         if (MY_CATE === "interests") {
+            // print(douban);
             if (douban) {
                 let status = MY_FL.status || "mark";
                 let subtype_tag = MY_FL.subtype_tag || "";
@@ -166,5 +169,5 @@ function cate_filter(d, douban) {
     }
     return {}
 }
-let res = cate_filter(d);
+let res = cate_filter(d,douban);
 setResult2(res);
