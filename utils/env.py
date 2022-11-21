@@ -15,6 +15,7 @@ def get_env():
     # print(new_conf)
     env = {
         'ali_token': new_conf.ALI_TOKEN,
-        'js_proxy':new_conf.JS_PROXY
+        'js_proxy':new_conf.JS_PROXY,
+        'fl':'{{fl}}' # 防止被依赖代理
     }
     return env

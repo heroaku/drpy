@@ -57,6 +57,9 @@ def search_one(rule, wd, before: str = ''):
     try:
         with open(js_path, encoding='utf-8') as f2:
             jscode = f2.read()
+        env = get_env()
+        if env:
+            jscode = render_template_string(jscode, **env)
         jscode = before + jscode + end_code
         # print(jscode)
         ctx.eval(jscode)
@@ -240,7 +243,7 @@ def vod_home():
             jscode = f2.read()
         env = get_env()
         if env:
-            jscode = render_template_string(jscode,env=env)
+            jscode = render_template_string(jscode,**env)
         # print(jscode)
         jscode = before + jscode + end_code
         # print(jscode)

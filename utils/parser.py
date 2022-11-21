@@ -86,7 +86,8 @@ def toJs(jsPath,jsRoot='cache',env=None):
     with open(js_path, 'r', encoding='UTF-8') as fp:
         js = fp.read()
     if env:
-        js = render_template_string(js,env=env)
+        # js = render_template_string(js,env=env)
+        js = render_template_string(js,**env)
     response = make_response(js)
     response.headers['Content-Type'] = 'text/javascript; charset=utf-8'
     return response
