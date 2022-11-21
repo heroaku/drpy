@@ -5,10 +5,11 @@
 # Date  : 2022/9/6
 import json
 
-from flask import Blueprint,abort,request,render_template,jsonify,make_response,redirect
+from flask import Blueprint,abort,request,render_template,render_template_string,jsonify,make_response,redirect
 from time import time
 from utils.web import getParmas,get_interval
 from utils.cfg import cfg
+from utils.env import get_env
 from js.rules import getRuleLists,getJxs
 from base.R import R
 from utils.log import logger
@@ -237,6 +238,10 @@ def vod_home():
     try:
         with open(js_path,encoding='utf-8') as f2:
             jscode = f2.read()
+        env = get_env()
+        if env:
+            jscode = render_template_string(jscode,env=env)
+        # print(jscode)
         jscode = before + jscode + end_code
         # print(jscode)
         ctx.eval(jscode)

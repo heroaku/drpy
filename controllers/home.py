@@ -262,13 +262,16 @@ def config_render(mode):
     # print(parses)
     merged_config['parses'] = parses
     config_text = json.dumps(merged_config,ensure_ascii=False,indent=1)
-    if js_proxy:
-        # print('js_proxy:',js_proxy)
-        if '=>' in js_proxy:
-            oldsrc = js_proxy.split('=>')[0]
-            newsrc = js_proxy.split('=>')[1]
-            print(f'js1源代理已启用,全局替换{oldsrc}为{newsrc}')
-            config_text = config_text.replace(oldsrc,newsrc)
+
+    # 依赖代理逻辑修改,改为admin/view去动态代理
+    # if js_proxy:
+    #     # print('js_proxy:',js_proxy)
+    #     if '=>' in js_proxy:
+    #         oldsrc = js_proxy.split('=>')[0]
+    #         newsrc = js_proxy.split('=>')[1]
+    #         print(f'js1源代理已启用,全局替换{oldsrc}为{newsrc}')
+    #         config_text = config_text.replace(oldsrc,newsrc)
+
     response = make_response(config_text)
     # response = make_response(str(merged_config))
     response.headers['Content-Type'] = 'application/json; charset=utf-8'
