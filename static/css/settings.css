@@ -1,4 +1,4 @@
-.save_conf{
+.btn_option{
     border-radius: 50px;
     border-style: solid;
     color: #FFFFFF;
@@ -12,10 +12,13 @@
 
 input.conf{
     margin-bottom: 10px;
-    width: 220px;
+    width: 180px;
 }
-label{
+.label{
     font-size: 12px;
     color: #5c6cf6;
     font-weight: bold;
+    width: 60px;
+    /*display:block;*/
+    text-align: center;
 }
