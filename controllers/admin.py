@@ -6,7 +6,7 @@
 import os
 
 import ujson
-from flask import Blueprint,request,render_template,jsonify,make_response
+from flask import Blueprint,request,render_template,render_template_string,jsonify,make_response,redirect
 from controllers.service import storage_service,rules_service,parse_service
 from base.R import R
 from base.database import db
@@ -14,6 +14,7 @@ from utils.log import logger
 import shutil
 from utils.update import getLocalVer,getOnlineVer,download_new_version,download_lives,copy_to_update
 from utils import parser
+from utils.env import get_env
 from utils.web import getParmas,verfy_token
 from js.rules import getRules,getCacheCount
 from utils.parser import runJScode
@@ -74,7 +75,27 @@ def admin_view_rule(name):
     if not name or not name.split('.')[-1] in ['js','txt','py','json']:
         return R.error(f'非法猥亵,未指定文件名。必须包含js|txt|json|py')
     try:
-        return parser.toJs(name,'js')
+        env = get_env()
+        # print(env)
+        if env.get('js_proxy'):
+            js_proxy = env['js_proxy']
+            burl = request.base_url
+            if '=>' in js_proxy:
+                oldsrc = js_proxy.split('=>')[0]
+                if oldsrc in burl:
+                        newsrc = js_proxy.split('=>')[1]
+                        # print(f'js1源代理已启用,全局替换{oldsrc}为{newsrc}')
+                        rurl = burl.replace(oldsrc, newsrc)
+                        if burl != rurl:
+                            jscode = parser.getJs(name, 'js')
+                            # rjscode = render_template_string(jscode, env=env)
+                            rjscode = render_template_string(jscode, **env)
+                            if rjscode.strip() == jscode.strip():  # 无需渲染才代理
+                                return redirect(rurl)
+                            else:
+                                logger.info(f'{name}由于存在环境变量无法被依赖代理')
+
+        return parser.toJs(name,'js',env)
     except Exception as e:
         return R.error(f'非法猥亵\n{e}')
 

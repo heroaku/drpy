@@ -8,7 +8,7 @@ import os
 import shutil
 
 import requests
-from flask import make_response, jsonify
+from flask import make_response, jsonify,render_template_string
 from functools import partial  # 这玩意儿能锁定一个函数的参数
 import subprocess
 subprocess.Popen = partial(subprocess.Popen, encoding="utf-8")  # 固定写法
@@ -77,17 +77,30 @@ def runJs(jsPath, before='', after='', ctx=None):
     # loader.execute(jscode_to_run)
     # return loader,js_code
 
-def toJs(jsPath,jsRoot='cache'):
+def toJs(jsPath,jsRoot='cache',env=None):
     base_path = os.path.dirname(os.path.abspath(os.path.dirname(__file__))) # 上级目录
     js_path = os.path.join(base_path, f'{jsRoot}/{jsPath}')
-    print(js_path)
+    # print(js_path)
     if not os.path.exists(js_path):
         return jsonify({'code': -2, 'msg': f'非法猥亵,文件不存在'})
     with open(js_path, 'r', encoding='UTF-8') as fp:
         js = fp.read()
+    if env:
+        # js = render_template_string(js,env=env)
+        js = render_template_string(js,**env)
     response = make_response(js)
     response.headers['Content-Type'] = 'text/javascript; charset=utf-8'
     return response
+
+def getJs(jsPath,jsRoot='cache'):
+    base_path = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))  # 上级目录
+    js_path = os.path.join(base_path, f'{jsRoot}/{jsPath}')
+    # print(js_path)
+    if not os.path.exists(js_path):
+        return ''
+    with open(js_path, 'r', encoding='UTF-8') as fp:
+        js = fp.read()
+    return js
 
 def toHtml(jsPath):
     base_path = os.path.dirname(os.path.abspath(os.path.dirname(__file__))) # 上级目录
