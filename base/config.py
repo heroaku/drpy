@@ -52,3 +52,4 @@ MULTI_MODE = 0  # 多源模式
 XR_MODE = 1  # 仙人模式
 JS_PROXY = 'http://localhost:5705/admin/view/=>https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/'  # 源代理
 ALI_TOKEN = '' # 适用于初始配置的阿里云token
+ENV = '{"bili_cookie":""}'  # 自定义环境变量

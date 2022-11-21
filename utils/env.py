@@ -5,6 +5,7 @@
 # Date  : 2022/11/21
 
 from utils.cfg import cfg
+import ujson
 from controllers.service import storage_service
 
 def get_env():
@@ -18,4 +19,15 @@ def get_env():
         'js_proxy':new_conf.JS_PROXY,
         'fl':'{{fl}}' # 防止被依赖代理
     }
+    ENV = new_conf.ENV.strip()
+    if ENV:
+        # print(ENV)
+        try:
+            ENV = ujson.loads(ENV)
+        except Exception as e:
+            print(f'自定义环境变量有误,不是合法json:{e}')
+            ENV = {}
+    if ENV:
+        env.update(ENV)
+    # print(env)
     return env
