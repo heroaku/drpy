@@ -411,7 +411,7 @@ function search(wd, quick) {
 		let lists = pdfa(html,'div&&ul&&a');
 		print(`搜索结果数:${lists.length},搜索结果显示数量限制:${limit_search_show}`);
 		let vods = [];
-		let excludeReg = /\.(pdf|epub|mobi|txt|doc)$/; // 过滤后缀文件
+		let excludeReg = /\.(pdf|epub|mobi|txt|doc|lrc)$/; // 过滤后缀文件
 		lists.forEach(it=>{
 			let vhref = pdfh(it,'a&&href');
 			if(vhref){
