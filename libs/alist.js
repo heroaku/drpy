@@ -1,5 +1,6 @@
 // import _ from 'https://underscorejs.org/underscore-esm-min.js'
 import { distance } from 'https://unpkg.com/fastest-levenshtein@1.0.16/esm/mod.js'
+import {getFirstLetterList } from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/pinyin_getFirstLetterList.js'
 
 /**
  * alist js
@@ -156,9 +157,14 @@ function home(filter) {
 		type_name: key,
 		type_flag: '1',
 	}));
+	let filter_dict = {};
+	let filters = [{'key': 'order', 'name': '排序方式', 'value': [{'n': '名称正序', 'v': 'vod_name_asc'}, {'n': '名称倒序', 'v': 'vod_name_desc'}]}];
+	classes.forEach(it=>{
+		filter_dict[it.type_id] = filters;
+	});
 	print("----home----");
 	print(classes);
-	return JSON.stringify({ 'class': classes });
+	return JSON.stringify({ 'class': classes,'filters': filter_dict});
 }
 
 function homeVod(params) {
@@ -232,7 +238,17 @@ function category(tid, pg, filter, extend) {
 		});
 	}
 	print("----category----");
-	print(allList);
+	let fl = filter?extend:{};
+	if(fl.order){
+		// print(fl.order);
+		let key = fl.order.split('_').slice(0,-1).join('_');
+		let order = fl.order.split('_').slice(-1)[0];
+		print(`排序key:${key},排序order:${order}`);
+		allList = sortListByName(allList,key,order);
+	}else{
+		allList = sortListByName(allList,'vod_name','asc');
+	}
+	// print(allList);
 	return JSON.stringify({
 		'page': 1,
 		'pagecount': 1,
@@ -346,11 +362,13 @@ function get_size(sz) {
 	}
 }
 
+// 相似度获取
 function levenshteinDistance(str1, str2) {
     return 100 - 100 * distance(str1, str2) / Math.max(str1.length, str2.length);
 }
 
-const sortList = (vodList,key) => {
+// 首字母开头排序
+const sortListByFirst = (vodList,key) => {
 	key = key||'vod_name';
 	// 名字以特殊符号开头的应用列表
 	const symbol_list = [];
@@ -384,6 +402,90 @@ const sortList = (vodList,key) => {
 	return newList
 };
 
+// 判断字符串是否全是中文
+function isAllChinese(str) {
+	return /^[\u4E00-\u9FA5]+$/.test(str);
+}
+
+// 判断字符是否为中文
+function isChinese(char) {
+	return /^[\u4E00-\u9FA5]$/.test(char);
+}
+
+// 完整名称排序
+const sortListByName = (vodList,key,order) => {
+	if(!key){
+		return vodList
+	}
+	order = order||'asc'; // 默认正序
+	let ASCarr = vodList.sort((a, b) => {
+		a = a[key];
+		b = b[key];
+		// 数字排在字符串前面
+		if (typeof a === 'number' && typeof b === 'string') {
+			return -1;
+		}
+
+		if (typeof a === 'string' && typeof b === 'number') {
+			return 1;
+		}
+
+		// 当存在非数字时
+		if (isNaN(a) || isNaN(b)) {
+
+			// 全汉字的排在非全汉字的后面
+			if (isAllChinese(a) && !isAllChinese(b)) {
+				return 1;
+			}
+
+			if (!isAllChinese(a) && isAllChinese(b)) {
+				return -1;
+			}
+
+			// 存在非数字的数据时，都转为字符串进行比较
+			a = a.toString();
+			b = b.toString();
+
+			let result = 0;
+
+			// 依次比较两个字符串的各项字符
+			for (let index = 0; index < ((a.length - b.length) ? b.length : a.length); index++) {
+
+				// 汉字排在非汉字的后面
+				if (!isChinese(a[index]) && isChinese(b[index])) {
+					result = -1;
+				}
+
+				if (isChinese(a[index]) && !isChinese(b[index])) {
+					result = 1;
+				}
+
+				// 若两个汉字进行比较，则比较他们的拼音首字母
+				if (isChinese(a[index]) && isChinese(b[index])) {
+					let pinyinA = getFirstLetterList(a[index]).toString();
+					let pinyinB = getFirstLetterList(b[index]).toString();
+
+					result = pinyinA.localeCompare(pinyinB, 'zh-Hans-CN', { sensitivity: 'accent' });
+				}
+
+				// 若已经比较出结果，则跳出循环，不再继续比较剩余字符
+				if (result !== 0) {
+					break
+				}
+			}
+
+			// 只要有一个无法转换为数字——转换为字符串进行比较——先按字符排序，然后按照数字排序
+			return result || a.toString().localeCompare(b.toString(), 'zh-Hans-CN', { sensitivity: 'accent' });
+		} else {
+			// 都能转换为数字——转换为数字进行比较——从小到大排序
+			return Number(a) - Number(b);
+		}
+	});
+	if(order==='desc'){
+		ASCarr.reverse();
+	}
+	return ASCarr
+};
 
 // 导出函数对象
 export default {
