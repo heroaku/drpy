@@ -23,6 +23,7 @@ String.prototype.rstrip = function (chars) {
 	return this.replace(regex, "");
 };
 var showMode = 'single';
+var searchDriver = '';
 /**
  * 打印日志
  * @param any 任意变量
@@ -95,6 +96,7 @@ function get_drives(name) {
 
 function init(ext) {
 	const data = http.get(ext).json();
+	searchDriver = (data.find(x=>x.search)||{}).name||'';
 	data.forEach(item => {
 		let _path_param = [];
 		if(item.params){
@@ -107,6 +109,7 @@ function init(ext) {
 			server: item.server.endsWith("/") ? item.server.rstrip("/") : item.server,
 			startPage: item.startPage || '/', //首页
 			showAll: item.showAll === true, //默认只显示 视频和文件夹，如果想显示全部 showAll 设置true
+			search: !!item.search, //是否支持搜索,只有小丫的可以,多个可搜索只取最前面的一个
 			params: item.params || {},
 			_path_param: _path_param,
 			settings: {},
@@ -298,7 +301,7 @@ function category(tid, pg, filter, extend) {
 	});
 }
 
-function getAll(tid,drives,path){
+function getAll(otid,tid,drives,path){
 	try {
 		const content = category(tid, null, false, null);
 		const { list } = JSON.parse(content);
@@ -311,7 +314,8 @@ function getAll(tid,drives,path){
 		const pl = path.split("/");
 		const vod_name = pl[pl.length - 2] || drives.name;
 		let vod = {
-			vod_id: tid,
+			// vod_id: tid,
+			vod_id: otid,
 			vod_name: vod_name,
 			type_name: "文件夹",
 			vod_pic: "https://avatars.githubusercontent.com/u/97389433?s=120&v=4",
@@ -331,15 +335,25 @@ function getAll(tid,drives,path){
 }
 
 function detail(tid) {
+	let isSearch = tid.endsWith('#search#');
+	let otid = tid;
+	tid = tid.replace('#search#','');
 	let { drives, path } = get_drives_path(tid);
 	if (path.endsWith("/")) { //长按文件夹可以 加载里面全部视频到详情
-		return getAll(tid,drives,path);
+		return getAll(otid,tid,drives,path);
 	} else {
-		if(showMode!=='all'){
+		if(isSearch){
+			return getAll(otid,tid,drives,path);
+		}else if(showMode==='all'){
+			let new_tid = tid.split('/').slice(0,-1).join('/')+'/';
+			print(`全集模式 tid:${tid}=>tid:${new_tid}`);
+			let { drives, path } = get_drives_path(new_tid);
+			return getAll(otid,new_tid,drives,path);
+		} else{
 			let paths = path.split("@@@");
 			let vod_name = paths[0].substring(paths[0].lastIndexOf("/") + 1);
 			let vod = {
-				vod_id: tid,
+				vod_id: otid,
 				vod_name: vod_name,
 				type_name: "文件",
 				vod_pic: "https://avatars.githubusercontent.com/u/97389433?s=120&v=4",
@@ -353,11 +367,6 @@ function detail(tid) {
 			return JSON.stringify({
 				'list': [vod]
 			});
-		}else{
-			let new_tid = tid.split('/').slice(0,-1).join('/')+'/';
-			print(`全集模式 tid:${tid}=>tid:${new_tid}`);
-			let { drives, path } = get_drives_path(new_tid);
-			return getAll(new_tid,drives,path);
 		}
 	}
 }
@@ -380,9 +389,33 @@ function play(flag, id, flags) {
 }
 
 function search(wd, quick) {
-	return JSON.stringify({
-		'list': []
-	});
+	print(__drives);
+	print('可搜索的alist驱动:'+searchDriver);
+	if(!searchDriver){
+		return JSON.stringify({
+			'list': []
+		});
+	}else{
+		let driver = __drives[searchDriver];
+		print(driver);
+		let html = http.get(driver.server + '/search?box='+wd+'&url=').text();
+		let lists = pdfa(html,'div&&ul&&a');
+		print(lists.length);
+		let vods = [];
+		lists.forEach(it=>{
+			let vid = searchDriver+'$'+pdfh(it,'a&&href')+'#search#';
+			vods.push({
+				vod_name:pdfh(it,'a&&Text'),
+				vod_id:vid,
+				vod_pic:'http://img1.3png.com/281e284a670865a71d91515866552b5f172b.png',
+				vod_remarks:searchDriver
+			});
+		});
+		print(vods);
+		return JSON.stringify({
+			'list': vods
+		});
+	}
 }
 
 function get_size(sz) {

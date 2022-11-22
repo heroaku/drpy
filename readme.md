@@ -51,6 +51,7 @@
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
 ###### 2022/11/22
 - [X] 增加了alist的api,版本号升级至 3.9.23
+- [X] 支持alist搜索小雅的结构,配置里加 "search": true, 仅取前面第一个alist
 - [X] 需要在custom.conf加一行自定义配置,例如:
 ```json
 {"key":"Alist","name":"Alist","type":3,"api":"{{host}}/libs/alist.min.js","searchable":0,"quickSearch":0,"filterable":0,"ext":"{{host}}/txt/json/alist.json"},
