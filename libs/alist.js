@@ -133,7 +133,10 @@ function init(ext) {
 				return this.settings.v3 ? res.data.content : res.data.files
 			},
 			getFile(path) {
-				return {raw_url:this.server+'/d'+path};
+				let raw_url = this.server+'/d'+path;
+				raw_url = encodeURI(raw_url);
+				// print('raw_url:'+raw_url);
+				return {raw_url:raw_url};
 
 				// const res = http.post(this.server + this.api.file, { data: this.getParams(path) }).json();
 				// const data = this.settings.v3 ? res.data : res.data.files[0];
@@ -415,7 +418,10 @@ function search(wd, quick) {
 		}
 		print('搜索链接:'+surl);
 		let html = http.get(surl).text();
-		let lists = pdfa(html,'div&&ul&&a');
+		let lists = [];
+		try {
+			lists = pdfa(html,'div&&ul&&a');
+		}catch (e) {}
 		print(`搜索结果数:${lists.length},搜索结果显示数量限制:${limit_search_show}`);
 		let vods = [];
 		let excludeReg = /\.(pdf|epub|mobi|txt|doc|lrc)$/; // 过滤后缀文件
