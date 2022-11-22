@@ -54,7 +54,7 @@
 - [X] 支持alist搜索小雅的结构,配置里加 "search": true, 仅取前面第一个alist
 - [X] 需要在custom.conf加一行自定义配置,例如:
 ```json
-{"key":"Alist","name":"Alist","type":3,"api":"{{host}}/libs/alist.min.js","searchable":0,"quickSearch":0,"filterable":0,"ext":"{{host}}/txt/json/alist.json"},
+{"key":"Alist","name":"Alist","type":3,"api":"{{host}}/libs/alist.min.js","searchable":2,"quickSearch":0,"filterable":0,"ext":"{{host}}/txt/json/alist.json"},
 ```
 ###### 2022/11/21
 - [X] 重新定义依赖代理逻辑
