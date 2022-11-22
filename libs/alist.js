@@ -25,6 +25,7 @@ String.prototype.rstrip = function (chars) {
 var showMode = 'single';
 var searchDriver = '';
 var limit_search_show = 200;
+var search_type = '';
 /**
  * 打印日志
  * @param any 任意变量
@@ -103,6 +104,7 @@ function init(ext) {
 	let alist_data = ext.split(';');
 	let alist_data_url = alist_data[0];
 	limit_search_show = alist_data.length>1?Number(alist_data[1])||limit_search_show:limit_search_show;
+	search_type = alist_data.length>2?alist_data[2]:search_type;
 	const data = http.get(alist_data_url).json();
 	searchDriver = (data.find(x=>x.search)||{}).name||'';
 	data.forEach(item => {
@@ -407,7 +409,12 @@ function search(wd, quick) {
 	}else{
 		let driver = __drives[searchDriver];
 		print(driver);
-		let html = http.get(driver.server + '/search?box='+wd+'&url=').text();
+		let surl = driver.server + '/search?box='+wd+'&url=';
+		if(search_type){
+			surl+='&type='+search_type;
+		}
+		print('搜索链接:'+surl);
+		let html = http.get(surl).text();
 		let lists = pdfa(html,'div&&ul&&a');
 		print(`搜索结果数:${lists.length},搜索结果显示数量限制:${limit_search_show}`);
 		let vods = [];
