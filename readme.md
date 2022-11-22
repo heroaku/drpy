@@ -49,6 +49,12 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/11/22
+- [X] 增加了alist的api,版本号升级至 3.9.23
+- [X] 需要在custom.conf加一行自定义配置,例如:
+```json
+{"key":"Alist","name":"Alist","type":3,"api":"{{host}}/libs/alist.min.js","searchable":0,"quickSearch":0,"filterable":0,"ext":"{{host}}/txt/json/alist.json"},
+```
 ###### 2022/11/21
 - [X] 重新定义依赖代理逻辑
 - [X] 设置中心增加自定义环境变量,演示源:007影视.js

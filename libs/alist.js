@@ -22,7 +22,7 @@ String.prototype.rstrip = function (chars) {
 	let regex = new RegExp(chars + "$");
 	return this.replace(regex, "");
 };
-
+var showMode = 'single';
 /**
  * 打印日志
  * @param any 任意变量
@@ -144,7 +144,28 @@ function init(ext) {
 			getPic(data) {
 				let pic = this.settings.v3 ? data.thumb : data.thumbnail;
 				return pic || (this.isFolder(data) ? "http://img1.3png.com/281e284a670865a71d91515866552b5f172b.png" : '');
-			}
+			},
+			getTime(data,isStandard) {
+				isStandard = isStandard||false;
+				try {
+					let tTime = data.updated_at || data.time_str || data.modified || "";
+					let date = '';
+					if(tTime){
+						tTime = tTime.split("T");
+						date = tTime[0];
+						if(isStandard){
+							date = date.replace(/-/g,"/");
+						}
+						tTime = tTime[1].split(/Z|\./);
+						date += " " + tTime[0];
+					}
+					return date;
+				}catch (e) {
+					// print(e.message);
+					// print(data);
+					return ''
+				}
+			},
 	}
 	}
 	);
@@ -158,7 +179,11 @@ function home(filter) {
 		type_flag: '1',
 	}));
 	let filter_dict = {};
-	let filters = [{'key': 'order', 'name': '排序方式', 'value': [{'n': '名称正序', 'v': 'vod_name_asc'}, {'n': '名称倒序', 'v': 'vod_name_desc'}]}];
+	let filters = [{'key': 'order', 'name': '排序', 'value': [{'n': '名称⬆️', 'v': 'vod_name_asc'}, {'n': '名称⬇️', 'v': 'vod_name_desc'},
+			{'n': '时间⬆️', 'v': 'vod_time_asc'}, {'n': '时间⬇️', 'v': 'vod_time_desc'},
+			{'n': '大小⬆️', 'v': 'vod_size_asc'}, {'n': '大小⬇️', 'v': 'vod_size_desc'}]},
+			{'key': 'show', 'name': '播放展示', 'value': [{'n': '单集', 'v': 'single'},{'n': '全集', 'v': 'all'}]}
+	];
 	classes.forEach(it=>{
 		filter_dict[it.type_id] = filters;
 	});
@@ -185,14 +210,18 @@ function category(tid, pg, filter, extend) {
 		if (!drives.showAll && !drives.isFolder(item) && !drives.isVideo(item)) {
 			return //只显示视频文件和文件夹
 		}
-		let remark = get_size(item.size);
+		let vod_time = drives.getTime(item);
+		let vod_size = get_size(item.size);
+		let remark = vod_time.split(' ')[0].substr(3)+'\t'+vod_size;
 		const vod = {
 			'vod_id': id + item.name + (drives.isFolder(item) ? '/' : ''),
 			'vod_name': item.name.replaceAll("$", "").replaceAll("#", ""),
 			'vod_pic': drives.getPic(item),
+			'vod_time':vod_time ,
+			'vod_size':item.size ,
 			'vod_tag': drives.isFolder(item) ? 'folder' : 'file',
 			'vod_remarks': drives.isFolder(item) ? remark + ' 文件夹' : remark
-		}
+		};
 		if (drives.isVideo(item)) {
 			vodFiles.push(vod);
 		}
@@ -219,7 +248,8 @@ function category(tid, pg, filter, extend) {
 			sub = subs.slice(-1)[0];
 		}
 		vodFiles[0].vod_id += "@@@" + sub;
-		vodFiles[0].vod_remarks += " 有字幕";
+		// vodFiles[0].vod_remarks += " 有字幕";
+		vodFiles[0].vod_remarks += "🏷️";
 	} else {
 		vodFiles.forEach(item => {
 			const lh = 0;
@@ -233,20 +263,30 @@ function category(tid, pg, filter, extend) {
 			});
 			if (sub) {
 				item.vod_id += "@@@" + sub;
-				item.vod_remarks += " 有字幕";
+				// item.vod_remarks += " 有字幕";
+				item.vod_remarks += "🏷️";
 			}
 		});
 	}
-	print("----category----");
+	print("----category----,tid:"+tid);
 	let fl = filter?extend:{};
 	if(fl.order){
 		// print(fl.order);
 		let key = fl.order.split('_').slice(0,-1).join('_');
 		let order = fl.order.split('_').slice(-1)[0];
 		print(`排序key:${key},排序order:${order}`);
-		allList = sortListByName(allList,key,order);
+		if(key.includes('name')){
+			allList = sortListByName(allList,key,order);
+		}else if(key.includes('time')){
+			allList = sortListByTime(allList,key,order);
+		}else if(key.includes('size')){
+			allList = sortListBySize(allList,key,order);
+		}
 	}else{
 		allList = sortListByName(allList,'vod_name','asc');
+	}
+	if(fl.show){
+		showMode = fl.show;
 	}
 	// print(allList);
 	return JSON.stringify({
@@ -258,9 +298,8 @@ function category(tid, pg, filter, extend) {
 	});
 }
 
-function detail(tid) {
-	let { drives, path } = get_drives_path(tid);
-	if (path.endsWith("/")) { //长按文件夹可以 加载里面全部视频到详情
+function getAll(tid,drives,path){
+	try {
 		const content = category(tid, null, false, null);
 		const { list } = JSON.parse(content);
 		let vod_play_url = [];
@@ -285,24 +324,41 @@ function detail(tid) {
 		print("----detail1----");
 		print(vod);
 		return JSON.stringify({ 'list': [vod] });
+	}catch (e) {
+		print(e.message);
+		return JSON.stringify({ 'list': [{}] });
+	}
+}
+
+function detail(tid) {
+	let { drives, path } = get_drives_path(tid);
+	if (path.endsWith("/")) { //长按文件夹可以 加载里面全部视频到详情
+		return getAll(tid,drives,path);
 	} else {
-		let paths = path.split("@@@");
-		let vod_name = paths[0].substring(paths[0].lastIndexOf("/") + 1);
-		let vod = {
-			vod_id: tid,
-			vod_name: vod_name,
-			type_name: "文件",
-			vod_pic: "https://avatars.githubusercontent.com/u/97389433?s=120&v=4",
-			vod_content: tid,
-			vod_play_from: drives.name,
-			vod_play_url: vod_name + "$" + path,
-			vod_remarks: drives.settings.title,
-		};
-		print("----detail2----");
-		print(vod);
-		return JSON.stringify({
-			'list': [vod]
-		});
+		if(showMode!=='all'){
+			let paths = path.split("@@@");
+			let vod_name = paths[0].substring(paths[0].lastIndexOf("/") + 1);
+			let vod = {
+				vod_id: tid,
+				vod_name: vod_name,
+				type_name: "文件",
+				vod_pic: "https://avatars.githubusercontent.com/u/97389433?s=120&v=4",
+				vod_content: tid,
+				vod_play_from: drives.name,
+				vod_play_url: vod_name + "$" + path,
+				vod_remarks: drives.settings.title,
+			};
+			print("----detail2----");
+			print(vod);
+			return JSON.stringify({
+				'list': [vod]
+			});
+		}else{
+			let new_tid = tid.split('/').slice(0,-1).join('/')+'/';
+			print(`全集模式 tid:${tid}=>tid:${new_tid}`);
+			let { drives, path } = get_drives_path(new_tid);
+			return getAll(new_tid,drives,path);
+		}
 	}
 }
 
@@ -480,6 +536,42 @@ const sortListByName = (vodList,key,order) => {
 			// 都能转换为数字——转换为数字进行比较——从小到大排序
 			return Number(a) - Number(b);
 		}
+	});
+	if(order==='desc'){
+		ASCarr.reverse();
+	}
+	return ASCarr
+};
+
+const getTimeInt = (timeStr) => {
+	return (new Date(timeStr)).getTime();
+};
+
+// 时间
+const sortListByTime = (vodList,key,order) => {
+	if (!key) {
+		return vodList
+	}
+	let ASCarr = vodList.sort((a, b) => {
+		a = a[key];
+		b = b[key];
+		return getTimeInt(a) - getTimeInt(b);
+	});
+	if(order==='desc'){
+		ASCarr.reverse();
+	}
+	return ASCarr
+};
+
+// 大小
+const sortListBySize = (vodList,key,order) => {
+	if (!key) {
+		return vodList
+	}
+	let ASCarr = vodList.sort((a, b) => {
+		a = a[key];
+		b = b[key];
+		return (Number(a) || 0) - (Number(b) || 0);
 	});
 	if(order==='desc'){
 		ASCarr.reverse();
