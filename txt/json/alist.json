@@ -3,6 +3,7 @@
 	"server": "http://alist.xiaoya.pro/",
 	"startPage": "/",
 	"showAll": false,
+	"search": true,
 	"params": {
 		"/abc": {
 			"password": "123"
