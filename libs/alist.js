@@ -24,6 +24,8 @@ String.prototype.rstrip = function (chars) {
 };
 var showMode = 'single';
 var searchDriver = '';
+var limit_search_show = 200;
+var search_type = '';
 /**
  * 打印日志
  * @param any 任意变量
@@ -63,6 +65,10 @@ const http = function (url, options = {}) {
 
 const __drives = {};
 
+function isMedia(file){
+	return /\.(wmv|mpeg|mov|ram|swf|mp4|mp3|wma|avi|rm|rmvb|flv|mpg|mkv|m3u8)$/.test(file);
+}
+
 function get_drives_path(tid) {
 	const index = tid.indexOf('$');
 	const name = tid.substring(0, index);
@@ -95,7 +101,11 @@ function get_drives(name) {
 }
 
 function init(ext) {
-	const data = http.get(ext).json();
+	let alist_data = ext.split(';');
+	let alist_data_url = alist_data[0];
+	limit_search_show = alist_data.length>1?Number(alist_data[1])||limit_search_show:limit_search_show;
+	search_type = alist_data.length>2?alist_data[2]:search_type;
+	const data = http.get(alist_data_url).json();
 	searchDriver = (data.find(x=>x.search)||{}).name||'';
 	data.forEach(item => {
 		let _path_param = [];
@@ -123,7 +133,10 @@ function init(ext) {
 				return this.settings.v3 ? res.data.content : res.data.files
 			},
 			getFile(path) {
-				return {raw_url:this.server+'/d'+path};
+				let raw_url = this.server+'/d'+path;
+				raw_url = encodeURI(raw_url);
+				// print('raw_url:'+raw_url);
+				return {raw_url:raw_url};
 
 				// const res = http.post(this.server + this.api.file, { data: this.getParams(path) }).json();
 				// const data = this.settings.v3 ? res.data : res.data.files[0];
@@ -338,11 +351,12 @@ function detail(tid) {
 	let isSearch = tid.endsWith('#search#');
 	let otid = tid;
 	tid = tid.replace('#search#','');
+	let isFile = isMedia(tid);
 	let { drives, path } = get_drives_path(tid);
 	if (path.endsWith("/")) { //长按文件夹可以 加载里面全部视频到详情
 		return getAll(otid,tid,drives,path);
 	} else {
-		if(isSearch){
+		if(isSearch&&!isFile){
 			return getAll(otid,tid,drives,path);
 		}else if(showMode==='all'){
 			let new_tid = tid.split('/').slice(0,-1).join('/')+'/';
@@ -398,12 +412,28 @@ function search(wd, quick) {
 	}else{
 		let driver = __drives[searchDriver];
 		print(driver);
-		let html = http.get(driver.server + '/search?box='+wd+'&url=').text();
-		let lists = pdfa(html,'div&&ul&&a');
-		print(lists.length);
+		let surl = driver.server + '/search?box='+wd+'&url=';
+		if(search_type){
+			surl+='&type='+search_type;
+		}
+		print('搜索链接:'+surl);
+		let html = http.get(surl).text();
+		let lists = [];
+		try {
+			lists = pdfa(html,'div&&ul&&a');
+		}catch (e) {}
+		print(`搜索结果数:${lists.length},搜索结果显示数量限制:${limit_search_show}`);
 		let vods = [];
+		let excludeReg = /\.(pdf|epub|mobi|txt|doc|lrc)$/; // 过滤后缀文件
 		lists.forEach(it=>{
-			let vid = searchDriver+'$'+pdfh(it,'a&&href')+'#search#';
+			let vhref = pdfh(it,'a&&href');
+			if(vhref){
+				vhref = unescape(vhref);
+			}
+			if(excludeReg.test(vhref)){
+				return; //跳过本次循环
+			}
+			let vid = searchDriver+'$'+vhref+'#search#';
 			vods.push({
 				vod_name:pdfh(it,'a&&Text'),
 				vod_id:vid,
@@ -411,6 +441,8 @@ function search(wd, quick) {
 				vod_remarks:searchDriver
 			});
 		});
+		// 截取搜索结果
+		vods = vods.slice(0,limit_search_show);
 		print(vods);
 		return JSON.stringify({
 			'list': vods
