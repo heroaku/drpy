@@ -52,6 +52,7 @@
 ###### 2022/11/22
 - [X] 增加了alist的api,版本号升级至 3.9.23
 - [X] 支持alist搜索小雅的结构,配置里加 "search": true, 仅取前面第一个alist
+- [X] alist搜索支持限制搜索结果数,默认取前200. "ext":"{{host}}/txt/json/alist.json;200" 这种格式,分号隔开传参数
 - [X] 需要在custom.conf加一行自定义配置,例如:
 ```json
 {"key":"Alist","name":"Alist","type":3,"api":"{{host}}/libs/alist.min.js","searchable":2,"quickSearch":0,"filterable":0,"ext":"{{host}}/txt/json/alist.json"},
