@@ -1,6 +1,6 @@
 // import _ from 'https://underscorejs.org/underscore-esm-min.js'
 import {distance} from 'https://unpkg.com/fastest-levenshtein@1.0.16/esm/mod.js'
-import {sortListByCN} from 'https://unpkg.com/fastest-levenshtein@1.0.16/esm/mod.js'
+import {sortListByCN} from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/sortName.js'
 
 /**
  * alist js
@@ -27,6 +27,7 @@ var searchDriver = '';
 var limit_search_show = 200;
 var search_type = '';
 var detail_order = 'name';
+const request_timeout = 5000;
 /**
  * 打印日志
  * @param any 任意变量
@@ -53,10 +54,21 @@ const http = function (url, options = {}) {
 		options.body = JSON.stringify(options.data);
 		options.headers = Object.assign({'content-type':'application/json'}, options.headers);
 	}
-    const res = req(url, options);
-    res.json = () => res.content ? JSON.parse(res.content) : null;
-    res.text = () => res.content;
-    return res
+	options.timeout = request_timeout;
+	try {
+		const res = req(url, options);
+		res.json = () => res&&res.content ? JSON.parse(res.content) : null;
+		res.text = () => res&&res.content ? res.content:'';
+		return res
+	}catch (e) {
+		return {
+			json() {
+				return null
+			}, text() {
+				return ''
+			}
+		}
+	}
 };
 ["get", "post"].forEach(method => {
     http[method] = function (url, options = {}) {
@@ -197,6 +209,7 @@ function home(filter) {
 	}));
 	let filter_dict = {};
 	let filters = [{'key': 'order', 'name': '排序', 'value': [{'n': '名称⬆️', 'v': 'vod_name_asc'}, {'n': '名称⬇️', 'v': 'vod_name_desc'},
+			{'n': '中英⬆️', 'v': 'vod_cn_asc'}, {'n': '中英⬇️', 'v': 'vod_cn_desc'},
 			{'n': '时间⬆️', 'v': 'vod_time_asc'}, {'n': '时间⬇️', 'v': 'vod_time_desc'},
 			{'n': '大小⬆️', 'v': 'vod_size_asc'}, {'n': '大小⬇️', 'v': 'vod_size_desc'},{'n': '无', 'v': 'none'}]},
 			{'key': 'show', 'name': '播放展示', 'value': [{'n': '单集', 'v': 'single'},{'n': '全集', 'v': 'all'}]}
@@ -294,6 +307,9 @@ function category(tid, pg, filter, extend) {
 		if(key.includes('name')){
 			detail_order = 'name';
 			allList = sortListByName(allList,key,order);
+		}else if(key.includes('cn')){
+			detail_order = 'cn';
+			allList = sortListByCN(allList,'vod_name',order);
 		}else if(key.includes('time')){
 			detail_order = 'time';
 			allList = sortListByTime(allList,key,order);

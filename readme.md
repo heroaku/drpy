@@ -49,6 +49,8 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/11/23
+- [X] 优化alist的名称排序算法
 ###### 2022/11/22
 - [X] 增加了alist的api,版本号升级至 3.9.23
 - [X] 支持alist搜索小雅的结构,配置里加 "search": true, 仅取前面第一个alist
