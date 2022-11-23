@@ -7,6 +7,7 @@
 from utils.ua import MOBILE_UA
 from utils.htmlParser import jsoup
 import requests
+from pyquery import PyQuery as pq
 
 
 def main():
@@ -94,8 +95,44 @@ def main3():
     a = jsp.pdfa(html,'.yunplay&&.downtitle&&ul li')
     print(a)
 
+def main4():
+    a = '唐人街电影.html'
+    a = '日常.html'
+    with open(a,encoding='utf-8') as f:
+        html = f.read()
+    # print(html)
+    二级 =  {"title": "h2&&Text;.content_detail.content_min.fl .data_style&&Text",
+         "img": ".content_thumb .vodlist_thumb&&data-original",
+         "desc": ".content_detail.content_min.fl li:eq(0)&&Text;.content_detail.content_min.fl li:eq(2)&&Text;.content_detail.content_min.fl li:eq(3)&&Text",
+         "content": ".content&&Text", "tabs": ".play_source_tab:eq(0) a", "lists": ".content_playlist:eq(#id) li"}
+    print(二级)
+    jsp = jsoup('https://www.tangrenjie.tv/vod/detail/id/218945.html')
+    # print(jsp.pdfa(html, 'h2'))
+    # print('h2&&Text',jsp.pdfh(html, 'h2&&Text'))
+    for i in 二级['title'].split(';'):
+        print(i)
+        print(jsp.pdfh(html,i))
+    for i in 二级['desc'].split(';'):
+        print(i)
+        print(jsp.pdfh(html,i))
+
+    for i in 二级['content'].split(';'):
+        print(i)
+        print(jsp.pdfh(html,i))
+
+    for i in 二级['img'].split(';'):
+        print(i)
+        print(jsp.pd(html,i))
+    print(jsp.pdfa(html,'.play_source_tab:eq(0) a'))
+    print(jsp.pdfa(html,'#playlistbox&&.content_playlist:eq(1) li'))
+    # doc = pq(html)
+    # print(doc)
+    # print('h2',doc.find('h2'))
+    # print('h2',doc('.title'))
+    # print('h2:',doc('h2'))
 if __name__ == '__main__':
     # main()
     # main1()
     # main2()
-    main3()
+    # main3()
+    main4()

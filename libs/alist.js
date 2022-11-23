@@ -26,6 +26,7 @@ var showMode = 'single';
 var searchDriver = '';
 var limit_search_show = 200;
 var search_type = '';
+var detail_order = 'name';
 /**
  * 打印日志
  * @param any 任意变量
@@ -66,7 +67,7 @@ const http = function (url, options = {}) {
 const __drives = {};
 
 function isMedia(file){
-	return /\.(wmv|mpeg|mov|ram|swf|mp4|mp3|wma|avi|rm|rmvb|flv|mpg|mkv|m3u8)$/.test(file);
+	return /\.(mp3|aac|wav|wma|cda|flac|m4a|mid|mka|mp2|mpa|mpc|ape|ofr|ogg|ra|wv|tta|ac3|dts|tak|webm|wmv|mpeg|mov|ram|swf|mp4|avi|rm|rmvb|flv|mpg|mkv|m3u8|ts|3gp|asf)$/.test(file.toLowerCase());
 }
 
 function get_drives_path(tid) {
@@ -197,7 +198,7 @@ function home(filter) {
 	let filter_dict = {};
 	let filters = [{'key': 'order', 'name': '排序', 'value': [{'n': '名称⬆️', 'v': 'vod_name_asc'}, {'n': '名称⬇️', 'v': 'vod_name_desc'},
 			{'n': '时间⬆️', 'v': 'vod_time_asc'}, {'n': '时间⬇️', 'v': 'vod_time_desc'},
-			{'n': '大小⬆️', 'v': 'vod_size_asc'}, {'n': '大小⬇️', 'v': 'vod_size_desc'}]},
+			{'n': '大小⬆️', 'v': 'vod_size_asc'}, {'n': '大小⬇️', 'v': 'vod_size_desc'},{'n': '无', 'v': 'none'}]},
 			{'key': 'show', 'name': '播放展示', 'value': [{'n': '单集', 'v': 'single'},{'n': '全集', 'v': 'all'}]}
 	];
 	classes.forEach(it=>{
@@ -284,7 +285,6 @@ function category(tid, pg, filter, extend) {
 			}
 		});
 	}
-	print("----category----,tid:"+tid);
 	let fl = filter?extend:{};
 	if(fl.order){
 		// print(fl.order);
@@ -292,18 +292,28 @@ function category(tid, pg, filter, extend) {
 		let order = fl.order.split('_').slice(-1)[0];
 		print(`排序key:${key},排序order:${order}`);
 		if(key.includes('name')){
+			detail_order = 'name';
 			allList = sortListByName(allList,key,order);
 		}else if(key.includes('time')){
+			detail_order = 'time';
 			allList = sortListByTime(allList,key,order);
 		}else if(key.includes('size')){
+			detail_order = 'size';
 			allList = sortListBySize(allList,key,order);
+		}else if(fl.order.includes('none')){
+			detail_order = 'none';
+			print('不排序');
 		}
 	}else{
-		allList = sortListByName(allList,'vod_name','asc');
+		// 没传order是其他地方调用的,自动按名称正序排序方便追剧,如果传了none进去就不排序，假装云盘里本身文件顺序是正常的
+		if(detail_order!=='none'){
+			allList = sortListByName(allList,'vod_name','asc');
+		}
 	}
 	if(fl.show){
 		showMode = fl.show;
 	}
+	print("----category----"+`tid:${tid},detail_order:${detail_order},showMode:${showMode}`);
 	// print(allList);
 	return JSON.stringify({
 		'page': 1,

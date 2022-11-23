@@ -108,11 +108,12 @@ class jsoup:
         :return:
         """
         nparse_rule, nparse_index, excludes = self.getParseInfo(nparse)
+
         if not ret:
             ret = doc(nparse_rule)
         else:
             ret = ret(nparse_rule)
-
+        # print(f'nparse_rule:{nparse_rule},nparse_index:{nparse_index},excludes:{excludes},ret:{ret}')
         if self.contains(nparse, ':eq'):
             ret = ret.eq(nparse_index)
             # if nparse_index > 4:
