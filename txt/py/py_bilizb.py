@@ -11,7 +11,9 @@ import time
 import base64
 
 
-class Spider(Spider):  # 元类 默认的元类 type
+class Spider(Spider):
+    def getDependence(self):
+        return ['py_bilibili']
 
     def getName(self):
         return "哔哩直播"
@@ -49,31 +51,11 @@ class Spider(Spider):  # 元类 默认的元类 type
     userid = ''
 
     def getCookie(self):
-        # --------↓↓↓↓↓↓↓------在下方cookies_str后的双引号内填写-------↓↓↓↓↓↓↓--------
-        cookies_str = ""
-        if cookies_str:
-            cookies = dict([co.strip().split('=', 1) for co in cookies_str.split(';')])
-            bili_jct = cookies['bili_jct']
-            SESSDATA = cookies['SESSDATA']
-            DedeUserID = cookies['DedeUserID']
-
-            cookies_jar = {"bili_jct": bili_jct,
-                           'SESSDATA': SESSDATA,
-                           'DedeUserID': DedeUserID
-                           }
-            rsp = session()
-            rsp.cookies = cookies_jar
-            content = self.fetch("https://api.bilibili.com/x/web-interface/nav", cookies=rsp.cookies)
-            res = json.loads(content.text)
-            if res["code"] == 0:
-                self.cookies = rsp.cookies
-                self.userid = res["data"].get('mid')
-                return rsp.cookies
-        rsp = self.fetch("https://www.bilibili.com/")
-        self.cookies = rsp.cookies
-        return rsp.cookies
+        self.cookies = self.bilibili.getCookie()
+        return self.cookies
 
     def init(self, extend=""):
+        self.bilibili = extend[0]
         print("============{0}============".format(extend))
         pass
 
@@ -96,7 +78,6 @@ class Spider(Spider):  # 元类 默认的元类 type
                 p = str(num)
         return p
 
-    # 获取主播用户名
     uname = ''
 
     def get_live_userInfo(self, uid):

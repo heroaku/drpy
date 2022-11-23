@@ -25,6 +25,7 @@ class Spider(Spider):  # 元类 默认的元类 type
     def homeContent(self, filter):
         result = {}
         cateManual = {
+            "丫仙女": "http://alist.xiaoya.pro/",
             "七米蓝": "https://al.chirmyram.com/",
             "梅花盘": "https://pan.142856.xyz/OneDrive",
             "触光云盘": "https://pan.ichuguang.com",
