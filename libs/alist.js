@@ -464,6 +464,7 @@ function search(wd, quick) {
 			vods.push({
 				vod_name:pdfh(it,'a&&Text'),
 				vod_id:vid,
+				vod_tag: isMedia(vhref) ? 'file' : 'folder',
 				vod_pic:'http://img1.3png.com/281e284a670865a71d91515866552b5f172b.png',
 				vod_remarks:searchDriver
 			});
