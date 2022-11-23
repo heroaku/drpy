@@ -440,6 +440,7 @@ function search(wd, quick) {
 			if(vhref){
 				vhref = unescape(vhref);
 			}
+			// print(vhref);
 			if(excludeReg.test(vhref)){
 				return; //跳过本次循环
 			}
