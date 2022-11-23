@@ -1,6 +1,6 @@
 // import _ from 'https://underscorejs.org/underscore-esm-min.js'
-import { distance } from 'https://unpkg.com/fastest-levenshtein@1.0.16/esm/mod.js'
-import {getFirstLetterList } from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/pinyin_getFirstLetterList.js'
+import {distance} from 'https://unpkg.com/fastest-levenshtein@1.0.16/esm/mod.js'
+import {sortListByCN} from 'https://unpkg.com/fastest-levenshtein@1.0.16/esm/mod.js'
 
 /**
  * alist js
@@ -440,7 +440,7 @@ function search(wd, quick) {
 			if(vhref){
 				vhref = unescape(vhref);
 			}
-			// print(vhref);
+			print(vhref);
 			if(excludeReg.test(vhref)){
 				return; //跳过本次循环
 			}
@@ -499,124 +499,95 @@ function levenshteinDistance(str1, str2) {
     return 100 - 100 * distance(str1, str2) / Math.max(str1.length, str2.length);
 }
 
-// 首字母开头排序
-const sortListByFirst = (vodList,key) => {
-	key = key||'vod_name';
-	// 名字以特殊符号开头的应用列表
-	const symbol_list = [];
-	// 名字以中文开头的应用列表
-	const cn_list = [];
-	// 名字以英文开头的应用列表
-	const en_list = [];
-	// 名字以数字开头的应用列表
-	const num_list = [];
+/**
+ * 自然排序
+ * ["第1集","第10集","第20集","第2集","1","2","10","12","23","01","02"].sort(naturalSort())
+ * @param options {{key,caseSensitive, order: string}}
+ */
+function naturalSort(options) {
+	if (!options) {
+		options = {};
+	}
 
-	vodList.forEach((vod) => {
-		const { vod_name } = vod;
-		//通过正则进行数据分类
-		if (/[\u4e00-\u9fa5]/.test(vod_name[0])) {
-			cn_list.push(vod);
-		} else if (/[a-zA-Z]/.test(vod_name[0])) {
-			en_list.push(vod);
-		} else if (/[\d]/.test(vod_name[0])) {
-			num_list.push(vod);
-		} else {
-			symbol_list.push(vod);
+	return function (a, b) {
+		if(options.key){
+			a = a[options.key];
+			b = b[options.key];
 		}
-	});
-	//按照要求的方式进行数据排序重组
-	const newList = [
-		...cn_list.sort((a, b) => a.vod_name[0]?.localeCompare(b.vod_name[0])),
-		...en_list.sort((a, b) => a.vod_name[0].localeCompare(b.vod_name[0])),//localeCompare可以不区分大小写的进行排序
-		...num_list.sort((a, b) => a.vod_name[0] - b.vod_name[0]),
-		...symbol_list.sort((a, b) => a.vod_name[0] - b.vod_name[0])
-	];
-	return newList
-};
+		var EQUAL = 0;
+		var GREATER = (options.order === 'desc' ?
+				-1 :
+				1
+		);
+		var SMALLER = -GREATER;
 
-// 判断字符串是否全是中文
-function isAllChinese(str) {
-	return /^[\u4E00-\u9FA5]+$/.test(str);
+		var re = /(^-?[0-9]+(\.?[0-9]*)[df]?e?[0-9]?$|^0x[0-9a-f]+$|[0-9]+)/gi;
+		var sre = /(^[ ]*|[ ]*$)/g;
+		var dre = /(^([\w ]+,?[\w ]+)?[\w ]+,?[\w ]+\d+:\d+(:\d+)?[\w ]?|^\d{1,4}[\/\-]\d{1,4}[\/\-]\d{1,4}|^\w+, \w+ \d+, \d{4})/;
+		var hre = /^0x[0-9a-f]+$/i;
+		var ore = /^0/;
+
+		var normalize = function normalize(value) {
+			var string = '' + value;
+			return (options.caseSensitive ?
+					string :
+					string.toLowerCase()
+			);
+		};
+
+		// Normalize values to strings
+		var x = normalize(a).replace(sre, '') || '';
+		var y = normalize(b).replace(sre, '') || '';
+
+		// chunk/tokenize
+		var xN = x.replace(re, '\0$1\0').replace(/\0$/, '').replace(/^\0/, '').split('\0');
+		var yN = y.replace(re, '\0$1\0').replace(/\0$/, '').replace(/^\0/, '').split('\0');
+
+		// Return immediately if at least one of the values is empty.
+		if (!x && !y) return EQUAL;
+		if (!x && y) return GREATER;
+		if (x && !y) return SMALLER;
+
+		// numeric, hex or date detection
+		var xD = parseInt(x.match(hre)) || (xN.length != 1 && x.match(dre) && Date.parse(x));
+		var yD = parseInt(y.match(hre)) || xD && y.match(dre) && Date.parse(y) || null;
+		var oFxNcL, oFyNcL;
+
+		// first try and sort Hex codes or Dates
+		if (yD) {
+			if (xD < yD) return SMALLER;
+			else if (xD > yD) return GREATER;
+		}
+
+		// natural sorting through split numeric strings and default strings
+		for (var cLoc = 0, numS = Math.max(xN.length, yN.length); cLoc < numS; cLoc++) {
+
+			// find floats not starting with '0', string or 0 if not defined (Clint Priest)
+			oFxNcL = !(xN[cLoc] || '').match(ore) && parseFloat(xN[cLoc]) || xN[cLoc] || 0;
+			oFyNcL = !(yN[cLoc] || '').match(ore) && parseFloat(yN[cLoc]) || yN[cLoc] || 0;
+
+			// handle numeric vs string comparison - number < string - (Kyle Adams)
+			if (isNaN(oFxNcL) !== isNaN(oFyNcL)) return (isNaN(oFxNcL)) ? GREATER : SMALLER;
+
+			// rely on string comparison if different types - i.e. '02' < 2 != '02' < '2'
+			else if (typeof oFxNcL !== typeof oFyNcL) {
+				oFxNcL += '';
+				oFyNcL += '';
+			}
+			if (oFxNcL < oFyNcL) return SMALLER;
+			if (oFxNcL > oFyNcL) return GREATER;
+		}
+		return EQUAL;
+	};
 }
-
-// 判断字符是否为中文
-function isChinese(char) {
-	return /^[\u4E00-\u9FA5]$/.test(char);
-}
-
 // 完整名称排序
 const sortListByName = (vodList,key,order) => {
 	if(!key){
 		return vodList
 	}
 	order = order||'asc'; // 默认正序
-	let ASCarr = vodList.sort((a, b) => {
-		a = a[key];
-		b = b[key];
-		// 数字排在字符串前面
-		if (typeof a === 'number' && typeof b === 'string') {
-			return -1;
-		}
-
-		if (typeof a === 'string' && typeof b === 'number') {
-			return 1;
-		}
-
-		// 当存在非数字时
-		if (isNaN(a) || isNaN(b)) {
-
-			// 全汉字的排在非全汉字的后面
-			if (isAllChinese(a) && !isAllChinese(b)) {
-				return 1;
-			}
-
-			if (!isAllChinese(a) && isAllChinese(b)) {
-				return -1;
-			}
-
-			// 存在非数字的数据时，都转为字符串进行比较
-			a = a.toString();
-			b = b.toString();
-
-			let result = 0;
-
-			// 依次比较两个字符串的各项字符
-			for (let index = 0; index < ((a.length - b.length) ? b.length : a.length); index++) {
-
-				// 汉字排在非汉字的后面
-				if (!isChinese(a[index]) && isChinese(b[index])) {
-					result = -1;
-				}
-
-				if (isChinese(a[index]) && !isChinese(b[index])) {
-					result = 1;
-				}
-
-				// 若两个汉字进行比较，则比较他们的拼音首字母
-				if (isChinese(a[index]) && isChinese(b[index])) {
-					let pinyinA = getFirstLetterList(a[index]).toString();
-					let pinyinB = getFirstLetterList(b[index]).toString();
-
-					result = pinyinA.localeCompare(pinyinB, 'zh-Hans-CN', { sensitivity: 'accent' });
-				}
-
-				// 若已经比较出结果，则跳出循环，不再继续比较剩余字符
-				if (result !== 0) {
-					break
-				}
-			}
-
-			// 只要有一个无法转换为数字——转换为字符串进行比较——先按字符排序，然后按照数字排序
-			return result || a.toString().localeCompare(b.toString(), 'zh-Hans-CN', { sensitivity: 'accent' });
-		} else {
-			// 都能转换为数字——转换为数字进行比较——从小到大排序
-			return Number(a) - Number(b);
-		}
-	});
-	if(order==='desc'){
-		ASCarr.reverse();
-	}
-	return ASCarr
+	// 排序键,顺序,区分大小写
+	return vodList.sort(naturalSort({key: key, order: order,caseSensitive:true}))
 };
 
 const getTimeInt = (timeStr) => {
