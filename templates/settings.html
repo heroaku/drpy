@@ -51,11 +51,25 @@
                    }
     });
   }
+
+  function checkValue(key,value){
+    if(key==='ENV'){
+      try {
+        JSON.parse(value);
+      }catch (e) {
+        layer.msg(`保存失败,变量 ${key}必须为json格式!`);
+        return false;
+      }
+    }
+    return true;
+  }
     $(document).ready(function() {
       $(".save_conf").click(function () {
         let key = $(this).attr('value');
         let value = $(`input.conf[name="${key}"]`).val();
-        saveConf(key,value);
+        if(checkValue(key,value)){
+            saveConf(key,value);
+        }
       });
       $('.edit_conf').click(function (){
         let key = $(this).attr('value');
@@ -67,7 +81,9 @@
           area: ['320px', '100px'] //自定义文本域宽高
 	    }, function(value, index, elem){
 	      console.log(value); //得到value
-          saveConf(key,value);
+          if(checkValue(key,value)){
+            saveConf(key,value);
+          }
           layer.close(index);
         });
       });

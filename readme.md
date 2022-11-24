@@ -49,6 +49,9 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/11/24
+- [X] 优化alist的历史记录和收藏
+- [X] 设置中心环境变量增加前端的保存校验
 ###### 2022/11/23
 - [X] 优化alist的名称排序算法
 ###### 2022/11/22

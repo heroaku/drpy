@@ -228,12 +228,17 @@ function homeVod(params) {
 }
 
 function category(tid, pg, filter, extend) {
-	let { drives, path } = get_drives_path(tid);
-	const id = tid.endsWith('/') ? tid : tid + '/';
+	let orid = tid.replace(/#all#|#search#/g,'');
+	let { drives, path } = get_drives_path(orid);
+	const id = orid.endsWith('/') ? orid : orid + '/';
 	const list = drives.getPath(path);
 	let subList = [];
 	let vodFiles = [];
 	let allList = [];
+	let fl = filter?extend:{};
+	if(fl.show){
+		showMode = fl.show;
+	}
 	list.forEach(item => {
 		if (drives.is_subt(item)) {
 			subList.push(item.name);
@@ -244,8 +249,13 @@ function category(tid, pg, filter, extend) {
 		let vod_time = drives.getTime(item);
 		let vod_size = get_size(item.size);
 		let remark = vod_time.split(' ')[0].substr(3)+'\t'+vod_size;
+		let vod_id = id + item.name + (drives.isFolder(item) ? '/' : '');
+		if(showMode==='all'){
+			vod_id+='#all#';
+		}
+		print(vod_id);
 		const vod = {
-			'vod_id': id + item.name + (drives.isFolder(item) ? '/' : ''),
+			'vod_id': vod_id,
 			'vod_name': item.name.replaceAll("$", "").replaceAll("#", ""),
 			'vod_pic': drives.getPic(item),
 			'vod_time':vod_time ,
@@ -299,7 +309,7 @@ function category(tid, pg, filter, extend) {
 			}
 		});
 	}
-	let fl = filter?extend:{};
+
 	if(fl.order){
 		// print(fl.order);
 		let key = fl.order.split('_').slice(0,-1).join('_');
@@ -327,9 +337,7 @@ function category(tid, pg, filter, extend) {
 			allList = sortListByName(allList,'vod_name','asc');
 		}
 	}
-	if(fl.show){
-		showMode = fl.show;
-	}
+
 	print("----category----"+`tid:${tid},detail_order:${detail_order},showMode:${showMode}`);
 	// print(allList);
 	return JSON.stringify({
@@ -344,15 +352,23 @@ function category(tid, pg, filter, extend) {
 function getAll(otid,tid,drives,path){
 	try {
 		const content = category(tid, null, false, null);
+		const isFile = isMedia(otid.replace(/#all#|#search#/g,''));
 		const { list } = JSON.parse(content);
 		let vod_play_url = [];
 		list.forEach(x => {
 			if (x.vod_tag === 'file'){
-				vod_play_url.push(`${x.vod_name}$${x.vod_id.substring(x.vod_id.indexOf('$') + 1)}`);
+				let vid = x.vod_id.replace(/#all#|#search#/g,'');
+				vod_play_url.push(`${x.vod_name}$${vid.substring(vid.indexOf('$') + 1)}`);
 			}
 		});
-		const pl = path.split("/");
-		const vod_name = pl[pl.length - 2] || drives.name;
+		const pl = path.split("/").filter(it=>it);
+		let vod_name = pl[pl.length - 1] || drives.name;
+		if(vod_name === drives.name){
+			print(pl);
+		}
+		if(otid.includes('#search#')){
+			vod_name+='[搜]';
+		}
 		let vod = {
 			// vod_id: tid,
 			vod_id: otid,
@@ -375,24 +391,34 @@ function getAll(otid,tid,drives,path){
 }
 
 function detail(tid) {
-	let isSearch = tid.endsWith('#search#');
+	let isSearch = tid.includes('#search#');
+	let isAll = tid.includes('#all#');
 	let otid = tid;
-	tid = tid.replace('#search#','');
+	tid = tid.replace(/#all#|#search#/g,'');
 	let isFile = isMedia(tid);
 	let { drives, path } = get_drives_path(tid);
 	if (path.endsWith("/")) { //长按文件夹可以 加载里面全部视频到详情
 		return getAll(otid,tid,drives,path);
 	} else {
-		if(isSearch&&!isFile){
+		if(isSearch&&!isFile){ // 搜索结果 当前目录获取所有文件
 			return getAll(otid,tid,drives,path);
-		}else if(showMode==='all'){ // 不管是搜索还是分类,只要不是 搜索到的文件夹，且展示模式为全部,都获取上级目录的所有文件
-			let new_tid = tid.split('/').slice(0,-1).join('/')+'/';
+		}else if(isAll){ // 上级目录获取所有文件  不管是搜索还是分类,只要不是 搜索到的文件夹，且展示模式为全部,都获取上级目录的所有文件
+			// 是文件就取上级目录
+			let new_tid;
+			if(isFile){
+				new_tid = tid.split('/').slice(0,-1).join('/')+'/';
+			}else{
+				new_tid = tid;
+			}
 			print(`全集模式 tid:${tid}=>tid:${new_tid}`);
 			let { drives, path } = get_drives_path(new_tid);
 			return getAll(otid,new_tid,drives,path);
-		} else{
+		} else if(isFile){ // 单文件进入
 			let paths = path.split("@@@");
 			let vod_name = paths[0].substring(paths[0].lastIndexOf("/") + 1);
+			if(otid.includes('#search#')){
+				vod_name+='[搜]';
+			}
 			let vod = {
 				vod_id: otid,
 				vod_name: vod_name,
@@ -407,6 +433,10 @@ function detail(tid) {
 			print(vod);
 			return JSON.stringify({
 				'list': [vod]
+			});
+		}else{
+			return JSON.stringify({
+				'list': []
 			});
 		}
 	}
@@ -432,12 +462,13 @@ function play(flag, id, flags) {
 function search(wd, quick) {
 	print(__drives);
 	print('可搜索的alist驱动:'+searchDriver);
-	if(!searchDriver){
+	if(!searchDriver||!wd){
 		return JSON.stringify({
 			'list': []
 		});
 	}else{
 		let driver = __drives[searchDriver];
+		wd = wd.split(' ').filter(it=>it.trim()).join('+');
 		print(driver);
 		let surl = driver.server + '/search?box='+wd+'&url=';
 		if(search_type){
@@ -452,16 +483,23 @@ function search(wd, quick) {
 		print(`搜索结果数:${lists.length},搜索结果显示数量限制:${limit_search_show}`);
 		let vods = [];
 		let excludeReg = /\.(pdf|epub|mobi|txt|doc|lrc)$/; // 过滤后缀文件
+		let cnt = 0;
 		lists.forEach(it=>{
 			let vhref = pdfh(it,'a&&href');
 			if(vhref){
 				vhref = unescape(vhref);
 			}
-			print(vhref);
 			if(excludeReg.test(vhref)){
 				return; //跳过本次循环
 			}
+			if(cnt < limit_search_show){
+				print(vhref);
+			}
+			cnt ++;
 			let vid = searchDriver+'$'+vhref+'#search#';
+			if(showMode==='all'){
+				vid+='#all#';
+			}
 			vods.push({
 				vod_name:pdfh(it,'a&&Text'),
 				vod_id:vid,
