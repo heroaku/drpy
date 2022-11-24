@@ -13,13 +13,14 @@ import shutil # https://blog.csdn.net/weixin_33130113/article/details/112336581
 from utils.log import logger
 from utils.web import get_interval
 from utils.htmlParser import jsoup
+import ujson
 
 headers = {
         'Referer': 'https://gitcode.net/',
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36',
 }
 
-def getHotSuggest(url='http://4g.v.sogou.com/hotsugg'):
+def getHotSuggest1(url='http://4g.v.sogou.com/hotsugg',size=0):
     jsp = jsoup(url)
     pdfh = jsp.pdfh
     pdfa = jsp.pdfa
@@ -34,6 +35,27 @@ def getHotSuggest(url='http://4g.v.sogou.com/hotsugg'):
         return suggs
     except:
         return []
+
+def getHotSuggest2(url='https://pbaccess.video.qq.com/trpc.videosearch.hot_rank.HotRankServantHttp/HotRankHttp',size=0):
+    size = int(size) if size else 50
+    pdata = ujson.dumps({"pageNum":0,"pageSize":size})
+    try:
+        r = requests.post(url,headers={'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36', 'content-type': 'application/json'},data=pdata,timeout=2)
+        html = r.json()
+        # print(html)
+        data = html['data']['navItemList'][0]['hotRankResult']['rankItemList']
+        suggs = [{'title':dt['title'],'url':dt['url']} for dt in data]
+        # print(html)
+        # print(suggs)
+        return suggs
+    except:
+        return []
+
+def getHotSuggest(s_from,size):
+    if s_from == 'sougou':
+        return getHotSuggest1(size=size)
+    else:
+        return getHotSuggest2(size=size)
 
 def getLocalVer():
     base_path = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))  # 上级目录
