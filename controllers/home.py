@@ -193,7 +193,9 @@ def get_liveslib():
 
 @home.route('/hotsugg')
 def get_hot_search():
-    data = getHotSuggest()
+    s_from = getParmas('from')
+    size = getParmas('size')
+    data = getHotSuggest(s_from,size)
     return R.success('获取成功',data)
 
 def merged_hide(merged_config):
