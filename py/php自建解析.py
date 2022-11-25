@@ -14,7 +14,7 @@ def gzinflate(compressed: bytes) -> bytes:
 def base64Encode(text):
     return base64.b64encode(text.encode("utf8")).decode("utf-8") #base64编码
 
-def baseDecode(text:str):
+def base64Decode(text:str):
     return base64.b64decode(text).decode("utf-8") #base64解码
 
 def un_encode(a:str):

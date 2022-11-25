@@ -14,7 +14,7 @@ from utils.web import *
 from utils.system import getHost
 from utils.config import playerConfig
 from utils.log import logger
-from utils.encode import base64Encode,baseDecode,fetch,post,request,getCryptoJS,getPreJs,buildUrl,getHome
+from utils.encode import base64Encode,base64Decode,fetch,post,request,getCryptoJS,getPreJs,buildUrl,getHome
 from utils.encode import verifyCode,setDetail,join,urljoin2,parseText,requireCache
 from utils.encode import md5 as mmd5
 from utils.safePython import safePython
@@ -74,7 +74,7 @@ def md5(text):
     return mmd5(text)
 
 py_ctx = {
-'requests':requests,'print':print,'base64Encode':base64Encode,'baseDecode':baseDecode,
+'requests':requests,'print':print,'base64Encode':base64Encode,'base64Decode':base64Decode,
 'log':logger.info,'fetch':fetch,'post':post,'request':request,'getCryptoJS':getCryptoJS,
 'buildUrl':buildUrl,'getHome':getHome,'setDetail':setDetail,'join':join,'urljoin2':urljoin2,
 'PC_UA':PC_UA,'MOBILE_UA':MOBILE_UA,'UC_UA':UC_UA,'UA':UA,'IOS_UA':IOS_UA,
@@ -1351,7 +1351,7 @@ class CMS:
         # print(play_url)
         if play_url.find('http') == -1: # 字符串看起来被编码的
             try:
-                play_url = baseDecode(play_url) # 自动base64解码
+                play_url = base64Decode(play_url) # 自动base64解码
             except:
                 pass
         # print(unquote(play_url))

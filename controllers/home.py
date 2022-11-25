@@ -14,7 +14,7 @@ from controllers.classes import getClasses,getClassInfo
 
 from utils.files import getPics,custom_merge,getAlist,get_live_url,get_multi_rules,getCustonDict
 from js.rules import getRules,getPys
-from utils.encode import parseText,base64Encode,baseDecode
+from utils.encode import parseText,base64Encode,base64Decode
 from base.R import R
 from utils.system import getHost,is_linux
 from utils.cfg import cfg
@@ -168,7 +168,7 @@ def get_lives():
         live_text = f.read()
     if len(live_text) > 100 and live_text.find('http') < 0:
         try:
-            live_text = baseDecode(live_text)
+            live_text = base64Decode(live_text)
             logger.info(f'{path} base64解码完毕')
         except:
             pass

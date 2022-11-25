@@ -20,6 +20,7 @@ import os
 from utils.web import UC_UA,PC_UA
 from ast import literal_eval
 from utils.log import logger
+import quickjs
 
 def getPreJs():
     base_path = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))  # 上级目
@@ -41,6 +42,44 @@ def getCryptoJS():
 
 def md5(str):
     return hashlib.md5(str.encode(encoding='UTF-8')).hexdigest()
+
+def getLib(js):
+    base_path = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))  # 上级目录
+    lib_path = os.path.join(base_path, f'libs/{js}')
+    if not os.path.exists(lib_path):
+        return ''
+    with open(lib_path,encoding='utf-8') as f:
+        return f.read()
+
+# def atob(text):
+#     if isinstance(text,PyJsString):
+#         text = parseText(str(text))
+#     qjs = quickjs.Context()
+#     print(text)
+#     js = getLib('atob.js')
+#     print(js)
+#     ret = qjs.eval(f'{js};atob("{text}")')
+#     print(ret)
+
+def atob(text):
+    """
+    解码
+    :param text:
+    :return:
+    """
+    if isinstance(text,PyJsString):
+        text = parseText(str(text))
+    return base64.b64decode(text.encode("utf8")).decode("latin1")
+
+def btoa(text):
+    """
+    编码
+    :param text:
+    :return:
+    """
+    if isinstance(text,PyJsString):
+        text = parseText(str(text))
+    return base64.b64encode(text.encode("latin1")).decode("utf8")
 
 def requireCache(lib:str):
     base_path = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))  # 上级目
@@ -129,7 +168,10 @@ def base64Encode(text):
         text = str(text).replace("'","").replace('"','')
     return base64.b64encode(text.encode("utf8")).decode("utf-8") #base64编码
 
-def baseDecode(text):
+def base64Decode(text):
+    if isinstance(text,PyJsString):
+        text = parseText(str(text))
+    # print(text)
     return base64.b64decode(text).decode("utf-8") #base64解码
 
 def parseText(text:str):

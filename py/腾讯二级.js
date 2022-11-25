@@ -103,6 +103,7 @@ if (/get_playsource/.test(input)) {
                     pic_url: it1.pic160x90.replace('/160',''),
                     desc: it1.video_checkup_time,
                     url: url,
+                    type:it1.category_map&&it1.category_map.length>1?it1.category_map[1]:''
                 });
             });
         });
@@ -111,7 +112,17 @@ if (/get_playsource/.test(input)) {
 
 }
 // print(d);
-VOD.vod_play_from = 'qq';
-VOD.vod_play_url = d.map(function (it){
+let yg = d.filter(function (it){
+    return (it.type&&it.type!=='正片')
+});
+let zp = d.filter(function (it){
+    return !(it.type&&it.type!=='正片')
+});
+VOD.vod_play_from = yg.length<1?'qq':'qq$$$qq 预告及花絮';
+VOD.vod_play_url = yg.length<1?d.map(function (it){
     return it.title + '$' + it.url;
-}).join('#');
+}).join('#'):[zp,yg].map(function (it){
+    return it.map(function (its){
+        return its.title + '$' + its.url;
+    }).join('#');
+}).join('$$$');
