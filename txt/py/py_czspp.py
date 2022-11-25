@@ -4,8 +4,10 @@ import sys
 sys.path.append('..')
 from base.spider import Spider
 import base64
-from requests import session, utils
+import hashlib
+import requests
 from Crypto.Cipher import AES
+import urllib
 
 class Spider(Spider):  # 元类 默认的元类 type
     def getName(self):
@@ -38,10 +40,13 @@ class Spider(Spider):  # 元类 默认的元类 type
 
     def homeVideoContent(self):
         url = "https://czspp.com"
-        if len(self.cookies) <= 0:
-            self.getCookie(url)
-        url = url + self.zid
-        rsp = self.fetch(url)
+        header = {
+            "Connection": "keep-alive",
+            "Referer": url,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
+        }
+        session = self.getCookie(url,header)
+        rsp = session.get(url, headers=header)
         root = self.html(self.cleanText(rsp.text))
         aList = root.xpath("//div[@class='mi_btcon']//ul/li")
         videos = []
@@ -62,34 +67,42 @@ class Spider(Spider):  # 元类 默认的元类 type
         }
         return result
 
-    header = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36"}
-    cookies = ''
-    def getCookie(self,url):
-        rsp = self.fetch(url,headers=self.header)
-        baseurl = self.regStr(reg=r'(https://.*?/)', src=url)
-        append = url.replace(baseurl,'')
-        zid = self.regStr(rsp.text, "{0}(\\S+)\"".format(append))
-        self.zid = zid
-        self.cookies = rsp.cookies
-        if 'btwaf' not in zid:
-            zid = ''
-        return rsp.cookies, zid
+    def getCookie(self,url,header):
+        session = requests.session()
+        rsp = session.get(url)
+        nurl = 'https://czspp.com' + self.regStr(rsp.text, 'src=\"(.*?)\"')
+        nrsp = session.get(nurl, headers=header)
+        key = self.regStr(nrsp.text, 'var key=\"(.*?)\"')
+        avalue = self.regStr(nrsp.text, 'value=\"(.*?)\"')
+        c = ''
+        for i in range(0, len(avalue)):
+            a = avalue[i]
+            b = ord(a)
+            c = c + str(b)
+        value = hashlib.md5(c.encode()).hexdigest()
+        session.get('https://czspp.com/a20be899_96a6_40b2_88ba_32f1f75f1552_yanzheng_ip.php?type=96c4e20a0e951f471d32dae103e83881&key={0}&value={1}'.format(key,value), headers=header)
+        return session
 
     def categoryContent(self, tid, pg, filter, extend):
         result = {}
         url = 'https://czspp.com/{0}/page/{1}'.format(tid,pg)
-        if len(self.cookies) <= 0:
-            self.getCookie(url)
-        url = url + self.zid
-        rsp = self.fetch(url, cookies=self.cookies,headers=self.header)
+        header = {
+            "Connection": "keep-alive",
+            "Referer": url,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
+        }
+        session = self.getCookie(url,header)
+        rsp = session.get(url, headers=header)
         root = self.html(self.cleanText(rsp.text))
         aList = root.xpath("//div[contains(@class,'bt_img mi_ne_kd mrb')]/ul/li")
         videos = []
         for a in aList:
             name = a.xpath('./a/img/@alt')[0]
             pic = a.xpath('./a/img/@data-original')[0]
-            mark = a.xpath("./div[@class='hdinfo']/span/text()")[0]
+            mark = a.xpath(".//div[@class='jidi']/span/text()")
+            if mark ==[]:
+                mark = a.xpath("./div[@class='hdinfo']/span/text()")
+            mark = mark[0]
             sid = a.xpath("./a/@href")[0]
             sid = self.regStr(sid, "/movie/(\\S+).html")
             videos.append({
@@ -108,10 +121,13 @@ class Spider(Spider):  # 元类 默认的元类 type
     def detailContent(self, array):
         tid = array[0]
         url = 'https://czspp.com/movie/{0}.html'.format(tid)
-        if len(self.cookies) <= 0:
-            self.getCookie(url)
-        url = url + self.zid
-        rsp = self.fetch(url,cookies=self.cookies,headers=self.header)
+        header = {
+            "Connection": "keep-alive",
+            "Referer": url,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
+        }
+        session = self.getCookie(url, header)
+        rsp = session.get(url, headers=header)
         root = self.html(self.cleanText(rsp.text))
         node = root.xpath("//div[@class='dyxingq']")[0]
         pic = node.xpath(".//div[@class='dyimg fl']/img/@src")[0]
@@ -181,11 +197,14 @@ class Spider(Spider):  # 元类 默认的元类 type
         return result
 
     def searchContent(self, key, quick):
-        url = 'https://czspp.com/xssearch?q={0}'.format(key)
-        if len(self.cookies) <= 0:
-            self.getCookie(url)
-        url = url + self.zid
-        rsp = self.fetch(url,cookies=self.cookies,headers=self.header)
+        url = 'https://czspp.com/xssearch?q={0}'.format(urllib.parse.quote(key))
+        header = {
+            "Connection": "keep-alive",
+            "Referer": url,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
+        }
+        session = self.getCookie(url, header)
+        rsp = session.get(url, headers=header)
         root = self.html(self.cleanText(rsp.text))
         vodList = root.xpath("//div[contains(@class,'mi_ne_kd')]/ul/li/a")
         videos = []
@@ -214,6 +233,7 @@ class Spider(Spider):  # 元类 默认的元类 type
         "filter": {}
     }
     header = {
+        "Referer": "https://czspp.com/",
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36"
     }
     def parseCBC(self, enc, key, iv):
@@ -227,11 +247,14 @@ class Spider(Spider):  # 元类 默认的元类 type
     def playerContent(self, flag, id, vipFlags):
         result = {}
         url = 'https://czspp.com/v_play/{0}.html'.format(id)
-        if len(self.cookies) <= 0:
-            self.getCookie(url)
-        url = url + self.zid
+        header = {
+            "Connection": "keep-alive",
+            "Referer": url,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
+        }
+        session = self.getCookie(url, header)
         pat = '\\"([^\\"]+)\\";var [\\d\\w]+=function dncry.*md5.enc.Utf8.parse\\(\\"([\\d\\w]+)\\".*md5.enc.Utf8.parse\\(([\\d]+)\\)'
-        rsp = self.fetch(url,cookies=self.cookies,headers=self.header)
+        rsp = session.get(url, headers=header)
         html = rsp.text
         content = self.regStr(html, pat)
         if content == '':
