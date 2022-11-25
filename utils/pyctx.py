@@ -9,7 +9,7 @@ import json
 import requests
 from utils.web import *
 from utils.log import logger
-from utils.encode import base64Encode,baseDecode,fetch,post,request,getCryptoJS,getPreJs,buildUrl,getHome,parseText
+from utils.encode import base64Encode,base64Decode,fetch,post,request,getCryptoJS,getPreJs,buildUrl,getHome,parseText,atob
 from utils.encode import setDetail,join,urljoin2,parseText,requireCache
 from utils.encode import md5 as mmd5
 from utils.parser import runPy,runJScode,JsObjectWrapper,PyJsObject,PyJsString
@@ -65,10 +65,10 @@ def md5(text):
     return mmd5(text)
 
 py_ctx = {
-'requests':requests,'print':print,'base64Encode':base64Encode,'baseDecode':baseDecode,
+'requests':requests,'print':print,'base64Encode':base64Encode,'base64Decode':base64Decode,
 'log':logger.info,'fetch':fetch,'post':post,'request':request,'getCryptoJS':getCryptoJS,
 'buildUrl':buildUrl,'getHome':getHome,'setDetail':setDetail,'join':join,'urljoin2':urljoin2,
 'PC_UA':PC_UA,'MOBILE_UA':MOBILE_UA,'UC_UA':UC_UA,'IOS_UA':IOS_UA,
 'setItem':setItem,'getItem':getItem,'clearItem':clearItem,'stringify':stringify,'encodeUrl':encodeUrl,
-'requireObj':requireObj,'md5':md5
+'requireObj':requireObj,'md5':md5,'atob':atob
 }
