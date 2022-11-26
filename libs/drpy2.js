@@ -1027,8 +1027,12 @@ function homeParse(homeObj) {
  * @returns {*}
  */
 function getPP(p, pn, pp, ppn){
-    let ps = p[pn] === '*' && pp.length > ppn ?pp[ppn]:p[pn]
-    return ps
+    try {
+        let ps = p[pn] === '*' && pp.length > ppn ?pp[ppn]:p[pn]
+        return ps
+    }catch (e) {
+        return ''
+    }
 }
 
 /**
@@ -1086,25 +1090,27 @@ function homeVodParse(homeVodObj){
             if (homeVodObj.double) {
                 let items = _pdfa(html, p0);
                 // console.log(items.length);
+                let p1 = getPP(p,1,pp,0);
+                let p2 = getPP(p,2,pp,1);
+                let p3 = getPP(p,3,pp,2);
+                let p4 = getPP(p,4,pp,3);
+                let p5 = getPP(p,5,pp,4);
+                let p6 = getPP(p,6,pp,5);
                 for (let item of items) {
                     // console.log(p[1]);
-                    let items2 = _pdfa(item, p[1]);
+                    let items2 = _pdfa(item, p1);
                     // console.log(items2.length);
                     for (let item2 of items2) {
                         try {
-                            let p2 = getPP(p,2,pp,1);
                             let title = _pdfh(item2, p2);
                             let img = '';
                             try {
-                                let p3 = getPP(p,3,pp,2);
                                 img = _pd(item2, p3);
                             } catch (e) {}
                             let desc = '';
                             try {
-                                let p4 = getPP(p,4,pp,3);
                                 desc = _pdfh(item2, p4);
                             }catch (e) {}
-                            let p5 = getPP(p,5,pp,4);
                             let links = [];
                             for (let _p5 of p5.split('+')) {
                                 let link = !homeVodObj.detailUrl ? _pd(item2, _p5, MY_URL) : _pdfh(item2, _p5);
@@ -1112,7 +1118,6 @@ function homeVodParse(homeVodObj){
                             }
                             let content;
                             if(p.length > 6 && p[6]){
-                                let p6 = getPP(p,6,pp,5);
                                 content = _pdfh(item2, p6);
                             } else{
                                 content = '';
@@ -1142,21 +1147,23 @@ function homeVodParse(homeVodObj){
 
             } else {
                 let items = _pdfa(html, p0);
+                let p1 = getPP(p,1,pp,1);
+                let p2 = getPP(p,2,pp,2);
+                let p3 = getPP(p,3,pp,3);
+                let p4 = getPP(p,4,pp,4);
+                let p5 = getPP(p,5,pp,5);
+
                 for (let item of items) {
                     try {
-                        let p1 = getPP(p,1,pp,1);
                         let title = _pdfh(item, p1);
                         let img = '';
                         try {
-                            let p2 = getPP(p,2,pp,2);
                             img = _pd(item, p2, MY_URL);
                         } catch (e) {}
                         let desc = '';
                         try {
-                            let p3 = getPP(p,3,pp,3);
                             desc = _pdfh(item, p3);
                         }catch (e) {}
-                        let p4 = getPP(p,4,pp,4);
                         let links = [];
                         for (let _p5 of p4.split('+')) {
                             let link = !homeVodObj.detailUrl ? _pd(item, _p5, MY_URL) : _pdfh(item, _p5);
@@ -1164,7 +1171,6 @@ function homeVodParse(homeVodObj){
                         }
                         let content;
                         if(p.length > 5 && p[5]){
-                            let p5 = getPP(p,5,pp,5);
                             content = _pdfh(item, p5);
                         }else{
                             content = ''

@@ -572,8 +572,11 @@ class CMS:
             jsp = jsoup(self.homeUrl)
             pp = self.一级.split(';')
             def getPP(p,pn,pp,ppn):
-                ps = pp[ppn] if p[pn] == '*' and len(pp) > ppn else p[pn]
-                return ps
+                try:
+                    ps = pp[ppn] if p[pn] == '*' and len(pp) > ppn else p[pn]
+                    return ps
+                except Exception as e:
+                    return ''
             p0 = getPP(p,0,pp,0)
             is_json = str(p0).startswith('json:')
             if is_json:
@@ -582,8 +585,6 @@ class CMS:
             pdfa = jsp.pjfa if is_json else jsp.pdfa
             pd = jsp.pj if is_json else jsp.pd
 
-
-
             # print(html)
             try:
                 if self.double:
@@ -591,29 +592,30 @@ class CMS:
                     # print(p[0])
                     # print(items)
                     # print(len(items))
+                    p1 = getPP(p, 1, pp, 0)
+                    p2 = getPP(p, 2, pp, 1)
+                    p3 = getPP(p, 3, pp, 2)
+                    p4 = getPP(p, 4, pp, 3)
+                    p5 = getPP(p, 5, pp, 4)
+                    p6 = getPP(p, 6, pp, 5)
                     for item in items:
-                        items2 = pdfa(item,p[1])
+                        items2 = pdfa(item,p1)
                         # print(len(items2))
                         for item2 in items2:
                             try:
-                                p2 = getPP(p,2,pp,1)
                                 title = pdfh(item2, p2)
                                 # print(title)
                                 try:
-                                    p3 = getPP(p,3,pp,2)
                                     img = pd(item2, p3)
                                 except:
                                     img = ''
                                 try:
-                                    p4 = getPP(p,4,pp,3)
                                     desc = pdfh(item2, p4)
                                 except:
                                     desc = ''
-                                p5 = getPP(p,5,pp,4)
                                 links = [pd(item2, _p5) if not self.detailUrl else pdfh(item2, _p5) for _p5 in p5.split('+')]
                                 vid = '$'.join(links)
                                 if len(p) > 6 and p[6]:
-                                    p6 = getPP(p,6,pp,5)
                                     content = pdfh(item2, p6)
                                 else:
                                     content = ''
@@ -635,26 +637,27 @@ class CMS:
                 else:
                     items = pdfa(html, p0.replace('json:',''))
                     # print(items)
+                    p1 = getPP(p, 1, pp, 1)
+                    p2 = getPP(p, 2, pp, 2)
+                    p3 = getPP(p, 3, pp, 3)
+                    p4 = getPP(p, 4, pp, 4)
+                    p5 = getPP(p, 5, pp, 5)
+
                     for item in items:
                         try:
-                            p1 = getPP(p,1,pp,1)
                             title = pdfh(item, p1)
                             try:
-                                p2 = getPP(p,2,pp,2)
                                 img = pd(item, p2)
                             except:
                                 img = ''
                             try:
-                                p3 = getPP(p,3,pp,3)
                                 desc = pdfh(item, p3)
                             except:
                                 desc = ''
-                            p4 = getPP(p,4,pp,4)
                             # link = pd(item, p[4])
                             links = [pd(item, _p5) if not self.detailUrl else pdfh(item, _p5) for _p5 in p4.split('+')]
                             vid = '$'.join(links)
                             if len(p) > 5 and p[5]:
-                                p5 = getPP(p,5,pp,5)
                                 content = pdfh(item, p5)
                             else:
                                 content = ''
