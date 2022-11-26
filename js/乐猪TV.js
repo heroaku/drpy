@@ -3,11 +3,13 @@ var rule = {
     host:'http://www.lezhutv.com',
     // homeUrl:'/',
     url:'/type/fyclass-fypage.html',
-    searchUrl:'/search-pg-fypage-wd-**.html',
+    // searchUrl:'/search-pg-fypage-wd-**.html',
+    searchUrl:'/index.php?m=vod-search#wd=**&search=;post',
     searchable:2,
     quickSearch:0,
     headers:{
-        'User-Agent':'UC_UA'
+        // 'User-Agent':'UC_UA'
+        'User-Agent':'MOBILE_UA'
     },
     timeout:5000,
     class_parse:'div.nav a;a&&Text;a&&href;/(\\d.+).html',

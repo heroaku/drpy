@@ -1221,8 +1221,11 @@ class CMS:
         is_js = isinstance(p, str) and str(p).startswith('js:')  # 是js
 
         def getPP(p, pn, pp, ppn):
-            ps = pp[ppn] if p[pn] == '*' and len(pp) > ppn else p[pn]
-            return ps
+            try:
+                ps = pp[ppn] if p[pn] == '*' and len(pp) > ppn else p[pn]
+                return ps
+            except:
+                return ''
         if is_js:
             headers['Referer'] = getHome(url)
             py_ctx.update({
@@ -1260,7 +1263,35 @@ class CMS:
             pd = jsp.pj if is_json else jsp.pd
             pq = jsp.pq
             try:
-                r = requests.get(url, headers=self.headers,timeout=self.timeout,verify=False)
+                req_method = url.split(';')[1].lower() if len(url.split(';'))>1 else 'get'
+                if req_method == 'post':
+                    rurls = url.split(';')[0].split('#')
+                    rurl = rurls[0]
+                    params = rurls[1] if len(rurls)>1 else ''
+                    # params = quote(params)
+                    print(f'rurl:{rurl},params:{params}')
+                    new_dict = {}
+                    new_tmp = params.split('&')
+                    # print(new_tmp)
+                    for i in new_tmp:
+                        new_dict[i.split('=')[0]] = i.split('=')[1]
+                    # data = ujson.dumps(new_dict)
+                    data = new_dict
+                    # print(data)
+                    r = requests.post(rurl, headers=self.headers,data=data, timeout=self.timeout, verify=False)
+                elif req_method == 'postjson':
+                    rurls = url.split(';')[0].split('#')
+                    rurl = rurls[0]
+                    params = rurls[1] if len(rurls) > 1 else '{}'
+                    headers_cp = self.headers.copy()
+                    headers_cp.update({'Content-Type':'application/json'})
+                    try:
+                        params = ujson.dumps(params)
+                    except:
+                        params = '{}'
+                    r = requests.post(rurl, headers=headers_cp, data=params, timeout=self.timeout, verify=False)
+                else:
+                    r = requests.get(url, headers=self.headers,timeout=self.timeout,verify=False)
                 html = self.checkHtml(r)
                 if is_json:
                     html = self.dealJson(html)
@@ -1287,29 +1318,30 @@ class CMS:
                 items = pdfa(html,p0.replace('json:','',1))
                 # print(len(items),items)
                 videos = []
+                p1 = getPP(p, 1, pp, 1)
+                p2 = getPP(p, 2, pp, 2)
+                p3 = getPP(p, 3, pp, 3)
+                p4 = getPP(p, 4, pp, 4)
+                p5 = getPP(p, 5, pp, 5)
+
                 for item in items:
                     # print(item)
                     try:
                         # title = pdfh(item, p[1])
-                        p1 = getPP(p, 1, pp, 1)
                         title = ''.join([pdfh(item, i) for i in p1.split('||')])
                         try:
-                            p2 = getPP(p, 2, pp, 2)
                             img = pd(item, p2)
                         except:
                             img = ''
                         try:
-                            p3 = getPP(p, 3, pp, 3)
                             desc = pdfh(item, p3)
                         except:
                             desc = ''
                         if len(p) > 5 and p[5]:
-                            p5 = getPP(p, 5, pp, 5)
                             content = pdfh(item, p5)
                         else:
                             content = ''
                         # link = '$'.join([pd(item, p4) for p4 in p[4].split('+')])
-                        p4 = getPP(p, 4, pp, 4)
                         links = [pd(item, _p4) if not self.detailUrl else pdfh(item, _p4) for _p4 in p4.split('+')]
                         link = '$'.join(links)
                         # print(content)
