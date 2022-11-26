@@ -15,7 +15,7 @@ from utils.system import getHost
 from utils.config import playerConfig
 from utils.log import logger
 from utils.encode import base64Encode,base64Decode,fetch,post,request,getCryptoJS,getPreJs,buildUrl,getHome
-from utils.encode import verifyCode,setDetail,join,urljoin2,parseText,requireCache
+from utils.encode import verifyCode,setDetail,join,urljoin2,parseText,requireCache,forceOrder
 from utils.encode import md5 as mmd5
 from utils.safePython import safePython
 from utils.parser import runPy,runJScode,JsObjectWrapper,PyJsObject,PyJsString
@@ -1091,7 +1091,12 @@ class CMS:
                             vodList = [(pdfh(html, tab_ext) if tab_ext else tab_name) + '$' + play_url + i for i in
                                        vodList] if is_json else \
                                 [pdfh(i,list_text) + '$' + play_url + pd(i, list_url) for i in vodList]  # 拼接成 名称$链接
+
+                        # print(vodList)
+                        vodList = forceOrder(vodList,option=lambda x:x.split('$')[0])
+                        # print(vodList)
                         vlist = '#'.join(vodList)  # 拼多个选集
+                        # print(vlist)
                         vod_tab_list.append(vlist)
                     vod_play_url = vod_play_url.join(vod_tab_list)
 

@@ -5,6 +5,8 @@
 # Date  : 2022/8/29
 
 import base64
+import math
+import re
 from urllib.parse import urljoin,quote,unquote
 from js2py.base import PyJsString
 import requests,warnings
@@ -367,3 +369,39 @@ def buildUrl(url,obj=None):
     url = url + prs
     # print(url)
     return url
+
+def forceOrder(lists:list,key:str=None,option=None):
+    """
+    强制正序
+    :param lists:
+    :param key:
+    :return:
+    """
+    start = math.floor(len(lists)/2)
+    end = min(len(lists)-1,start+1)
+    if start >= end:
+        return lists
+    first = lists[start]
+    second = lists[end]
+    if key:
+        try:
+            first = first[key]
+            second = second[key]
+        except:
+            pass
+    if option and hasattr(option, '__call__'):
+        try:
+            first = option(first)
+            second = option(second)
+            # print(f'first:{first},second:{second}')
+        except Exception as e:
+            print(f'强制排序执行option发生了错误:{e}')
+    first = str(first)
+    second = str(second)
+    if re.search(r'(\d+)',first) and re.search(r'(\d+)',second):
+        num1 = int(re.search(r'(\d+)',first).groups()[0])
+        num2 = int(re.search(r'(\d+)',second).groups()[0])
+        if num1 > num2:
+            lists.reverse()
+
+    return lists
