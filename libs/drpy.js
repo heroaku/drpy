@@ -53,7 +53,7 @@ function pre(){
 }
 
 let rule = {};
-const VERSION = 'drpy1 3.9.25 20221126';
+const VERSION = 'drpy1 3.9.25beta1 20221126';
 /** 已知问题记录
  * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)[影魔牛逼，最新的文件发现这问题已经解决了]
  * Array.prototype.append = Array.prototype.push; 这种js执行后有毛病,for in 循环列表会把属性给打印出来 (这个大毛病需要重点排除一下)
@@ -397,6 +397,47 @@ function getCryptoJS(){
     // return request('https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/crypto-hiker.js');
     return 'console.log("CryptoJS已装载");'
 }
+
+/**
+ * 强制正序算法
+ * @param lists  待正序列表
+ * @param key 正序键
+ * @param option 单个元素处理函数
+ * @returns {*}
+ */
+function forceOrder(lists,key,option){
+    let start = Math.floor(lists.length/2);
+    let end = Math.min(lists.length-1,start+1);
+    if(start >= end){
+        return lists;
+    }
+    let first = lists[start];
+    let second = lists[end];
+    if(key){
+        try {
+            first = first[key];
+            second = second[key];
+        }catch (e) {}
+    }
+    if(option && typeof(option)==='function'){
+        try {
+            first = option(first);
+            second = option(second);
+        }catch (e) {}
+    }
+    first+='';
+    second+='';
+    // console.log(first,second);
+    if(first.match(/(\d+)/)&&second.match(/(\d+)/)){
+        let num1 = Number(first.match(/(\d+)/)[1]);
+        let num2 = Number(second.match(/(\d+)/)[1]);
+        if (num1 > num2){
+            lists.reverse();
+        }
+    }
+    return lists
+}
+
 
 let VODS = [];// 一级或者搜索需要的数据列表
 let VOD = {};// 二级的单个数据
@@ -1862,6 +1903,7 @@ function detailParse(detailObj){
                         new_vod_list.push(_pdfh(it, list_text).trim() + '$' +_pd(it, list_url,MY_URL));
                     });
                     if(vodList.length>0){
+                        new_vod_list = forceOrder(new_vod_list,'',x=>x.split('$')[0]);
                         console.log(`drpy影响性能代码共计列表数循环次数:${vodList.length},耗时:${(new Date()).getTime()-tt1}毫秒`);
                     }
                     let vlist = new_vod_list.join('#');
