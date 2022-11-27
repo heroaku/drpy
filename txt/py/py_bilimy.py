@@ -42,7 +42,8 @@ class Spider(Spider):
             "猫咪": "喵星人",
             "请自定义关键词": "美女",
             # ————————以下可自定义UP主，冒号后须填写UID————————
-            "虫哥说电影": "29296192",
+            "徐云流浪中国": "697166795",
+            # "虫哥说电影": "29296192",
 
         }
         classes = []
@@ -83,8 +84,8 @@ class Spider(Spider):
 
     def get_up_videos(self, tid, pg):
         result = {}
-        url = 'https://api.bilibili.com/x/space/arc/search?mid={0}&pn={1}&ps=20'.format(tid, pg)
-        rsp = self.fetch(url, cookies=self.cookies)
+        url = 'https://api.bilibili.com/x/space/arc/search?mid={0}&pn={1}&ps=10'.format(tid, pg)
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         if jo['code'] == 0:
@@ -94,7 +95,7 @@ class Spider(Spider):
                 aid = str(vod['aid']).strip()
                 title = vod['title'].strip().replace("<em class=\"keyword\">", "").replace("</em>", "")
                 img = vod['pic'].strip()
-                remark = str(vod['length']).strip()
+                remark = "观看:" + self.bilibili.zh(vod['play']) + "　 " + str(vod['length']).strip()
                 videos.append({
                     "vod_id": aid,
                     "vod_name": title,
@@ -176,7 +177,7 @@ class Spider(Spider):
         if len(self.cookies) <= 0:
             self.getCookie()
         url = 'https://api.bilibili.com/x/web-interface/search/type?search_type=bili_user&keyword={0}'.format(key)
-        rsp = self.fetch(url, cookies=self.cookies)
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         videos = []

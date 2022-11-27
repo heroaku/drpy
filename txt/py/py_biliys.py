@@ -29,6 +29,7 @@ class Spider(Spider):
     def manualVideoCheck(self):
         pass
 
+    # 主页
     def homeContent(self, filter):
         result = {}
         cateManual = {
@@ -42,6 +43,9 @@ class Spider(Spider):
             "追番": "追番",
             "追剧": "追剧",
             "时间表": "时间表",
+            # ————————以下可自定义关键字，结果以影视类搜索展示————————
+            # "喜羊羊": "喜羊羊"
+
         }
         classes = []
         for k in cateManual:
@@ -170,7 +174,7 @@ class Spider(Spider):
         result = {}
         if len(self.cookies) <= 0:
             self.getCookie()
-        url = 'https://api.bilibili.com/pgc/season/index/result?order={2}&pagesize=20&type=1&season_type={0}&page={1}&season_status={3}'.format(tid, pg, order, season_status)
+        url = 'https://api.bilibili.com/pgc/season/index/result?order={2}&pagesize=10&type=1&season_type={0}&page={1}&season_status={3}'.format(tid, pg, order, season_status)
         rsp = self.fetch(url, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
@@ -246,7 +250,7 @@ class Spider(Spider):
         elif tid in {"2", "3", "4", "5", "7"}:
             return self.get_rank2(tid=tid)
         elif tid == "全部":
-            tid = '1'
+            tid = '1'    # 全部界面默认展示最多播放的番剧
             order = '2'
             season_status = '-1'
             if 'tid' in extend:
@@ -309,10 +313,10 @@ class Spider(Spider):
         ja = jo['episodes']
         playUrl = ''
         for tmpJo in ja:
-            eid = tmpJo['id']
+            aid = tmpJo['aid']
             cid = tmpJo['cid']
             part = tmpJo['title'].replace("#", "-")
-            playUrl = playUrl + '{0}${1}_{2}#'.format(part, eid, cid)
+            playUrl = playUrl + '{0}${1}_{2}#'.format(part, aid, cid)
 
         vod['vod_play_from'] = 'B站'
         vod['vod_play_url'] = playUrl
@@ -369,9 +373,10 @@ class Spider(Spider):
             "Referer": "https://www.bilibili.com",
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
         }
-        url = 'https://api.bilibili.com/pgc/player/web/playurl?qn=116&ep_id={0}&cid={1}'.format(ids[0], ids[1])
+        url = 'https://api.bilibili.com/pgc/player/web/playurl?qn=116&aid={0}&cid={1}'.format(ids[0], ids[1])
         if len(self.cookies) <= 0:
             self.getCookie()
+        self.bilibili.post_history(ids[0], ids[1])  # 回传播放历史记录
         rsp = self.fetch(url, cookies=self.cookies, headers=header)
         jRoot = json.loads(rsp.text)
         if jRoot['message'] != 'success':
