@@ -1821,11 +1821,20 @@ function detailParse(detailObj){
                 console.log(vHeader.length);
                 let tab_text = p.tab_text||'body&&Text';
                 // print('tab_text:'+tab_text);
+                let new_map = {};
                 for(let v of vHeader){
                     let v_title = _pdfh(v,tab_text).trim();
                     console.log(v_title);
                     if(tab_exclude&& (new RegExp(tab_exclude)).test(v_title)){
                         continue;
+                    }
+                    if(!new_map.hasOwnProperty(v_title)){
+                        new_map[v_title] = 1;
+                    }else{
+                        new_map[v_title] += 1;
+                    }
+                    if(new_map[v_title]>1){
+                        v_title+=Number(new_map[v_title]-1);
                     }
                     playFrom.push(v_title);
                 }

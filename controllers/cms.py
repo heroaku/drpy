@@ -1039,7 +1039,14 @@ class CMS:
 
             # print(vodHeader)
             # print(vod)
+            new_map = {}
             for v in vodHeader:
+                if not v in new_map:
+                    new_map[v] = 1
+                else:
+                    new_map[v] += 1
+                if new_map[v] > 1:
+                    v = f'{v}{new_map[v]-1}'
                 playFrom.append(v)
             vod_play_from = vod_play_from.join(playFrom)
 
