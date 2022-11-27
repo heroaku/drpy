@@ -163,8 +163,8 @@ function init(ext) {
 			isFolder(data) { return data.type === 1 },
 			isVideo(data) { //判断是否是 视频文件
 				// return this.settings.v3 ? data.type === 2 : data.type === 3
-				// 增加音乐识别
-				return this.settings.v3 ? (data.type === 2||data.type===0) : (data.type === 3||data.type===0)
+				// 增加音乐识别 视频,其他,音频
+				return this.settings.v3 ? (data.type === 2||data.type===0||data.type===3) : (data.type === 3||data.type===0||data.type === 4)
 			},
 			is_subt(data) {
 				if (data.type === 1) {
