@@ -1917,9 +1917,9 @@ function init(ext) {
                 if (js){
                     eval(js.replace('var rule', 'rule'));
                 }
+            } else {
+                eval(ext.replace('var rule', 'rule'));
             }
-        } else {
-            eval(ext.replace('var rule', 'rule'));
         }
         if (rule.模板 && muban.hasOwnProperty(rule.模板)) {
             print('继承模板:'+rule.模板);

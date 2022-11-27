@@ -89,7 +89,12 @@ def admin_view_rule(name):
                         if burl != rurl:
                             jscode = parser.getJs(name, 'js')
                             # rjscode = render_template_string(jscode, env=env)
-                            rjscode = render_template_string(jscode, **env)
+                            rjscode = jscode
+                            for k in env:
+                                # print(f'${k}', f'{env[k]}')
+                                if f'${k}' in rjscode:
+                                    rjscode = rjscode.replace(f'${k}', f'{env[k]}')
+                            # rjscode = render_template_string(jscode, **env)
                             if rjscode.strip() == jscode.strip():  # 无需渲染才代理
                                 return redirect(rurl)
                             else:
