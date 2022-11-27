@@ -119,7 +119,8 @@ function init(ext) {
 	let alist_data_url = alist_data[0];
 	limit_search_show = alist_data.length>1?Number(alist_data[1])||limit_search_show:limit_search_show;
 	search_type = alist_data.length>2?alist_data[2]:search_type;
-	const data = http.get(alist_data_url).json();
+	const data = http.get(alist_data_url).json(); // .map(it=>{it.name='🙋丫仙女';return it})
+	print(data); // 测试证明壳子标题支持emoji,是http请求源码不支持emoji
 	searchDriver = (data.find(x=>x.search)||{}).name||'';
 	data.forEach(item => {
 		let _path_param = [];
