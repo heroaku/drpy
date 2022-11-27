@@ -1362,6 +1362,9 @@ function homeVodParse(homeVodObj){
             }
         });
     }
+    if(d.length>0){
+        print(d.slice(0,2));
+    }
     return JSON.stringify({
         list:d
     })
@@ -1497,6 +1500,9 @@ function categoryParse(cateObj) {
         });
     }
     // print(d);
+    if(d.length>0){
+        print(d.slice(0,2));
+    }
     return d.length<1?'{}':JSON.stringify({
         'page': parseInt(cateObj.pg),
         'pagecount': 999,

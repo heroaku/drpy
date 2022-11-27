@@ -49,6 +49,9 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/11/27
+- [X] 修复alist含字幕视频无法播放问题以及dsf文件无法显示问题
+- [X] drpy系列接口增加首页推荐和一级分类前两条数据打印
 ###### 2022/11/26
 - [X] drpy系列资源接口修复,推荐为double的情况也支持第二个定位写*自动继承一级的第一个定位(参考乐猪TV)
 - [X] V3.9.25新特性:搜索支持post(参考乐猪TV) 格式为 搜索链接;post (搜索参数用#传递)
