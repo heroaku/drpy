@@ -44,7 +44,6 @@ class Spider(Spider):
             "每周必看": "每周必看",
             "入站必刷": "入站必刷",
             "频道": "频道",
-            # ————————以下可自定义关键字，结果以搜索方式展示————————
         }
         classes = []
         for k in cateManual:
@@ -57,13 +56,14 @@ class Spider(Spider):
             result['filters'] = self.config['filter']
         return result
 
+    # 用户cookies
     cookies = ''
     userid = ''
+    csrf = ''
 
     def getCookie(self):
-        import requests
         import http.cookies
-        # --------↓↓↓↓↓↓↓------在下方双引号内填写-------↓↓↓↓↓↓↓--------
+        # ----↓↓↓↓↓↓↓----在下方raw_cookie_line后的双引号内填写----↓↓↓↓↓↓↓----
         raw_cookie_line = ""
         simple_cookie = http.cookies.SimpleCookie(raw_cookie_line)
         cookie_jar = requests.cookies.RequestsCookieJar()
@@ -75,6 +75,7 @@ class Spider(Spider):
         if res["code"] == 0:
             self.cookies = rsp.cookies
             self.userid = res["data"].get('mid')
+            self.csrf = rsp.cookies['bili_jct']
         return cookie_jar
 
     def __init__(self):
@@ -105,6 +106,10 @@ class Spider(Spider):
 
     def manualVideoCheck(self):
         pass
+
+    def post_history(self, aid, cid):
+        url = 'http://api.bilibili.com/x/v2/history/report?aid={0}&cid={1}&csrf={2}'.format(aid, cid, self.csrf)
+        requests.post(url=url, cookies=self.cookies)
 
     # 将超过10000的数字换成成以万和亿为单位
     def zh(self, num):
@@ -159,13 +164,12 @@ class Spider(Spider):
         jo = json.loads(content)
         if jo['code'] == 0:
             videos = []
-            vodList = jo['data']['list']
+            vodList = jo['data']['list'][0:50]
             for vod in vodList:
                 aid = str(vod['aid']).strip()
                 title = vod['title'].strip().replace("<em class=\"keyword\">", "").replace("</em>", "")
                 img = vod['pic'].strip()
-                # view = "▶" + self.zh(vod['stat']['view']) + ' 🕓'   # 标签上加入播放量
-                remark = str(self.second_to_time(vod['duration'])).strip()
+                remark = "观看:" + self.zh(vod['stat']['view']) + "　 " + str(self.second_to_time(vod['duration'])).strip()
                 videos.append({
                     "vod_id": aid,
                     "vod_name": title,
@@ -218,18 +222,18 @@ class Spider(Spider):
 
     def get_hot(self, pg):
         result = {}
-        url = 'https://api.bilibili.com/x/web-interface/popular?ps=20&pn={0}'.format(pg)
+        url = 'https://api.bilibili.com/x/web-interface/popular?ps=10&pn={0}'.format(pg)
         rsp = self.fetch(url, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         if jo['code'] == 0:
             videos = []
-            vodList = jo['data']['list']
+            vodList = jo['data']['list'][0:50]
             for vod in vodList:
                 aid = str(vod['aid']).strip()
                 title = vod['title'].strip().replace("<em class=\"keyword\">", "").replace("</em>", "")
                 img = vod['pic'].strip()
-                remark = str(self.second_to_time(vod['duration'])).strip()
+                remark = "观看:" + self.zh(vod['stat']['view']) + "　 " + str(self.second_to_time(vod['duration'])).strip()
                 videos.append({
                     "vod_id": aid,
                     "vod_name": title,
@@ -245,7 +249,7 @@ class Spider(Spider):
 
     def get_rcmd(self, pg):
         result = {}
-        url = 'https://api.bilibili.com/x/web-interface/index/top/feed/rcmd?y_num={0}&fresh_type=3&feed_version=SEO_VIDEO&fresh_idx_1h=1&fetch_row=1&fresh_idx=1&brush=0&homepage_ver=1&ps=20'.format(
+        url = 'https://api.bilibili.com/x/web-interface/index/top/feed/rcmd?y_num={0}&fresh_type=3&feed_version=SEO_VIDEO&fresh_idx_1h=1&fetch_row=1&fresh_idx=1&brush=0&homepage_ver=1&ps=10'.format(
             pg)
         rsp = self.fetch(url, cookies=self.cookies)
         content = rsp.text
@@ -258,7 +262,7 @@ class Spider(Spider):
                     aid = str(vod['id']).strip()
                     title = vod['title'].strip().replace("<em class=\"keyword\">", "").replace("</em>", "")
                     img = vod['pic'].strip()
-                    remark = str(self.second_to_time(vod['duration'])).strip()
+                    remark = "观看:" + self.zh(vod['stat']['view']) + "　 " + str(self.second_to_time(vod['duration'])).strip()
                     videos.append({
                         "vod_id": aid,
                         "vod_name": title,
@@ -280,12 +284,12 @@ class Spider(Spider):
         jo = json.loads(content)
         if jo['code'] == 0:
             videos = []
-            vodList = jo['data']['list']
+            vodList = jo['data']['list'][0:50]
             for vod in vodList:
                 aid = str(vod['aid']).strip()
                 title = vod['title'].strip().replace("<em class=\"keyword\">", "").replace("</em>", "")
                 img = vod['pic'].strip()
-                remark = str(self.second_to_time(vod['duration'])).strip()
+                remark = "观看:" + self.zh(vod['stat']['view']) + "　 " + str(self.second_to_time(vod['duration'])).strip()
                 videos.append({
                     "vod_id": aid,
                     "vod_name": title,
@@ -301,7 +305,7 @@ class Spider(Spider):
 
     def get_history(self, pg):
         result = {}
-        url = 'https://api.bilibili.com/x/v2/history?pn=%s' % pg
+        url = 'https://api.bilibili.com/x/v2/history?pn=%s&ps=10' % pg
         rsp = self.fetch(url, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)  # 解析api接口,转化成json数据对象
@@ -355,7 +359,7 @@ class Spider(Spider):
 
     def get_fav_detail(self, pg, mlid, order):
         result = {}
-        url = 'https://api.bilibili.com/x/v3/fav/resource/list?media_id=%s&order=%s&pn=%s&ps=20&platform=web&type=0' % (mlid, order, pg)
+        url = 'https://api.bilibili.com/x/v3/fav/resource/list?media_id=%s&order=%s&pn=%s&ps=10&platform=web&type=0' % (mlid, order, pg)
         rsp = self.fetch(url, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
@@ -371,7 +375,7 @@ class Spider(Spider):
                     title = vod['title'].replace("<em class=\"keyword\">", "").replace("</em>", "").replace("&quot;",
                                                                                                             '"')
                     img = vod['cover'].strip()
-                    remark = str(self.second_to_time(vod['duration'])).strip()
+                    remark = "观看:" + self.zh(vod['cnt_info']['play']) + "　 " + str(self.second_to_time(vod['duration'])).strip()
                     videos.append({
                         "vod_id": aid,
                         "vod_name": title,
@@ -394,12 +398,12 @@ class Spider(Spider):
         jo = json.loads(content)
         if jo['code'] == 0:
             videos = []
-            vodList = jo['data']['list']
+            vodList = jo['data']['list'][0:50]
             for vod in vodList:
                 aid = str(vod['aid']).strip()
                 title = vod['title'].strip().replace("<em class=\"keyword\">", "").replace("</em>", "")
                 img = vod['pic'].strip()
-                remark = str(self.second_to_time(vod['duration'])).strip()
+                remark = "观看:" + self.zh(vod['stat']['view']) + "　 " + str(self.second_to_time(vod['duration'])).strip()
                 videos.append({
                     "vod_id": aid,
                     "vod_name": title,
@@ -431,7 +435,7 @@ class Spider(Spider):
                 aid = str(vod['aid']).strip()
                 title = vod['title'].strip()
                 img = vod['pic'].strip()
-                remark = str(self.second_to_time(vod['duration'])).strip()
+                remark = "观看:" + self.zh(vod['stat']['view']) + "　 " + str(self.second_to_time(vod['duration'])).strip()
                 videos.append({
                     "vod_id": aid,
                     "vod_name": title,
@@ -458,7 +462,7 @@ class Spider(Spider):
                 aid = str(vod['aid']).strip()
                 title = vod['title'].strip()
                 img = vod['pic'].strip()
-                remark = str(self.second_to_time(vod['duration'])).strip()
+                remark = "观看:" + self.zh(vod['stat']['view']) + "　 " + str(self.second_to_time(vod['duration'])).strip()
                 videos.append({
                     "vod_id": aid,
                     "vod_name": title,
@@ -512,7 +516,7 @@ class Spider(Spider):
 
     def get_channel(self, pg, cid, extend, order, duration_diff):
         result = {}
-        url = 'https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword={0}&page={1}&duration={2}&order={3}'.format(
+        url = 'https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword={0}&page={1}&duration={2}&order={3}&page_size=10'.format(
             cid, pg, duration_diff, order)
         rsp = self.fetch(url, cookies=self.cookies)
         content = rsp.text
@@ -524,7 +528,7 @@ class Spider(Spider):
                 aid = str(vod['aid']).strip()
                 title = vod['title'].replace("<em class=\"keyword\">", "").replace("</em>", "").replace("&quot;", '"')
                 img = 'https:' + vod['pic'].strip()
-                remark = str(self.second_to_time(self.str2sec(vod['duration']))).strip()
+                remark = "观看:" + self.zh(vod['play']) + "　 " + str(self.second_to_time(self.str2sec(vod['duration']))).strip()
                 videos.append({
                     "vod_id": aid,
                     "vod_name": title,
@@ -585,7 +589,7 @@ class Spider(Spider):
             order = 'totalrank'
             if 'order' in extend:
                 order = extend['order']
-            url = 'https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword={0}&page={1}&duration={2}&order={3}'.format(
+            url = 'https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword={0}&page={1}&duration={2}&order={3}&page_size=10'.format(
                 tid, pg, duration_diff, order)
             rsp = self.fetch(url, cookies=self.cookies)
             content = rsp.text
@@ -599,7 +603,7 @@ class Spider(Spider):
                                                                                                             '"')
                     img = 'https:' + vod['pic'].strip()
                     # remark = str(vod['duration']).strip()
-                    remark = str(self.second_to_time(self.str2sec(vod['duration']))).strip()
+                    remark = "观看:" + self.zh(vod['play']) + "　 " + str(self.second_to_time(self.str2sec(vod['duration']))).strip()
                     videos.append({
                         "vod_id": aid,
                         "vod_name": title,
@@ -634,7 +638,7 @@ class Spider(Spider):
         remark = str(jo['duration']).strip()
         vod = {
             "vod_id": aid,
-            "vod_name": '[' + jo['owner']['name'] + "]" + title,
+            "vod_name": '[' + jo['owner']['name'] + "]" + title, 
             "vod_pic": pic,
             "type_name": typeName,
             "vod_year": date,
@@ -676,7 +680,7 @@ class Spider(Spider):
         vodList = jo['data']['result']
         for vod in vodList:
             aid = str(vod['aid']).strip()
-            title = '[' + key + ']' + vod['title'].replace("<em class=\"keyword\">", "").replace("</em>", "").replace("&quot;", '"')
+            title = vod['title'].replace("<em class=\"keyword\">", "").replace("</em>", "").replace("&quot;", '"') + '[' + key + ']'
             img = 'https:' + vod['pic'].strip()
             remark = str(self.second_to_time(self.str2sec(vod['duration']))).strip()
             videos.append({
@@ -698,6 +702,7 @@ class Spider(Spider):
         url = 'https://api.bilibili.com:443/x/player/playurl?avid={0}&cid={1}&qn=116'.format(ids[0], ids[1])
         if len(self.cookies) <= 0:
             self.getCookie()
+        self.post_history(ids[0], ids[1])  # 回传播放历史记录
         rsp = self.fetch(url, cookies=self.cookies)
         jRoot = json.loads(rsp.text)
         jo = jRoot['data']

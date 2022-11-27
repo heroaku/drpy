@@ -18,6 +18,7 @@ class Spider(Spider):
     def getName(self):
         return "哔哩直播"
 
+    # 主页
     def homeContent(self, filter):
         result = {}
         cateManual = {
@@ -88,7 +89,7 @@ class Spider(Spider):
         if jo['code'] == 0:
             return jo['data']["info"]["uname"]
 
-    def homeVideoContent(self):
+    def homeVideoContent(self,):
         return self.get_hot(1)
 
     def get_recommend(self, pg):
@@ -120,7 +121,7 @@ class Spider(Spider):
 
     def get_hot(self, pg):
         result = {}
-        url = 'https://api.live.bilibili.com/room/v1/room/get_user_recommend?page=%s' % pg
+        url = 'https://api.live.bilibili.com/room/v1/room/get_user_recommend?page=%s&page_size=20' % pg
         rsp = self.fetch(url, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
@@ -201,7 +202,7 @@ class Spider(Spider):
 
     def get_history(self):
         result = {}
-        url = 'https://api.bilibili.com/x/web-interface/history/cursor?ps=30&type=live'
+        url = 'https://api.bilibili.com/x/web-interface/history/cursor?ps=10&type=live'
         rsp = self.fetch(url, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
@@ -302,7 +303,7 @@ class Spider(Spider):
             vodList = jo['data']['result']['live_room']
             for vod in vodList:
                 aid = str(vod['roomid']).strip()
-                title = vod['title'].strip() + "⇦" + key
+                title = "直播间：" + vod['title'].strip().replace("<em class=\"keyword\">", "").replace("</em>", "") + "⇦" + key
                 img = 'https:' + vod['user_cover'].strip()
                 remark = vod['watched_show']['text_small'].strip() + "  " + vod['uname'].strip()
                 videos1.append({
@@ -316,7 +317,7 @@ class Spider(Spider):
             vodList = jo['data']['result']['live_user']
             for vod in vodList:
                 aid = str(vod['roomid']).strip()
-                title = vod['uname'].strip().replace("<em class=\"keyword\">", "").replace("</em>", "") + "⇦" + key
+                title = "直播间：" + vod['uname'].strip().replace("<em class=\"keyword\">", "").replace("</em>", "") + " ⇦" + key
                 img = 'https:' + vod['uface'].strip()
                 remark = str(vod['live_status']).replace("0", "未开播").replace("1", "") + "  关注：" + self.zh(vod['attentions'])
                 videos2.append({
