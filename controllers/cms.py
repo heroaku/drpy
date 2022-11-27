@@ -710,6 +710,7 @@ class CMS:
 
         if fl is None:
             fl = {}
+        # print(f'fl:{fl}')
         if self.filter_def and isinstance(self.filter_def,dict):
             try:
                 if self.filter_def.get(fyclass) and isinstance(self.filter_def[fyclass],dict):
@@ -740,8 +741,8 @@ class CMS:
                 url += self.filter_url
             else: # 第二种情况直接替换关键字为待拼接的结果后面渲染,适用于 ----fypage.html的情况
                 url = url.replace('fyfilter', self.filter_url)
+            # print(f'url渲染:{url}')
             url = render_template_string(url,fl=fl)
-
             # fl_url = render_template_string(self.filter_url,fl=fl)
             # if not 'fyfilter' in url: # 第一种情况,默认不写fyfilter关键字,视为直接拼接在链接后面当参数
             #     if not url.endswith('&') and not fl_url.startswith('&'):

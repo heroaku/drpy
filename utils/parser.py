@@ -87,7 +87,11 @@ def toJs(jsPath,jsRoot='cache',env=None):
         js = fp.read()
     if env:
         # js = render_template_string(js,env=env)
-        js = render_template_string(js,**env)
+        for k in env:
+            # print(f'${k}', f'{env[k]}')
+            if f'${k}' in js:
+                js = js.replace(f'${k}', f'{env[k]}')
+        # js = render_template_string(js,**env)
     response = make_response(js)
     response.headers['Content-Type'] = 'text/javascript; charset=utf-8'
     return response

@@ -60,7 +60,11 @@ def search_one(rule, wd, before: str = '',env:dict=None,app=None):
         if env:
             # 渲染字符串文本 render_template_string 必须带 flask的上下文
             with app.app_context():
-                jscode = render_template_string(jscode, **env)
+                for k in env:
+                    # print(f'${k}', f'{env[k]}')
+                    if f'${k}' in jscode:
+                        jscode = jscode.replace(f'${k}', f'{env[k]}')
+                # jscode = render_template_string(jscode, **env)
             # if '007' in rule:
             #     print(rule,jscode)
         jscode = before + jscode + end_code
@@ -253,8 +257,13 @@ def vod_home():
         with open(js_path,encoding='utf-8') as f2:
             jscode = f2.read()
         env = get_env()
-        if env:
-            jscode = render_template_string(jscode,**env)
+        for k in env:
+            # print(f'${k}',f'{env[k]}')
+            if f'${k}' in jscode:
+                jscode = jscode.replace(f'${k}',f'{env[k]}')
+        # print(env)
+        # if env:
+        #     jscode = render_template_string(jscode,**env)
         # print(jscode)
         jscode = before + jscode + end_code
         # print(jscode)
