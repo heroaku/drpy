@@ -80,7 +80,7 @@ const http = function (url, options = {}) {
 const __drives = {};
 
 function isMedia(file){
-	return /\.(mp3|aac|wav|wma|cda|flac|m4a|mid|mka|mp2|mpa|mpc|ape|ofr|ogg|ra|wv|tta|ac3|dts|tak|webm|wmv|mpeg|mov|ram|swf|mp4|avi|rm|rmvb|flv|mpg|mkv|m3u8|ts|3gp|asf)$/.test(file.toLowerCase());
+	return /\.(dsf|mp3|aac|wav|wma|cda|flac|m4a|mid|mka|mp2|mpa|mpc|ape|ofr|ogg|ra|wv|tta|ac3|dts|tak|webm|wmv|mpeg|mov|ram|swf|mp4|avi|rm|rmvb|flv|mpg|mkv|m3u8|ts|3gp|asf)$/.test(file.toLowerCase());
 }
 
 function get_drives_path(tid) {
@@ -161,7 +161,9 @@ function init(ext) {
 			},
 			isFolder(data) { return data.type === 1 },
 			isVideo(data) { //判断是否是 视频文件
-				return this.settings.v3 ? data.type === 2 : data.type === 3
+				// return this.settings.v3 ? data.type === 2 : data.type === 3
+				// 增加音乐识别
+				return this.settings.v3 ? (data.type === 2||data.type===0) : (data.type === 3||data.type===0)
 			},
 			is_subt(data) {
 				if (data.type === 1) {
@@ -352,7 +354,7 @@ function category(tid, pg, filter, extend) {
 function getAll(otid,tid,drives,path){
 	try {
 		const content = category(tid, null, false, null);
-		const isFile = isMedia(otid.replace(/#all#|#search#/g,''));
+		const isFile = isMedia(otid.replace(/#all#|#search#/g,'').split('@@@')[0]);
 		const { list } = JSON.parse(content);
 		let vod_play_url = [];
 		list.forEach(x => {
@@ -395,8 +397,10 @@ function detail(tid) {
 	let isAll = tid.includes('#all#');
 	let otid = tid;
 	tid = tid.replace(/#all#|#search#/g,'');
-	let isFile = isMedia(tid);
+	let isFile = isMedia(tid.split('@@@')[0]);
+	print(`isFile:${tid}?${isFile}`);
 	let { drives, path } = get_drives_path(tid);
+	print(`drives:${drives},path:${path}`);
 	if (path.endsWith("/")) { //长按文件夹可以 加载里面全部视频到详情
 		return getAll(otid,tid,drives,path);
 	} else {
@@ -416,12 +420,13 @@ function detail(tid) {
 		} else if(isFile){ // 单文件进入
 			let paths = path.split("@@@");
 			let vod_name = paths[0].substring(paths[0].lastIndexOf("/") + 1);
+			let vod_title = vod_name;
 			if(otid.includes('#search#')){
-				vod_name+='[搜]';
+				vod_title+='[搜]';
 			}
 			let vod = {
 				vod_id: otid,
-				vod_name: vod_name,
+				vod_name: vod_title,
 				type_name: "文件",
 				vod_pic: "https://avatars.githubusercontent.com/u/97389433?s=120&v=4",
 				vod_content: tid,
