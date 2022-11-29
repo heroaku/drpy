@@ -49,6 +49,12 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/11/29
+- [X] alist引用模块更换,配置支持pluto
+```json
+{"key":"Alist_pt","name":"Alist(pluto)","type":3,"api":"{{host}}/libs/alist.min.js","searchable":2,"quickSearch":0,"filterable":0,"ext":"{{host}}/config/2;200;video"},
+```
+- [X] v3.9.27beta1 drpy系列api引用模板优化,可以模板本地化
 ###### 2022/11/27
 - [X] 修复alist含字幕视频无法播放问题以及dsf文件无法显示问题
 - [X] drpy系列接口增加首页推荐和一级分类前两条数据打印
