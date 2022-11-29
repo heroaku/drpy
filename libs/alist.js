@@ -30,6 +30,7 @@ var limit_search_show = 200;
 var search_type = '';
 var detail_order = 'name';
 const request_timeout = 5000;
+const VERSION = 'alist v2/v3 20221129';
 /**
  * 打印日志
  * @param any 任意变量
@@ -116,6 +117,7 @@ function get_drives(name) {
 }
 
 function init(ext) {
+	console.log("当前版本号:"+VERSION);
 	let alist_data = ext.split(';');
 	let alist_data_url = alist_data[0];
 	limit_search_show = alist_data.length>1?Number(alist_data[1])||limit_search_show:limit_search_show;
