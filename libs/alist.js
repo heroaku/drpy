@@ -118,12 +118,24 @@ function get_drives(name) {
 
 function init(ext) {
 	console.log("当前版本号:"+VERSION);
-	let alist_data = ext.split(';');
-	let alist_data_url = alist_data[0];
-	limit_search_show = alist_data.length>1?Number(alist_data[1])||limit_search_show:limit_search_show;
-	search_type = alist_data.length>2?alist_data[2]:search_type;
-	print(alist_data_url);
-	const data = http.get(alist_data_url).json(); // .map(it=>{it.name='🙋丫仙女';return it})
+	let data;
+	if (typeof ext == 'object'){
+		data = ext;
+		print('alist ext:object');
+	} else if (typeof ext == 'string') {
+		if (ext.startsWith('http')) {
+			let alist_data = ext.split(';');
+			let alist_data_url = alist_data[0];
+			limit_search_show = alist_data.length>1?Number(alist_data[1])||limit_search_show:limit_search_show;
+			search_type = alist_data.length>2?alist_data[2]:search_type;
+			print(alist_data_url);
+			data = http.get(alist_data_url).json(); // .map(it=>{it.name='🙋丫仙女';return it})
+		} else {
+			print('alist ext:json string');
+			data = JSON.parse(ext);
+		}
+	}
+
 	// print(data); // 测试证明壳子标题支持emoji,是http请求源码不支持emoji
 	let drives = [];
 	if(Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty('server') && data[0].hasOwnProperty('name')){
