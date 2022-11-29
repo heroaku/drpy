@@ -30,6 +30,7 @@ var limit_search_show = 200;
 var search_type = '';
 var detail_order = 'name';
 const request_timeout = 5000;
+const VERSION = 'alist v2/v3 20221129';
 /**
  * 打印日志
  * @param any 任意变量
@@ -116,6 +117,7 @@ function get_drives(name) {
 }
 
 function init(ext) {
+	console.log("当前版本号:"+VERSION);
 	let alist_data = ext.split(';');
 	let alist_data_url = alist_data[0];
 	limit_search_show = alist_data.length>1?Number(alist_data[1])||limit_search_show:limit_search_show;
@@ -124,14 +126,14 @@ function init(ext) {
 	const data = http.get(alist_data_url).json(); // .map(it=>{it.name='🙋丫仙女';return it})
 	// print(data); // 测试证明壳子标题支持emoji,是http请求源码不支持emoji
 	let drives = [];
-	if(Array.isArray(data) && data.length > 1 && data[0].hasOwnProperty('server') && data[0].hasOwnProperty('name')){
+	if(Array.isArray(data) && data.length > 0 && data[0].hasOwnProperty('server') && data[0].hasOwnProperty('name')){
 		drives = data;
 	}else if(!Array.isArray(data)&&data.hasOwnProperty('drives')&&Array.isArray(data.drives)){
 		drives = data.drives.filter(it=>(it.type&&it.type==='alist')||!it.type);
 	}
 	print(drives);
 	searchDriver = (drives.find(x=>x.search)||{}).name||'';
-	if(!searchDriver && drives.length > 1){
+	if(!searchDriver && drives.length > 0){
 		searchDriver = drives[0].name;
 	}
 	print(searchDriver);
