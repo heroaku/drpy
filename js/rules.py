@@ -43,7 +43,8 @@ def getRulesJs2py(path='cache',js_mode=0):
     rule_list = [file.replace('.js', '') for file in file_name]
     js_path = [f'{path}/{rule}.js' for rule in rule_list]
     with open('js/模板.js', encoding='utf-8') as f:
-        before = f.read().split('export')[0]
+        # before = f.read().split('export')[0]
+        before = f.read().split('export default')[0]
     rule_codes = []
     # for js in js_path:
     #     with open(js,encoding='utf-8') as f:
@@ -105,7 +106,8 @@ def getRules(path='cache',js_mode=0):
     rule_list = [file.replace('.js', '') for file in file_name]
     js_path = [f'{path}/{rule}.js' for rule in rule_list]
     with open('js/模板.js', encoding='utf-8') as f:
-        before = f.read().split('export')[0]
+        # before = f.read().split('export')[0]
+        before = f.read().split('export default')[0]
     rule_codes = []
     ctx = Context()
     codes = []
