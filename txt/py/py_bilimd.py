@@ -4,12 +4,23 @@ import sys
 
 sys.path.append('..')
 from base.spider import Spider
+# from base.htmlParser import jsoup
 import json
 from requests import session, utils
 import os
 import time
 import base64
 
+# def main3():
+#     html = """
+#     <div>
+# <p>内容1<span id='exd1'>我不获取的内容1</span><span id='exd2'>我不获取的内容2</span>内容2</p>
+# </div>
+#     """
+#     jsp = jsoup('https://www.cnblogs.com/lizhibk/p/8623543.html')
+#     a = jsp.pdfh(html, 'div p:eq(0)--span&&Text')
+#     print(a)
+#     return a
 
 class Spider(Spider):  # 元类 默认的元类 type
     def getName(self):
@@ -28,6 +39,7 @@ class Spider(Spider):  # 元类 默认的元类 type
     def homeContent(self, filter):
         result = {}
         cateManual = {
+            # main3():"1",
             "番剧": "1",
             "国创": "4",
             "电影": "2",
