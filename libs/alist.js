@@ -10,7 +10,7 @@ import {sortListByCN} from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/l
 				name:'名称',
 				server:'地址',
 				startPage:'/',		 //启动文件夹
-				showAll: false ,	//是否显示全部文件，默认false只显示 视频和文件夹
+				showAll: false ,	//是否显示全部文件，默认false只显示 音视频和文件夹
  				search: true, // 启用小雅的搜索,搜索只会搜第一个开启此开关的磁盘
 				params:{ 			//对应文件夹参数 如设置对应文件夹的密码
 					'/abc':{ password : '123' },
