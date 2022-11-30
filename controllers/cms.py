@@ -1478,6 +1478,7 @@ class CMS:
                             if isinstance(play_url, str):
                                 base_json = pjson['json']
                                 base_json['url'] = web_url
+                                play_url = base_json
                             elif isinstance(play_url, dict):
                                 base_json = pjson['json']
                                 play_url.update(base_json)
