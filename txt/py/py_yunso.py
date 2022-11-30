@@ -26,25 +26,18 @@ class Spider(Spider):
 	def homeVideoContent(self):
 		result = {}
 		return result
+
 	def categoryContent(self,tid,pg,filter,extend):
 		result = {}
 		return result
+
 	header = {
 		"User-Agent": "Mozilla/5.0 (Linux; Android 12; V2049A Build/SP1A.210812.003; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/103.0.5060.129 Mobile Safari/537.36",
 		"origin": "https://www.upyunso.com/"
 	}
+
 	def detailContent(self,array):
-		id = array[0]
-		ysurl = 'https://api.upyunso.com/{0}'.format(id.replace('.html', ''))
-		header = {
-			"User-Agent": "Mozilla/5.0 (Linux; Android 12; V2049A Build/SP1A.210812.003; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/103.0.5060.129 Mobile Safari/537.36",
-			"referer": "https://www.upyunso.com/{0}".format(id),
-			"origin": "https://www.upyunso.com/"
-		}
-		urlrsp = requests.get(url=ysurl, headers=header).text.encode('ISO-8859-1').decode('UTF-8')
-		url = ["{0}".format(json.loads(base64.b64decode(urlrsp))['result']['res_url'])]
-		print(url)
-		return self.ali.detailContent(url)
+		return self.ali.detailContent(array)
 
 	def searchContent(self,key,quick):
 		url = "https://api.upyunso.com/search?keyword={0}&page=1&s_type=2".format(key)
@@ -52,16 +45,16 @@ class Spider(Spider):
 		vodList = json.loads(base64.b64decode(rsp.text))['result']['items']
 		videos = []
 		for vod in vodList:
-			conList = vod['content']
-			for con in conList:
-				if 'download.html?url' in con['size']:
-					vid = con['size']
-					videos.append({
-						"vod_id": vid,
-						"vod_name": con['title'],
-						"vod_pic": "https://inews.gtimg.com/newsapp_bt/0/13263837859/1000",
-						"vod_remarks": vod['insert_time']
-					})
+			vid =vod['page_url']
+			name = vod['title']
+			if 'aliyundrive.com' in vid:
+				videos.append({
+					"vod_id": vid,
+					"vod_name": name,
+					"vod_pic": "https://inews.gtimg.com/newsapp_bt/0/13263837859/1000",
+					"vod_remarks": vod['insert_time']
+				})
+
 		result = {
 			'list':videos
 		}
