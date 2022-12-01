@@ -35,6 +35,8 @@ class Spider(Spider):  # 元类 默认的元类 type
 		rsp = self.fetch("https://cokemv.me/")
 		root = self.html(rsp.text)
 		aList = root.xpath("//div[@class='main']//div[contains(@class,'module-items')]/a")
+		# aList = jsp.pdfa(".main&&.module-items&&a")
+		# aList = jsp.pdfa(".main .module-items a")
 
 		videos = []
 		for a in aList:
