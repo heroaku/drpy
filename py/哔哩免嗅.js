@@ -1,4 +1,11 @@
 js:
+if(/^http/.test(input)){
+input = {
+  jx:1,
+  url:input,
+  parse:0
+};
+}else{
 let ids = input.split('_');
 let result = {};
 let url = 'https://api.bilibili.com/pgc/player/web/playurl?qn=116&ep_id='+ids[0]+'&cid='+ids[1];
@@ -34,4 +41,5 @@ if(jRoot['message'] !== 'success'){
     };
     result["contentType"] = 'video/x-flv';
     input = result;
+}
 }

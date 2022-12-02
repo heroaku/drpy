@@ -37,14 +37,17 @@ let vod = {
 "vod_content": dec
 }
 let ja = jo['episodes'];
-let playurls = [];
+let playurls1 = [];
+let playurls2 = [];
 ja.forEach(function (tmpJo){
     let eid = tmpJo['id'];
     let cid = tmpJo['cid'];
+    let link = tmpJo['link'];
     let part = tmpJo['title'].replace("#", "-")+' '+tmpJo['long_title'];
-    playurls.push(part+'$'+eid+'_'+cid);
+    playurls1.push(part+'$'+eid+'_'+cid);
+    playurls2.push(part+'$'+link);
 });
-let playUrl = playurls.join('#');
-vod['vod_play_from'] = 'B站'
+let playUrl = playurls1.join('#')+'$$$'+playurls2.join('#');
+vod['vod_play_from'] = 'B站$$$bilibili'
 vod['vod_play_url'] = playUrl
 VOD = vod;
