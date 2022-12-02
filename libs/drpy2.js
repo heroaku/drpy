@@ -1401,13 +1401,19 @@ function categoryParse(cateObj) {
         print(`MY_CATE:${MY_CATE},pagecount:${JSON.stringify(rule.pagecount)}`);
         pagecount = parseInt(rule.pagecount[MY_CATE]);
     }
-    return d.length<1?'{}':JSON.stringify({
+    let nodata = {
+        list:[{vod_name:'无数据,防无限请求',vod_id:'no_data',vod_remarks:'不要点,会崩的',vod_pic:'https://ghproxy.com/https://raw.githubusercontent.com/hjdhnx/dr_py/main/404.jpg'}],
+        total:1,pagecount:1,page:1,limit:1
+    };
+    let vod =  d.length<1?JSON.stringify(nodata):JSON.stringify({
         'page': parseInt(cateObj.pg),
         'pagecount': pagecount||999,
         'limit': 20,
         'total': 999,
         'list': d,
     });
+    // print(vod);
+    return vod
 }
 
 /**
