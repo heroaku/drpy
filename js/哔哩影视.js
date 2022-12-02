@@ -3,7 +3,7 @@ var rule = {
     host:'https://api.bilibili.com',
     url:'/fyclass-fypage&vmid=$vmid',
     filter_url:'fl={{fl}}',
-    vmid获取教程:'登录后访问https://api.bilibili.com/x/web-interface/nav,搜索mid就是',
+    vmid获取教程:'登录后访问https://api.bilibili.com/x/web-interface/nav,搜索mid就是,cookie需要 bili_jct,DedeUserID,SESSDATA参数',
     searchUrl:'/index.php?m=vod-search#wd=**&search=;post',
     searchable:1,
     filterable:1,
