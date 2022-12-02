@@ -102,7 +102,7 @@ function cate_filter(d, cookie) {
         let tid = MY_FL.tid||'1' ;
         return get_timeline(tid,MY_PAGE)
     }else{
-        return {}
+        return []
     }
 }
 VODS = cate_filter();
