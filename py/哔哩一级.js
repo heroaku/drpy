@@ -1,5 +1,6 @@
 js:
 let d = [];
+let vmid = input.split("vmid=")[1].split("&")[0];
 function get_result(url){
     let videos = [];
     let html = request(url);
@@ -10,7 +11,7 @@ function get_result(url){
             let aid = (vod['season_id']+'').trim();
             let title = vod['title'].trim();
             let img = vod['cover'].trim();
-            let remark = vod['new_ep']['index_show'];
+            let remark = vod.new_ep?vod['new_ep']['index_show']:vod['index_show'];
             videos.push({
                 "vod_id": aid,
                 "vod_name": title,
@@ -30,7 +31,7 @@ function get_rank2(tid,pg){
 }
 
 function get_zhui(pg,mode){
-    let url = 'https://api.bilibili.com/x/space/bangumi/follow/list?type='+mode+'&follow_status=0&pn='+pg+'&ps=10&vmid='+getItem('userid','');
+    let url = 'https://api.bilibili.com/x/space/bangumi/follow/list?type='+mode+'&follow_status=0&pn='+pg+'&ps=10&vmid='+vmid;
     return get_result(url)
 }
 
@@ -101,7 +102,7 @@ function cate_filter(d, cookie) {
         let tid = MY_FL.tid||'1' ;
         return get_timeline(tid,MY_PAGE)
     }else{
-        return {}
+        return []
     }
 }
 VODS = cate_filter();
