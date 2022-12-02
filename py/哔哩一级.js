@@ -1,11 +1,10 @@
 js:
 let d = [];
 function get_result(url){
-    let result = {};
+    let videos = [];
     let html = request(url);
     let jo = JSON.parse(html);
     if(jo['code'] === 0){
-        let videos = [];
         let vodList = jo.result?jo.result.list:jo.data.list;
         vodList.forEach(function (vod){
             let aid = (vod['season_id']+'').trim();
@@ -19,13 +18,8 @@ function get_result(url){
                 "vod_remarks": remark
             });
         });
-        result['list'] = videos;
-        result['page'] = 1;
-        result['pagecount'] = 1;
-        result['limit'] = 90;
-        result['total'] = 999999;
     }
-    return result;
+    return videos;
 }
 function get_rank(tid,pg){
     return get_result('https://api.bilibili.com/pgc/web/rank/list?season_type='+tid+'&pagesize=20&page='+pg+'&day=3')
@@ -46,7 +40,7 @@ function get_all(tid, pg, order, season_status){
 }
 
 function get_timeline(tid,pg){
-    let result = {};
+    let videos = [];
     let url = 'https://api.bilibili.com/pgc/web/timeline/v2?season_type='+tid+'&day_before=2&day_after=4';
     let html = request(url);
     let jo = JSON.parse(html);
@@ -58,7 +52,7 @@ function get_timeline(tid,pg){
             let title = vod['title'].trim();
             let img = vod['cover'].trim();
             let remark = vod['pub_index'] + '　' + vod['follows'].replace('系列', '');
-            videos.push({
+            videos1.push({
                 "vod_id": aid,
                 "vod_name": title,
                 "vod_pic": img,
@@ -83,15 +77,10 @@ function get_timeline(tid,pg){
                     });
                 }
             });
-
         }
-        result['list'] = videos2.concat(videos1);
-        result['page'] = 1;
-        result['pagecount'] = 1;
-        result['limit'] = 90;
-        result['total'] = 999999;
+        videos = videos2.concat(videos1);
     }
-    return result;
+    return videos;
 }
 
 function cate_filter(d, cookie) {
@@ -115,5 +104,5 @@ function cate_filter(d, cookie) {
         return {}
     }
 }
-VODS = cate_filter().list;
+VODS = cate_filter();
 // print(VODS);

@@ -49,6 +49,12 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/12/2
+- [X] js0/js1 api更新，增加新特性:pagecount(单独指定某些分类的总页数)
+```json
+{"1":1,"2":1,"3":1,"4":1,"5":1,"7":1,"时间表":1}
+```
+- [X] 增加分类api无数据时显示一条提示数据防止软件无限请求
 ###### 2022/11/30
 - [X] 修复哔哩zb,jrkan zb无法播放问题
 ###### 2022/11/29
@@ -464,7 +470,9 @@ var rule = {
             parse:1,
         },
     }],
-    // 自定义免嗅
+    //控制不同分类栏目下的总页面,不填就是默认999.哔哩影视大部分分类无法翻页，都需要指定页数为 1
+    pagecount:{"1":1,"2":1,"3":1,"4":1,"5":1,"7":1,"时间表":1},
+    // 自定义免嗅 
     lazy:'',
     // 首页推荐显示数量
     limit:6,
@@ -508,4 +516,4 @@ class_parse:'.navbar-items li:gt(1):lt(7);a&&Text;a&&href;/(\\d+).html',
 }
 ```
 js:内置变量
-input,html,VODS,VOD,TABS,LISTS
+input,html,VODS,VOD,TABS,LISTS,MY_CATE,MY_FL

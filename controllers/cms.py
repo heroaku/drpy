@@ -214,6 +214,7 @@ class CMS:
         self.filter = rule.get('filter',[])
         self.filter_def = rule.get('filter_def',{})
         self.play_json = rule['play_json'] if 'play_json' in rule else []
+        self.pagecount = rule['pagecount'] if 'pagecount' in rule else {}
         self.extend = rule.get('extend',[])
         self.d = self.getObject()
 
@@ -869,15 +870,25 @@ class CMS:
         print('videos:',videos)
         limit = 40
         cnt = 9999 if len(videos) > 0 else 0
+        pagecount = 0
+        if self.pagecount and isinstance(self.pagecount,dict) and fyclass in self.pagecount:
+            print(f'fyclass:{fyclass},self.pagecount:{self.pagecount}')
+            pagecount = int(self.pagecount[fyclass])
         result['list'] = videos
         result['page'] = fypage
-        result['pagecount'] = max(cnt,fypage)
+        result['pagecount'] = pagecount or max(cnt,fypage)
         result['limit'] = limit
         result['total'] = cnt
         # print(result)
+        # print(result['pagecount'])
         logger.info(f'{self.getName()}获取分类{fyclass}第{fypage}页耗时:{get_interval(t1)}毫秒,共计{round(len(str(result)) / 1000, 2)} kb')
-
-        return result
+        nodata = {
+            'list': [{'vod_name': '无数据,防无限请求', 'vod_id': 'no_data', 'vod_remarks': '不要点,会崩的',
+                    'vod_pic': 'https://ghproxy.com/https://raw.githubusercontent.com/hjdhnx/dr_py/main/404.jpg'}],
+            'total': 1, 'pagecount': 1, 'page': 1, 'limit': 1
+        }
+        # return result
+        return result if len(result['list']) > 0 else nodata
 
     def 二级渲染(self,parse_str:'str|dict',**kwargs):
         # *args是不定长参数 列表
