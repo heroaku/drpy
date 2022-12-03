@@ -32,7 +32,8 @@ class Spider(Spider):  # 元类 默认的元类 type
             # "小孟资源": "https://8023.haohanba.cn/小孟丨资源大合集/无损音乐",
             "资源小站": "https://960303.xyz/ali",
             "轻弹浅唱": "https://g.xiang.lol",
-            "小兵组网盘视频": "https://6vv.app"
+            "小兵组网盘视频": "https://6vv.app",
+            # "wenwen": "http://518p8g7316.goho.co:5244",
         }
         classes = []
         for k in cateManual:
