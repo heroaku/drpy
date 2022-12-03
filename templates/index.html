@@ -19,14 +19,22 @@
 <div class="image">
 
 <script>
-        $(document).ready(function () {
-            $("#gen_config").click(function () {
-                // let rule = this.innerText.trim();
-                let code = $.ajax({ url: "/configs", async: false }).responseText;
-                code = typeof (code) === "object" ? code : JSON.parse(code);
-                alert(code.msg);
-            });
+    function darkModeHandler() {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        if (mediaQuery.matches) {
+            let color = '#1b1b1b';
+            $('body').css({"background": color });
+        }
+    }
+    darkModeHandler();
+    $(document).ready(function () {
+        $("#gen_config").click(function () {
+            // let rule = this.innerText.trim();
+            let code = $.ajax({ url: "/configs", async: false }).responseText;
+            code = typeof (code) === "object" ? code : JSON.parse(code);
+            alert(code.msg);
         });
+    });
 </script>
 <h2 class="title">欢迎使用DR-PY首页界面<div class="kf"><span class="ver_title">当前版本: {{ver}}</span><span
                 class="ver_title">框架开发：道长</span><span class="ver_title">框架美化：蓝莓</span></div>
