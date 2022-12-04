@@ -10,7 +10,8 @@
     <title>dr_py首页</title>
     <script src="/static/js/jquery.min.js"></script>
     <link rel="stylesheet" media="screen" href="/static/css/home.css">
-    <link rel="stylesheet" media="screen" href="/static/css/grey.css">
+    <script src="/static/js/grey.js"></script>
+<!--    <link rel="stylesheet" media="screen" href="/static/css/grey.css">-->
 
 </head>
 
@@ -19,14 +20,6 @@
 <div class="image">
 
 <script>
-    function darkModeHandler() {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        if (mediaQuery.matches) {
-            let color = '#1b1b1b';
-            $('body').css({"background": color });
-        }
-    }
-    darkModeHandler();
     $(document).ready(function () {
         $("#gen_config").click(function () {
             // let rule = this.innerText.trim();
@@ -58,7 +51,7 @@
             <a href="/rules/clear">缓存文件列表-清除</a>
         </div>
         <div class="btn">
-            <a href="{{ getHost(0) }}/config/0">本地配置地址</a>
+            <a href="{{ getHost(0) }}/config/0?ver=0">本地配置地址</a>
         </div>
         {% if is_linux %}
         <div class="btn">
@@ -70,7 +63,7 @@
         </div>
         {% if '192.168' in getHost(1) %}
         <div class="btn">
-            <a href="{{ getHost(1) }}/config/1">局域网配置地址</a>
+            <a href="{{ getHost(1) }}/config/1?ver=0">局域网配置地址</a>
         </div>
         {% if is_linux %}
         <div class="btn">
@@ -82,7 +75,7 @@
         </div>
         {% endif %}
         <div class="btn">
-            <a href="{{ getHost(2) }}/config/2">远程配置地址</a>
+            <a href="{{ getHost(2) }}/config/2?ver=0">远程配置地址</a>
         </div>
         {% if is_linux %}
         <div class="btn">

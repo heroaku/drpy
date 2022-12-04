@@ -1302,6 +1302,7 @@ class CMS:
                     # data = ujson.dumps(new_dict)
                     data = new_dict
                     # print(data)
+                    logger.info(self.headers)
                     r = requests.post(rurl, headers=self.headers,data=data, timeout=self.timeout, verify=False)
                 elif req_method == 'postjson':
                     rurls = url.split(';')[0].split('#')
@@ -1313,6 +1314,7 @@ class CMS:
                         params = ujson.dumps(params)
                     except:
                         params = '{}'
+                    logger.info(headers_cp)
                     r = requests.post(rurl, headers=headers_cp, data=params, timeout=self.timeout, verify=False)
                 else:
                     r = requests.get(url, headers=self.headers,timeout=self.timeout,verify=False)
