@@ -10,7 +10,8 @@
     <title>dr_py首页</title>
     <script src="/static/js/jquery.min.js"></script>
     <link rel="stylesheet" media="screen" href="/static/css/home.css">
-    <link rel="stylesheet" media="screen" href="/static/css/grey.css">
+    <script src="/static/js/grey.js"></script>
+<!--    <link rel="stylesheet" media="screen" href="/static/css/grey.css">-->
 
 </head>
 
@@ -19,14 +20,6 @@
 <div class="image">
 
 <script>
-    function darkModeHandler() {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        if (mediaQuery.matches) {
-            let color = '#1b1b1b';
-            $('body').css({"background": color });
-        }
-    }
-    darkModeHandler();
     $(document).ready(function () {
         $("#gen_config").click(function () {
             // let rule = this.innerText.trim();
