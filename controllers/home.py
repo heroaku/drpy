@@ -219,8 +219,15 @@ def config_render(mode):
     # print(dict(app.config))
     tt = time()
     UA = request.headers['User-Agent']
-    ISTVB = 'okhttp/3' in UA
-    logger.info(UA)
+    ver = getParmas('ver')
+    logger.info(f'ver:{ver},UA:{UA}')
+    if ver not in ['1','2']:
+        ISTVB = 'okhttp/3' in UA
+    elif ver == '1':
+        ISTVB = False
+    elif ver == '2':
+        ISTVB = True
+    # print(ISTVB)
     if mode == 1:
         jyw_ip = getHost(mode)
         logger.info(jyw_ip)
