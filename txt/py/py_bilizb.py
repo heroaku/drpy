@@ -5,11 +5,6 @@ import sys
 sys.path.append('..')
 from base.spider import Spider
 import json
-import requests
-from requests import session, utils
-import time
-import base64
-
 
 class Spider(Spider):
     def getDependence(self):
@@ -22,7 +17,10 @@ class Spider(Spider):
     def homeContent(self, filter):
         result = {}
         cateManual = {
+            "我的关注": "我的关注",
+            "观看记录": "观看记录",
             "推荐": "推荐",
+            "热门": "热门",
             "网游": "2",
             "手游": "3",
             "单机": "6",
@@ -32,8 +30,6 @@ class Spider(Spider):
             "赛事": "13",
             "电台": "5",
             "虚拟": "9",
-            "我的关注": "我的关注",
-            "观看记录": "观看记录",
 
         }
         classes = []
@@ -49,7 +45,6 @@ class Spider(Spider):
 
     # 用户cookies
     cookies = ''
-    userid = ''
 
     def getCookie(self):
         self.cookies = self.bilibili.getCookie()
@@ -83,19 +78,22 @@ class Spider(Spider):
 
     def get_live_userInfo(self, uid):
         url = 'https://api.live.bilibili.com/live_user/v1/Master/info?uid=%s' % uid
-        rsp = self.fetch(url, cookies=self.cookies)
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         if jo['code'] == 0:
             return jo['data']["info"]["uname"]
 
     def homeVideoContent(self,):
-        return self.get_hot(1)
+        result = {}
+        videos = self.get_hot(1)['list'][0:3]
+        result['list'] = videos
+        return result
 
     def get_recommend(self, pg):
         result = {}
         url = 'https://api.live.bilibili.com/xlive/web-interface/v1/webMain/getList?platform=web&page=%s' % pg
-        rsp = self.fetch(url, cookies=self.cookies)
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         if jo['code'] == 0:
@@ -109,20 +107,20 @@ class Spider(Spider):
                 videos.append({
                     "vod_id": aid + '&live',
                     "vod_name": title,
-                    "vod_pic": img,
+                    "vod_pic": img + '@672w_378h_1c.jpg',
                     "vod_remarks": remark
                 })
             result['list'] = videos
             result['page'] = pg
             result['pagecount'] = 9999
-            result['limit'] = 90
+            result['limit'] = 2
             result['total'] = 999999
         return result
 
     def get_hot(self, pg):
         result = {}
-        url = 'https://api.live.bilibili.com/room/v1/room/get_user_recommend?page=%s&page_size=20' % pg
-        rsp = self.fetch(url, cookies=self.cookies)
+        url = 'https://api.live.bilibili.com/room/v1/room/get_user_recommend?page=%s&page_size=10' % pg
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         if jo['code'] == 0:
@@ -136,13 +134,13 @@ class Spider(Spider):
                 videos.append({
                     "vod_id": aid + '&live',
                     "vod_name": title,
-                    "vod_pic": img,
+                    "vod_pic": img + '@672w_378h_1c.jpg',
                     "vod_remarks": remark
                 })
             result['list'] = videos
             result['page'] = pg
             result['pagecount'] = 9999
-            result['limit'] = 90
+            result['limit'] = 2
             result['total'] = 999999
         return result
 
@@ -150,7 +148,7 @@ class Spider(Spider):
         result = {}
         url = 'https://api.live.bilibili.com/xlive/web-interface/v1/second/getList?platform=web&parent_area_id=%s&area_id=%s&sort_type=online&page=%s' % (
         parent_area_id, area_id, pg)
-        rsp = self.fetch(url, cookies=self.cookies)
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         if jo['code'] == 0:
@@ -164,20 +162,20 @@ class Spider(Spider):
                 videos.append({
                     "vod_id": aid + '&live',
                     "vod_name": title,
-                    "vod_pic": img,
+                    "vod_pic": img + '@672w_378h_1c.jpg',
                     "vod_remarks": remark
                 })
             result['list'] = videos
             result['page'] = pg
             result['pagecount'] = 9999
-            result['limit'] = 90
+            result['limit'] = 2
             result['total'] = 999999
         return result
 
     def get_fav(self, pg):
         result = {}
         url = 'https://api.live.bilibili.com/xlive/web-ucenter/v1/xfetter/GetWebList?page=%s&page_size=10' % pg
-        rsp = self.fetch(url, cookies=self.cookies)
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         videos = []
@@ -190,20 +188,20 @@ class Spider(Spider):
             videos.append({
                 "vod_id": aid + '&live',
                 "vod_name": title,
-                "vod_pic": img,
+                "vod_pic": img + '@672w_378h_1c.jpg',
                 "vod_remarks": remark
             })
         result['list'] = videos
         result['page'] = pg
         result['pagecount'] = 9999
-        result['limit'] = 90
+        result['limit'] = 2
         result['total'] = 999999
         return result
 
     def get_history(self):
         result = {}
-        url = 'https://api.bilibili.com/x/web-interface/history/cursor?ps=10&type=live'
-        rsp = self.fetch(url, cookies=self.cookies)
+        url = 'https://api.bilibili.com/x/web-interface/history/cursor?ps=21&type=live'
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         if jo['code'] == 0:
@@ -217,7 +215,7 @@ class Spider(Spider):
                 videos.append({
                     "vod_id": aid + '&live',
                     "vod_name": title,
-                    "vod_pic": img,
+                    "vod_pic": img + '@672w_378h_1c.jpg',
                     "vod_remarks": remark
                 })
             result['list'] = videos
@@ -239,6 +237,8 @@ class Spider(Spider):
             return self.get_live(pg=pg, parent_area_id=parent_area_id, area_id=area_id)
         if tid == "推荐":
             return self.get_recommend(pg)
+        if tid == "热门":
+            return self.get_hot(pg)
         if tid == "我的关注":
             return self.get_fav(pg)
         if tid == "观看记录":
@@ -250,8 +250,8 @@ class Spider(Spider):
 
     def detailContent(self, array):
         arrays = array[0].split("&")
-        aid = arrays[0]
-        url = "https://api.live.bilibili.com/room/v1/Room/get_info?room_id=%s" % aid
+        room_id = arrays[0]
+        url = "https://api.live.bilibili.com/room/v1/Room/get_info?room_id=%s" % room_id
         rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         jRoot = json.loads(rsp.text)
         if jRoot.get('code') == 0:
@@ -259,27 +259,34 @@ class Spider(Spider):
             title = jo['title'].replace("<em class=\"keyword\">", "").replace("</em>", "")
             pic = jo.get("user_cover")
             desc = jo.get('description')
-            dire = self.get_live_userInfo(jo["uid"])
-            typeName = jo.get("area_name")
-            live_status = str(jo.get('live_status')).replace("0", "未开播").replace("1", "").replace("2", "")
-            live_time = str(jo.get('live_time'))[5: 16]
+            uid = str(jo["uid"])
+            info = {}
+            self.bilibili.get_up_info(uid, info)
+            dire = self.get_live_userInfo(uid)
+            self.bilibili.up_mid = uid
+            typeName = jo['parent_area_name'] + '--' + jo['area_name']
+            if jo['live_status'] == 0:
+                live_status = "未开播"
+            else:
+                live_status = "开播时间：" + jo['live_time']
             remark = '在线人数:' + str(jo['online']).strip()
             vod = {
-                "vod_id": aid,
+                "vod_id": room_id,
                 "vod_name": title,
                 "vod_pic": pic,
                 "type_name": typeName,
                 "vod_year": "",
                 "vod_area": "bilidanmu",
                 "vod_remarks": remark,
-                "vod_actor": "主播：" + dire + "　　" + "房间号：" + aid + "　　" + live_status,
-                "vod_director": "关注：" + self.zh(jo.get('attention')) + "　　" + "开播时间：" + live_time,
+                "vod_actor": "关注：" + self.zh(jo.get('attention')) + "　房间号：" + room_id +  "　UID：" + uid,
+                "vod_director": dire + '　　' + info['following'] + "　　" + live_status,
                 "vod_content": desc,
             }
-            playUrl = 'flv线路原画$platform=web&quality=4_' + aid + '#flv线路高清$platform=web&quality=3_' + aid + '#h5线路原画$platform=h5&quality=4_' + aid + '#h5线路高清$platform=h5&quality=3_' + aid
+            playUrl = 'flv线路原画$platform=web&quality=4_' + room_id + '#flv线路高清$platform=web&quality=3_' + room_id + '#h5线路原画$platform=h5&quality=4_' + room_id + '#h5线路高清$platform=h5&quality=3_' + room_id
 
-            vod['vod_play_from'] = 'B站'
-            vod['vod_play_url'] = playUrl
+            vod['vod_play_from'] = 'B站$$$关注/取关'
+            secondP = info['followActName'] + '$' + str(uid) + '_' + str(info['followAct']) + '_follow#'
+            vod['vod_play_url'] = playUrl + '$$$' +  secondP
             result = {
                 'list': [
                     vod
@@ -309,7 +316,7 @@ class Spider(Spider):
                 videos1.append({
                     "vod_id": aid,
                     "vod_name": title,
-                    "vod_pic": img,
+                    "vod_pic": img + '@672w_378h_1c.jpg',
                     "vod_remarks": remark
                 })
         videos2 = []
@@ -323,7 +330,7 @@ class Spider(Spider):
                 videos2.append({
                     "vod_id": aid,
                     "vod_name": title,
-                    "vod_pic": img,
+                    "vod_pic": img + '@672w_378h_1c.jpg',
                     "vod_remarks": remark
                 })
         videos = videos1 + videos2
@@ -335,13 +342,14 @@ class Spider(Spider):
     def playerContent(self, flag, id, vipFlags):
         result = {}
         ids = id.split("_")
-
+        if 'follow' in ids:
+            self.bilibili.do_follow(ids[0], ids[1])
+            return result
         url = 'https://api.live.bilibili.com/room/v1/Room/playUrl?cid=%s&%s' % (ids[1], ids[0])
-
         # raise Exception(url)
         if len(self.cookies) <= 0:
             self.getCookie()
-        rsp = self.fetch(url, cookies=self.cookies)
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         jRoot = json.loads(rsp.text)
         if jRoot['code'] == 0:
 

@@ -49,6 +49,12 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/12/4
+- [X] 修复js1 post搜索时未传递规则请求头信息bug
+- [X] alist.js更新,增加了首页推荐
+- [X] 仙人模式逻辑优化,增加ver参数,0,1,2。其中默认0为仙人自动识别,1为强制drpy.min.js,2为强制drpy2.min.js
+- [X] 默哀模式优化
+- [X] 更新部分py源
 ###### 2022/12/2
 - [X] js0/js1 api更新，增加新特性:pagecount(单独指定某些分类的总页数)
 ```json

@@ -10,7 +10,6 @@ import os
 import time
 import base64
 
-
 class Spider(Spider):
     def getDependence(self):
         return ['py_bilibili']
@@ -40,8 +39,6 @@ class Spider(Spider):
             "纪录片": "3",
             "综艺": "7",
             "全部": "全部",
-            "追番": "追番",
-            "追剧": "追剧",
             "时间表": "时间表",
             # ————————以下可自定义关键字，结果以影视类搜索展示————————
             # "喜羊羊": "喜羊羊"
@@ -60,11 +57,9 @@ class Spider(Spider):
 
     # 用户cookies
     cookies = ''
-    userid = ''
 
     def getCookie(self):
         self.cookies = self.bilibili.getCookie()
-        self.userid = self.bilibili.userid
         return self.cookies
 
     # 将超过10000的数字换成成以万和亿为单位
@@ -82,92 +77,79 @@ class Spider(Spider):
 
     def homeVideoContent(self):
         result = {}
-        videos = self.get_rank(1)['list'][0:5]
-        for i in [4, 2, 5, 3, 7]:
-            videos += self.get_rank2(i)['list'][0:5]
+        videos = self.get_rank2(tid=4, pg=1)['list'][0:3]
+        #videos = self.get_rank(tid=1, pg=1)['list'][0:5]
+        #for i in [4, 2, 5, 3, 7]:
+        #    videos += self.get_rank2(tid=i, pg=1)['list'][0:5]
         result['list'] = videos
         return result
 
-    def get_rank(self, tid):
+    def get_rank(self, tid, pg):
+        ps=9
+        pg_max= int(pg) * ps
+        pg_min= pg_max - ps
         result = {}
         url = 'https://api.bilibili.com/pgc/web/rank/list?season_type={0}&day=3'.format(tid)
-        rsp = self.fetch(url, cookies=self.cookies)
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         if jo['code'] == 0:
             videos = []
             vodList = jo['result']['list']
+            pc = int(len(vodList) / ps) + 1
+            vodList = vodList[pg_min:pg_max]
             for vod in vodList:
                 aid = str(vod['season_id']).strip()
                 title = vod['title'].strip()
                 img = vod['cover'].strip()
-                remark = vod['new_ep']['index_show']
+                remark = ''
+                if 'index_show' in vod['new_ep']:
+                    remark = vod['new_ep']['index_show']
                 videos.append({
-                    "vod_id": aid,
+                    "vod_id": 'ss' + aid,
                     "vod_name": title,
-                    "vod_pic": img,
+                    "vod_pic": img + '@672w_378h_1c.jpg',
                     "vod_remarks": remark
                 })
             result['list'] = videos
-            result['page'] = 1
-            result['pagecount'] = 1
-            result['limit'] = 90
+            result['page'] = pg
+            result['pagecount'] = pc
+            result['limit'] = 2
             result['total'] = 999999
         return result
 
-    def get_rank2(self, tid):
+    def get_rank2(self, tid, pg):
+        ps=9
+        pg_max= int(pg) * ps
+        pg_min= pg_max - ps
         result = {}
         url = 'https://api.bilibili.com/pgc/season/rank/web/list?season_type={0}&day=3'.format(tid)
-        rsp = self.fetch(url, cookies=self.cookies)
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         if jo['code'] == 0:
             videos = []
             vodList = jo['data']['list']
+            pc = int(len(vodList) / ps) + 1
+            vodList = vodList[pg_min:pg_max]
             for vod in vodList:
                 aid = str(vod['season_id']).strip()
                 title = vod['title'].strip()
                 img = vod['cover'].strip()
-                remark = vod['new_ep']['index_show']
+                remark = ''
+                if 'index_show' in vod['new_ep']:
+                    remark = vod['new_ep']['index_show']
                 videos.append({
-                    "vod_id": aid,
+                    "vod_id": 'ss' + aid,
                     "vod_name": title,
-                    "vod_pic": img,
+                    "vod_pic": img + '@672w_378h_1c.jpg',
                     "vod_remarks": remark
                 })
             result['list'] = videos
-            result['page'] = 1
-            result['pagecount'] = 1
-            result['limit'] = 90
+            result['page'] = pg
+            result['pagecount'] = pc
+            result['limit'] = 2
             result['total'] = 999999
-        return result
-
-    def get_zhui(self, pg, mode):
-        result = {}
-        if len(self.cookies) <= 0:
-            self.getCookie()
-        url = 'https://api.bilibili.com/x/space/bangumi/follow/list?type={2}&follow_status=0&pn={1}&ps=10&vmid={0}'.format(self.userid, pg, mode)
-        rsp = self.fetch(url, cookies=self.cookies)
-        content = rsp.text
-        jo = json.loads(content)
-        videos = []
-        vodList = jo['data']['list']
-        for vod in vodList:
-            aid = str(vod['season_id']).strip()
-            title = vod['title']
-            img = vod['cover'].strip()
-            remark = vod['new_ep']['index_show'].strip()
-            videos.append({
-                "vod_id": aid,
-                "vod_name": title,
-                "vod_pic": img,
-                "vod_remarks": remark
-            })
-        result['list'] = videos
-        result['page'] = pg
-        result['pagecount'] = 9999
-        result['limit'] = 90
-        result['total'] = 999999
         return result
 
     def get_all(self, tid, pg, order, season_status, extend):
@@ -175,7 +157,7 @@ class Spider(Spider):
         if len(self.cookies) <= 0:
             self.getCookie()
         url = 'https://api.bilibili.com/pgc/season/index/result?order={2}&pagesize=10&type=1&season_type={0}&page={1}&season_status={3}'.format(tid, pg, order, season_status)
-        rsp = self.fetch(url, cookies=self.cookies)
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         videos = []
@@ -186,22 +168,22 @@ class Spider(Spider):
             img = vod['cover'].strip()
             remark = vod['index_show'].strip()
             videos.append({
-                "vod_id": aid,
+                "vod_id": 'ss' + aid,
                 "vod_name": title,
-                "vod_pic": img,
+                "vod_pic": img + '@672w_378h_1c.jpg',
                 "vod_remarks": remark
             })
         result['list'] = videos
         result['page'] = pg
         result['pagecount'] = 9999
-        result['limit'] = 90
+        result['limit'] = 2
         result['total'] = 999999
         return result
 
     def get_timeline(self, tid, pg):
         result = {}
         url = 'https://api.bilibili.com/pgc/web/timeline/v2?season_type={0}&day_before=2&day_after=4'.format(tid)
-        rsp = self.fetch(url, cookies=self.cookies)
+        rsp = self.fetch(url, headers=self.header, cookies=self.cookies)
         content = rsp.text
         jo = json.loads(content)
         if jo['code'] == 0:
@@ -213,9 +195,9 @@ class Spider(Spider):
                 img = vod['cover'].strip()
                 remark = vod['pub_index'] + '　' + vod['follows'].replace('系列', '')
                 videos1.append({
-                    "vod_id": aid,
+                    "vod_id": 'ss' + aid,
                     "vod_name": title,
-                    "vod_pic": img,
+                    "vod_pic": img + '@672w_378h_1c.jpg',
                     "vod_remarks": remark
                 })
             videos2 = []
@@ -229,9 +211,9 @@ class Spider(Spider):
                         date = str(time.strftime("%m-%d %H:%M", time.localtime(vod['pub_ts'])))
                         remark = date + "   " + vod['pub_index']
                         videos2.append({
-                            "vod_id": aid,
+                            "vod_id": 'ss' + aid,
                             "vod_name": title,
-                            "vod_pic": img,
+                            "vod_pic": img + '@672w_378h_1c.jpg',
                             "vod_remarks": remark
                         })
             result['list'] = videos2 + videos1
@@ -246,9 +228,9 @@ class Spider(Spider):
         if len(self.cookies) <= 0:
             self.getCookie()
         if tid == "1":
-            return self.get_rank(tid=tid)
+            return self.get_rank(tid=tid, pg=pg)
         elif tid in {"2", "3", "4", "5", "7"}:
-            return self.get_rank2(tid=tid)
+            return self.get_rank2(tid=tid, pg=pg)
         elif tid == "全部":
             tid = '1'    # 全部界面默认展示最多播放的番剧
             order = '2'
@@ -260,10 +242,6 @@ class Spider(Spider):
             if 'season_status' in extend:
                 season_status = extend['season_status']
             return self.get_all(tid, pg, order, season_status, extend)
-        elif tid == "追番":
-            return self.get_zhui(pg, 1)
-        elif tid == "追剧":
-            return self.get_zhui(pg, 2)
         elif tid == "时间表":
             tid = 1
             if 'tid' in extend:
@@ -277,69 +255,20 @@ class Spider(Spider):
         return str.replace('\n', '').replace('\t', '').replace('\r', '').replace(' ', '')
 
     def detailContent(self, array):
-        aid = array[0]
-        url = "https://api.bilibili.com/pgc/view/web/season?season_id={0}".format(aid)
-        rsp = self.fetch(url, headers=self.header)
-        jRoot = json.loads(rsp.text)
-        jo = jRoot['result']
-        id = jo['season_id']
-        title = jo['title']
-        pic = jo['cover']
-        # areas = jo['areas']['name']  改bilidanmu显示弹幕
-        typeName = jo['share_sub_title']
-        date = jo['publish']['pub_time'][0:4]
-        dec = jo['evaluate']
-        remark = jo['new_ep']['desc']
-        stat = jo['stat']
-        # 演员和导演框展示视频状态，包括以下内容：
-        status = "弹幕: " + self.zh(stat['danmakus']) + "　点赞: " + self.zh(stat['likes']) + "　投币: " + self.zh(
-            stat['coins']) + "　追番追剧: " + self.zh(stat['favorites'])
-        if 'rating' in jo:
-            score = "评分: " + str(jo['rating']['score']) + '　' + jo['subtitle']
-        else:
-            score = "暂无评分" + '　' + jo['subtitle']
-        vod = {
-            "vod_id": id,
-            "vod_name": title,
-            "vod_pic": pic,
-            "type_name": typeName,
-            "vod_year": date,
-            "vod_area": "bilidanmu",
-            "vod_remarks": remark,
-            "vod_actor": status,
-            "vod_director": score,
-            "vod_content": dec
-        }
-        ja = jo['episodes']
-        playUrl = ''
-        for tmpJo in ja:
-            aid = tmpJo['aid']
-            cid = tmpJo['cid']
-            part = tmpJo['title'].replace("#", "-")
-            playUrl = playUrl + '{0}${1}_{2}#'.format(part, aid, cid)
-
-        vod['vod_play_from'] = 'B站'
-        vod['vod_play_url'] = playUrl
-
-        result = {
-            'list': [
-                vod
-            ]
-        }
-        return result
+        return self.bilibili.ysContent(array)
 
     def searchContent(self, key, quick):
         if len(self.cookies) <= 0:
             self.getCookie()
         url1 = 'https://api.bilibili.com/x/web-interface/search/type?search_type=media_bangumi&keyword={0}'.format(
             key)  # 番剧搜索
-        rsp1 = self.fetch(url1, cookies=self.cookies)
+        rsp1 = self.fetch(url1, headers=self.header, cookies=self.cookies)
         content1 = rsp1.text
         jo1 = json.loads(content1)
         rs1 = jo1['data']
         url2 = 'https://api.bilibili.com/x/web-interface/search/type?search_type=media_ft&keyword={0}'.format(
             key)  # 影视搜索
-        rsp2 = self.fetch(url2, cookies=self.cookies)
+        rsp2 = self.fetch(url2, headers=self.header, cookies=self.cookies)
         content2 = rsp2.text
         jo2 = json.loads(content2)
         rs2 = jo2['data']
@@ -356,9 +285,9 @@ class Spider(Spider):
             img = vod['cover'].strip()  # vod['eps'][0]['cover'].strip()原来的错误写法
             remark = vod['index_show']
             videos.append({
-                "vod_id": aid,
+                "vod_id": 'ss' + aid,
                 "vod_name": title,
-                "vod_pic": img,
+                "vod_pic": img + '@672w_378h_1c.jpg',
                 "vod_remarks": remark
             })
         result = {
@@ -367,46 +296,7 @@ class Spider(Spider):
         return result
 
     def playerContent(self, flag, id, vipFlags):
-        result = {}
-        ids = id.split("_")
-        header = {
-            "Referer": "https://www.bilibili.com",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
-        }
-        url = 'https://api.bilibili.com/pgc/player/web/playurl?qn=116&aid={0}&cid={1}'.format(ids[0], ids[1])
-        if len(self.cookies) <= 0:
-            self.getCookie()
-        self.bilibili.post_history(ids[0], ids[1])  # 回传播放历史记录
-        rsp = self.fetch(url, cookies=self.cookies, headers=header)
-        jRoot = json.loads(rsp.text)
-        if jRoot['message'] != 'success':
-            print("需要大会员权限才能观看")
-            return {}
-        jo = jRoot['result']
-        ja = jo['durl']
-        maxSize = -1
-        position = -1
-        for i in range(len(ja)):
-            tmpJo = ja[i]
-            if maxSize < int(tmpJo['size']):
-                maxSize = int(tmpJo['size'])
-                position = i
-
-        url = ''
-        if len(ja) > 0:
-            if position == -1:
-                position = 0
-            url = ja[position]['url']
-
-        result["parse"] = 0
-        result["playUrl"] = ''
-        result["url"] = url
-        result["header"] = {
-            "Referer": "https://www.bilibili.com",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
-        }
-        result["contentType"] = 'video/x-flv'
-        return result
+        return self.bilibili.playerContent(flag, id, vipFlags)
 
     config = {
         "player": {},
