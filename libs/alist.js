@@ -30,7 +30,7 @@ var limit_search_show = 200;
 var search_type = '';
 var detail_order = 'name';
 const request_timeout = 5000;
-const VERSION = 'alist v2/v3 20221129';
+const VERSION = 'alist v2/v3 20221204';
 /**
  * 打印日志
  * @param any 任意变量
@@ -254,7 +254,25 @@ function home(filter) {
 }
 
 function homeVod(params) {
-	return JSON.stringify({ 'list': [] });
+	let _post_data = {"pageNum":0,"pageSize":100};
+	let _post_url = 'https://pbaccess.video.qq.com/trpc.videosearch.hot_rank.HotRankServantHttp/HotRankHttp';
+	let data = http.post(_post_url,{ data: _post_data }).json();
+	let _list = [];
+	try {
+		data = data['data']['navItemList'][0]['hotRankResult']['rankItemList'];
+		// print(data);
+		data.forEach(it=>{
+			_list.push({
+				vod_name:it.title,
+				vod_id:'msearch:'+it.title,
+				vod_pic:'https://avatars.githubusercontent.com/u/97389433?s=120&v=4',
+				vod_remarks:it.changeOrder,
+			});
+		});
+	}catch (e) {
+		print('Alist获取首页推荐发送错误:'+e.message);
+	}
+	return JSON.stringify({ 'list': _list });
 }
 
 function category(tid, pg, filter, extend) {
