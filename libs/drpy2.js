@@ -34,7 +34,7 @@ function pre(){
 }
 
 let rule = {};
-const VERSION = 'drpy2 3.9.28 20221202';
+const VERSION = 'drpy2 3.9.29 20221204';
 /** 已知问题记录
  * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)[影魔牛逼，最新的文件发现这问题已经解决了]
  * Array.prototype.append = Array.prototype.push; 这种js执行后有毛病,for in 循环列表会把属性给打印出来 (这个大毛病需要重点排除一下)
@@ -1473,7 +1473,10 @@ function searchParse(searchObj) {
                 //     new_dict[i.split('=')[0]] = i.split('=')[1];
                 // });
                 // html = post(rurl,{body:new_dict});
-                html = post(rurl,{body:params});
+                let _fetch_params = JSON.parse(JSON.stringify(rule_fetch_params));
+                let postData = {body:params};
+                Object.assign(_fetch_params,postData);
+                html = post(rurl,_fetch_params);
             }else if(req_method==='postjson'){
                 let rurls = MY_URL.split(';')[0].split('#')
                 let rurl = rurls[0]
@@ -1484,7 +1487,10 @@ function searchParse(searchObj) {
                 }catch (e) {
                     params = '{}'
                 }
-                html = post(rurl,{body:params});
+                let _fetch_params = JSON.parse(JSON.stringify(rule_fetch_params));
+                let postData = {body:params};
+                Object.assign(_fetch_params,postData);
+                html = post(rurl,_fetch_params);
             }else{
                 html = getHtml(MY_URL);
             }
