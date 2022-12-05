@@ -1935,11 +1935,11 @@ function detailParse(detailObj){
                     //     // new_vod_list.push(idex + '$' +_pdfh(it, list_url));
                     //     new_vod_list.push(_pdfh(it, list_text).trim() + '$' +_pd(it, list_url,MY_URL));
                     // });
-                    for(let i=0;i<vodList.length;i++){
-                        let it = vodList[i];
-                        new_vod_list.push(_pdfh(it, list_text).trim() + '$' +_pd(it, list_url,MY_URL));
-                    }
                     if(vodList.length>0){
+                        for(let i=0;i<vodList.length;i++){
+                            let it = vodList[i];
+                            new_vod_list.push(_pdfh(it, list_text).trim() + '$' +_pd(it, list_url,MY_URL));
+                        }
                         new_vod_list = forceOrder(new_vod_list,'',x=>x.split('$')[0]);
                         console.log(`drpy影响性能代码共计列表数循环次数:${vodList.length},耗时:${(new Date()).getTime()-tt1}毫秒`);
                     }
