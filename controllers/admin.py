@@ -14,7 +14,7 @@ from utils.log import logger
 import shutil
 from utils.update import getLocalVer,getOnlineVer,download_new_version,download_lives,copy_to_update
 from utils import parser
-from utils.env import get_env
+from utils.env import get_env,update_env
 from utils.web import getParmas,verfy_token
 from js.rules import getRules,getCacheCount
 from utils.parser import runJScode
@@ -68,6 +68,17 @@ def admin_save_conf():  # 管理员界面
     lsg = storage_service()
     res_id = lsg.setItem(key,value)
     return R.success(f'修改成功,记录ID为:{res_id}')
+
+@admin.route('/update_env',methods=['POST'])
+def admin_update_env():  # 更新环境变量中的某个值
+    if not verfy_token():
+        # return render_template('login.html')
+        return R.error('请登录后再试')
+    key = getParmas('key')
+    value = getParmas('value')
+    print(f'key:{key},value:{value}')
+    ENV = update_env(key,value)
+    return R.success(f'修改成功,最新的完整ENV见data',data=ENV)
 
 
 @admin.route("/view/<name>",methods=['GET'])

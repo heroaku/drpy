@@ -18,6 +18,7 @@ def getParmas(key=None,value=''):
     :return:
     """
     content_type = request.headers.get('Content-Type')
+    # print(content_type)
     args = {}
     if request.method == 'POST':
         if 'application/x-www-form-urlencoded' in content_type or 'multipart/form-data' in content_type:

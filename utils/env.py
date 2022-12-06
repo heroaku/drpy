@@ -31,3 +31,18 @@ def get_env():
         env.update(ENV)
     # print(env)
     return env
+
+def update_env(env_key:str,env_value:str):
+    lsg = storage_service()
+    env = lsg.getItem('ENV')
+    ENV = {}
+    try:
+        ENV = ujson.loads(env)
+    except:
+        env = '{}'
+    if env_key:
+        ENV[env_key] = env_value
+        new_env = ujson.dumps(ENV,ensure_ascii=False)
+        print(new_env)
+        lsg.setItem('ENV',new_env)
+    return ENV
