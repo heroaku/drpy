@@ -49,6 +49,8 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/12/6
+- [X] 增加外部更新环境变量的方法,详情参考 /py/外部更新环境变量.py,可以自行用js等其他语言实现调用
 ###### 2022/12/4
 - [X] 修复js1 post搜索时未传递规则请求头信息bug
 - [X] alist.js更新,增加了首页推荐
