@@ -6,8 +6,9 @@
 
 import requests
 
+
 class Drpy:
-    def __init__(self,url,username='admin',password='drpy'):
+    def __init__(self, url, username='admin', password='drpy'):
         s = requests.session()
         data = {
             'username': username,
@@ -26,16 +27,15 @@ class Drpy:
             self.s = None
             print('drpy连接失败')
 
-
-    def update_env(self,key,value):
+    def update_env(self, key, value):
         if not self.s:
             exit('drpy未连接，无法进行操作')
         else:
             data = {
-                'key':key,
-                'value':value,
+                'key': key,
+                'value': value,
             }
-            r = self.s.post(self.env_api,data=data)
+            r = self.s.post(self.env_api, data=data)
             jsonData = r.json()
             if jsonData.get('code') == 200:
                 print('修改成功')
@@ -43,6 +43,7 @@ class Drpy:
             else:
                 print('修改失败')
 
+
 if __name__ == '__main__':
     drpy = Drpy('http://localhost:5705/')
-    drpy.update_env('test_env','测试环境变量')
+    drpy.update_env('test_env', '测试环境变量')
