@@ -59,7 +59,15 @@
 	"server": "https://ali.liucn.repl.co"
 }, {
 	"name": "🌨秋雨分享",
-	"server": "https://share.laowang.me"
+	"server": "https://share.laowang.me",
+	"params": {
+		"/Onedrive-2": {
+			"password": "s8;K^h[j<b"
+		},
+		"/Onedrive-3": {
+			"password": "s8;K^h[j<b"
+		}
+	}
 }, {
 	"name": "💦讯维云盘",
 	"server": "https://pan.xwbeta.com"
