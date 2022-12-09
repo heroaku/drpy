@@ -29,8 +29,9 @@ var searchDriver = '';
 var limit_search_show = 200;
 var search_type = '';
 var detail_order = 'name';
+var playRaw = 1; // 播放直链获取,默认0直接拼接/d 填1可以获取阿里oss链接。注意，有时效性
 const request_timeout = 5000;
-const VERSION = 'alist v2/v3 20221204';
+const VERSION = 'alist v2/v3 20221209';
 /**
  * 打印日志
  * @param any 任意变量
@@ -156,6 +157,17 @@ function init(ext) {
 			// 升序排列
 			_path_param.sort((a,b)=>(a.length-b.length));
 		}
+		if(item.password){
+			let pwdObj = {
+				password: item.password
+			};
+			if(!item.params){
+				item.params = {'/':pwdObj};
+			}else{
+				item.params['/'] = pwdObj;
+			}
+			_path_param.unshift('/');
+		}
 		__drives[item.name] = {
 			name: item.name,
 			server: item.server.endsWith("/") ? item.server.rstrip("/") : item.server,
@@ -177,15 +189,22 @@ function init(ext) {
 			getFile(path) {
 				let raw_url = this.server+'/d'+path;
 				raw_url = encodeURI(raw_url);
-				// print('raw_url:'+raw_url);
-				return {raw_url:raw_url};
-
-				// const res = http.post(this.server + this.api.file, { data: this.getParams(path) }).json();
-				// const data = this.settings.v3 ? res.data : res.data.files[0];
-				// if (!this.settings.v3) {
-				// 	data.raw_url = data.url; //v2 的url和v3不一样
-				// }
-				// return data
+				let data = {raw_url:raw_url,raw_url1:raw_url};
+				if(playRaw===1){
+					try {
+						const res = http.post(this.server + this.api.file, { data: this.getParams(path) }).json();
+						data = this.settings.v3 ? res.data : res.data.files[0];
+						if (!this.settings.v3) {
+							data.raw_url = data.url; //v2 的url和v3不一样
+						}
+						data.raw_url1 = raw_url;
+						return data
+					}catch (e) {
+						return data
+					}
+				}else{
+					return data
+				}
 			},
 			isFolder(data) { return data.type === 1 },
 			isVideo(data) { //判断是否是 视频文件
@@ -499,11 +518,12 @@ function play(flag, id, flags) {
 	let vod = {
 		'parse': 0,
 		'playUrl': '',
+		// 'url': drives.getFile(urls[0]).raw_url+'#.m3u8' // 加 # 没法播放
 		'url': drives.getFile(urls[0]).raw_url
 	};
 	if (urls.length >= 2) {
 		const path = urls[0].substring(0, urls[0].lastIndexOf('/') + 1);
-		vod.subt = drives.getFile(path + urls[1]).raw_url;
+		vod.subt = drives.getFile(path + urls[1]).raw_url1;
 	}
 	print("----play----");
 	print(vod);
