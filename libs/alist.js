@@ -189,16 +189,21 @@ function init(ext) {
 			getFile(path) {
 				let raw_url = this.server+'/d'+path;
 				raw_url = encodeURI(raw_url);
+				let data = {raw_url:raw_url,raw_url1:raw_url};
 				if(playRaw===1){
-					const res = http.post(this.server + this.api.file, { data: this.getParams(path) }).json();
-					const data = this.settings.v3 ? res.data : res.data.files[0];
-					if (!this.settings.v3) {
-						data.raw_url = data.url; //v2 的url和v3不一样
+					try {
+						const res = http.post(this.server + this.api.file, { data: this.getParams(path) }).json();
+						data = this.settings.v3 ? res.data : res.data.files[0];
+						if (!this.settings.v3) {
+							data.raw_url = data.url; //v2 的url和v3不一样
+						}
+						data.raw_url1 = raw_url;
+						return data
+					}catch (e) {
+						return data
 					}
-					data.raw_url1 = raw_url;
-					return data
 				}else{
-					return {raw_url:raw_url,raw_url1:raw_url};
+					return data
 				}
 			},
 			isFolder(data) { return data.type === 1 },
