@@ -405,3 +405,11 @@ def forceOrder(lists:list,key:str=None,option=None):
             lists.reverse()
 
     return lists
+
+def base64ToImage(image_base64:str):
+    if isinstance(image_base64,PyJsString):
+        image_base64 = parseText(str(image_base64))
+    if ',' in image_base64:
+        image_base64 = image_base64.split(',')[1]
+    img_data = base64.b64decode(image_base64)
+    return img_data
