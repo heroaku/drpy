@@ -3,12 +3,12 @@
 # File  : parse.py
 # Author: DaShenHan&道长-----先苦后甜，任凭晚风拂柳颜------
 # Date  : 2022/9/24
-from flask import Blueprint, jsonify,redirect
+from flask import Blueprint, jsonify,redirect,make_response
 from utils.web import getParmas,get_interval
 import os
 from utils.cfg import cfg
 from utils.log import logger
-from utils.encode import OcrApi
+from utils.encode import OcrApi,base64ToImage
 from controllers.service import storage_service
 from utils.pyctx import py_ctx,getPreJs,runJScode,JsObjectWrapper,PyJsString,parseText,jsoup,time
 import base64
@@ -54,6 +54,11 @@ def toast(url:str):
         url = parseText(str(url))
     return f'toast://{url}'
 
+def image(text:str):
+    if isinstance(text, PyJsString):
+        text = parseText(str(text))
+    return f'image://{text}'
+
 @parse.route('/api/<path:filename>')
 def parse_home(filename):
     url = getParmas('url')
@@ -74,6 +79,7 @@ def parse_home(filename):
         'jsp':jsp,
         '重定向':重定向,
         'toast':toast,
+        'image':image,
         'print':print,
         'log':logger.info,
         'getParmas':getParmas,
@@ -99,6 +105,11 @@ def parse_home(filename):
             return redirect(realUrl.split('redirect://')[1])
         elif str(realUrl).startswith('toast://'):
             return R.failed(str(realUrl).split('toast://')[1],extra={'from':url})
+        elif str(realUrl).startswith('image://'):
+            img_data = base64ToImage(str(realUrl).split('image://')[1])
+            response = make_response(img_data)
+            response.headers['Content-Type'] = 'image/jpeg'
+            return response
         return R.success(f'{filename}解析成功',realUrl,{'time':f'{get_interval(t1)}毫秒','from':url})
     except Exception as e:
         msg = f'{filename}解析出错:{e}'

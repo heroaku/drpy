@@ -10,7 +10,7 @@ import requests
 from utils.web import *
 from utils.log import logger
 from utils.encode import base64Encode,base64Decode,fetch,post,request,getCryptoJS,getPreJs,buildUrl,getHome,parseText,atob
-from utils.encode import setDetail,join,urljoin2,parseText,requireCache
+from utils.encode import setDetail,join,urljoin2,parseText,requireCache,base64ToImage
 from utils.encode import md5 as mmd5
 from utils.parser import runPy,runJScode,JsObjectWrapper,PyJsObject,PyJsString
 from urllib.parse import quote
@@ -70,5 +70,5 @@ py_ctx = {
 'buildUrl':buildUrl,'getHome':getHome,'setDetail':setDetail,'join':join,'urljoin2':urljoin2,
 'PC_UA':PC_UA,'MOBILE_UA':MOBILE_UA,'UC_UA':UC_UA,'IOS_UA':IOS_UA,
 'setItem':setItem,'getItem':getItem,'clearItem':clearItem,'stringify':stringify,'encodeUrl':encodeUrl,
-'requireObj':requireObj,'md5':md5,'atob':atob
+'requireObj':requireObj,'md5':md5,'atob':atob,'base64ToImage':base64ToImage
 }
