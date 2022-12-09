@@ -60,6 +60,7 @@
 }, {
 	"name": "🌨秋雨分享",
 	"server": "https://share.laowang.me",
+	"password": "s8;K^h[j<b",
 	"params": {
 		"/Onedrive-2": {
 			"password": "s8;K^h[j<b"
@@ -68,6 +69,10 @@
 			"password": "s8;K^h[j<b"
 		}
 	}
+},{
+	"name": "🌨秋雨分享2",
+	"server": "https://share.laowang.me",
+	"password": "s8;K^h[j<b"
 }, {
 	"name": "💦讯维云盘",
 	"server": "https://pan.xwbeta.com"
