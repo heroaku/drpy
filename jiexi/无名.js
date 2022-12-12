@@ -1,4 +1,5 @@
 // let jxUrl = 'http://api.ckflv.cn/?url=';
+log(env);
 let jxUrl = 'https://k.json.icu/home/api?type=ys&uid=12406929&key=adgouwyCGIRSTUV046&url=';
 fetch_params.headers.Referer = jxUrl;
 try {

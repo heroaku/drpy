@@ -11,6 +11,7 @@ from utils.log import logger
 from utils.encode import OcrApi,base64ToImage
 from controllers.service import storage_service
 from utils.pyctx import py_ctx,getPreJs,runJScode,JsObjectWrapper,PyJsString,parseText,jsoup,time
+from utils.env import get_env
 import base64
 
 parse = Blueprint("parse", __name__)
@@ -63,6 +64,7 @@ def image(text:str):
 def parse_home(filename):
     url = getParmas('url')
     # http://localhost:5705/parse/api/%E6%97%A0%E5%90%8D.js?url=https://www.iqiyi.com/v_ik3832z0go.html
+    # http://localhost:5705/parse/api/哔哩.js?url=https://www.bilibili.com/bangumi/play/ep704873
     if not url or not url.startswith('http'):
         return R.failed(f'url必填!{url},且必须是http开头')
     base_path = 'jiexi'
@@ -73,12 +75,14 @@ def parse_home(filename):
     logger.info(f'开始尝试通过{filename}解析:{url}')
 
     jsp = jsoup(url)
+    env = get_env()
     py_ctx.update({
         'vipUrl': url,
         'fetch_params': {'headers': {'Referer':url}, 'timeout': 10, 'encoding': 'utf-8'},
         'jsp':jsp,
         '重定向':重定向,
         'toast':toast,
+        'env':env,
         'image':image,
         'print':print,
         'log':logger.info,
