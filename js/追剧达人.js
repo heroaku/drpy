@@ -1,5 +1,8 @@
+muban.mxpro.二级.desc = ';;;.module-info-item-content:eq(1)&&Text;.module-info-item-content:eq(0)&&Text'
+muban.mxpro.二级.tabs = '.module-tab-items-box .module-tab-item'
 var rule={
 	title:'追剧达人',
+	模板:'mxpro',
 	host:'http://zjdr.tv',
 	url:'/vodshowfyfilter.html',
     filterable:1,//是否启用分类筛选,
@@ -11,18 +14,9 @@ var rule={
         4:{cateId:'4'},
         3:{cateId:'3'}
     },
-	searchUrl:'/vod/search/page/fypage/wd/**.html',
-	searchable:2,
-	headers:{//网站的请求头,完整支持所有的,常带ua和cookies
-		'User-Agent':'MOBILE_UA',
-	},
-	class_name:'电影&电视剧&综艺&动漫',
-	class_url:'1&2&3&4',
-	// 推荐:'.module-main;a&&title;.lazyload&&data-original;.module-item-note&&Text;a&&href',
-	推荐:'.module-main;*;*;*;*',
-	一级:'.module-poster-item;a&&title;.lazyload&&data-original;.module-item-note&&Text;a&&href',
-	// 二级:{"title":"h1&&Text;.module-info-items div:eq(5) p&&Text","img":".lazyload&&data-original","desc":";;;.module-info-items div:eq(4) a&&Text;.module-info-items div:eq(3) a&&Text","content":".show-desc&&Text","tabs":".module-tab-items-box div","lists":".module-play-list:eq(#id) a"},
-	二级:{"title":"h1&&Text;.module-info-items div:eq(5) p&&Text","img":".lazyload&&data-original","desc":";;;.module-info-item-content:eq(1)&&Text;.module-info-item-content:eq(0)&&Text","content":".show-desc&&Text","tabs":".module-tab-items-box div","lists":".module-play-list:eq(#id) a"},
-	// 搜索:'.module-poster-item;a&&title;.lazyload&&data-original;.module-item-note&&Text;a&&href',
-	搜索:'*',
+    class_parse: '.navbar-items li:gt(1):lt(8);a&&Text;a&&href;/(\\d+).html',
+	// searchUrl:'/vod/search/page/fypage/wd/**.html',
+    searchUrl:'/index.php/ajax/suggest?mid=1&wd=**',
+	detailUrl:'/Moviedetail/fyid.html', //非必填,二级详情拼接链接
+	搜索:'json:list;name;pic;;id',
 }
