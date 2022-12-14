@@ -3,10 +3,14 @@
 # File  : 九酷.py
 # Author: DaShenHan&道长-----先苦后甜，任凭晚风拂柳颜------
 # Date  : 2022/12/14
+import hashlib
 
 import requests
 import time
 import ujson
+
+def md5(str):
+    return hashlib.md5(str.encode(encoding='UTF-8')).hexdigest()
 
 headers = {
     'x-requested-with':'XMLHttpRequest',
@@ -20,9 +24,10 @@ print(s.cookies)
 fyclass = 1
 fypage = 1
 tm = int(time.time())
-tm = ''
+# tm = ''
 print(tm)
-data = f'type={fyclass}&page={fypage}&time={tm}1670981084&key=52871810a25aa2ac4675e3c4dfd321c6'
+key = md5("DS"+str(tm)+"DCC147D11943AF75")
+data = f'type={fyclass}&page={fypage}&time={tm}&key={key}'
 data_dict = {}
 for dt in data.split('&'):
     data_dict[dt.split('=')[0]] = dt.split('=')[1]
@@ -30,3 +35,10 @@ print(data_dict)
 data_dict = ujson.dumps(data_dict)
 r = s.post('https://jiuku.site/index.php/api/vod',data=data_dict,headers=headers)
 print(r.text)
+
+"""
+解析免嗅:
+"https://jiuku.site/addons/dp/player/dp.php?key=0&from=&id="+vod_id+"&api=&url="+"vipUrl
+专线m3u8:
+unescape(base64Decode(jsurl))
+"""
