@@ -13,9 +13,9 @@ var rule = {
     headers:{
         'User-Agent':'PC_UA',
     },
-    // class_parse:'.mr-auto li;a&&Text;a&&href;/(.*?)/index.html',
-    class_name:'电影&电视剧&综艺&动漫&其他',
-    class_url:'Movie&Tv&Zy&Dm&qita',
+    class_parse:'.mr-auto li:gt(0):lt(6);a&&Text;a&&href;/(\\w+)/index.html',
+    // class_name:'电影&电视剧&综艺&动漫&其他',
+    // class_url:'Movie&Tv&Zy&Dm&qita',
     play_parse:true,
     lazy:'',
     limit:6,
@@ -27,6 +27,7 @@ var rule = {
         "desc":".w-100&&Text;.message p:eq(10)&&Text;.message p:eq(9)&&Text;.message p:eq(6)&&Text;.message p:eq(4)&&Text",
         "content":".message p:eq(-1)&&Text",
         "tabs":"#player_list h2",
+        "tab_text":"h2--span&&Text",
         "lists":"#player_list:eq(#id) li"
     },
     搜索:'.card-body .media;.text-danger&&Text;;.data&&Text;a&&href',
