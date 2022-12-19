@@ -1385,6 +1385,11 @@ function categoryParse(cateObj) {
     let d = [];
     // let url = cateObj.url.replaceAll('fyclass', cateObj.tid).replaceAll('fypage', cateObj.pg);
     let url = cateObj.url.replaceAll('fyclass', cateObj.tid);
+    if(cateObj.pg === 1 && url.includes('[')&&url.includes(']')){
+        url = url.split('[')[1].split(']')[0];
+    }else if(cateObj.pg > 1 && url.includes('[')&&url.includes(']')){
+        url = url.split('[')[0];
+    }
     if(rule.filter_url){
         if(!/fyfilter/.test(url)){
             if(!url.endsWith('&')&&!rule.filter_url.startsWith('&')){
@@ -1432,11 +1437,7 @@ function categoryParse(cateObj) {
             url = url.replaceAll('fypage',cateObj.pg);
         }
     }
-    if(cateObj.pg === 1 && url.includes('[')&&url.includes(']')){
-        url = url.split('[')[1].split(']')[0];
-    }else if(cateObj.pg > 1 && url.includes('[')&&url.includes(']')){
-        url = url.split('[')[0];
-    }
+
     MY_URL = url;
     // setItem('MY_URL',MY_URL);
     console.log(MY_URL);
