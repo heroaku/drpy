@@ -735,6 +735,10 @@ class CMS:
         t1 = time()
         pg = str(fypage)
         url = self.url.replace('fyclass',fyclass)
+        if fypage == 1 and self.test('[\[\]]',url):
+            url = url.split('[')[1].split(']')[0]
+        elif fypage > 1 and self.test('[\[\]]',url):
+            url = url.split('[')[0]
         if self.filter_url:
             if not 'fyfilter' in url: # 第一种情况,默认不写fyfilter关键字,视为直接拼接在链接后面当参数
                 if not url.endswith('&') and not self.filter_url.startswith('&'):
@@ -767,10 +771,7 @@ class CMS:
                 # print(url)
             else:
                 url = url.replace('fypage',pg)
-        if fypage == 1 and self.test('[\[\]]',url):
-            url = url.split('[')[1].split(']')[0]
-        elif fypage > 1 and self.test('[\[\]]',url):
-            url = url.split('[')[0]
+
         # print(url)
         logger.info(url)
         p = self.一级

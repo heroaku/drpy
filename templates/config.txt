@@ -172,7 +172,7 @@
             {
                 "category": 4,
                 "name": "max-buffer-size",
-                "value": "5242880"
+                "value": "15728640"
             },
             {
                 "category": 4,
@@ -251,7 +251,7 @@
             {
                 "category": 4,
                 "name": "max-buffer-size",
-                "value": "5242880"
+                "value": "15728640"
             },
             {
                 "category": 4,
