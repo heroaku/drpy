@@ -287,7 +287,7 @@ def base_request(url,obj):
         method = 'get'
         obj['method'] = 'method'
     # print(obj)
-    print(f"{method}:{url}:{obj['headers']}:{obj.get('body','')}")
+    print(f"{method}:{url}:{obj['headers']}:{obj.get('body','')},请求超时:{obj['timeout']}")
     try:
         # r = requests.get(url, headers=headers, params=body, timeout=timeout)
         if method.lower() == 'get':
