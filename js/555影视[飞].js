@@ -1,5 +1,5 @@
 var rule = {
-    title:'555影视',
+    title:'555影视[飞]',
     模板:'mxpro',
     // host:'https://www.555dy.app',
     // host:'https://www.555yy2.com',
