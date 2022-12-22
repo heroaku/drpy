@@ -170,8 +170,8 @@ def get_lives():
         try:
             live_text = base64Decode(live_text)
             logger.info(f'{path} base64解码完毕')
-        except:
-            pass
+        except Exception as e:
+            logger.info(f'{path} base64解码失败:{e}')
     response = make_response(live_text)
     response.headers['Content-Type'] = 'text/plain; charset=utf-8'
     return response
