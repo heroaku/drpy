@@ -31,7 +31,7 @@ var search_type = '';
 var detail_order = 'name';
 var playRaw = 1; // 播放直链获取,默认0直接拼接/d 填1可以获取阿里oss链接。注意，有时效性
 const request_timeout = 5000;
-const VERSION = 'alist v2/v3 20221209';
+const VERSION = 'alist v2/v3 20221223';
 /**
  * 打印日志
  * @param any 任意变量
@@ -453,7 +453,8 @@ function getAll(otid,tid,drives,path){
 		return JSON.stringify({ 'list': [vod] });
 	}catch (e) {
 		print(e.message);
-		return JSON.stringify({ 'list': [{}] });
+		let list = [{vod_name:'无数据,防无限请求',type_name: "文件夹",vod_id:'no_data',vod_remarks:'不要点,会崩的',vod_pic:'https://ghproxy.com/https://raw.githubusercontent.com/hjdhnx/dr_py/main/404.jpg',vod_actor:e.message,vod_director: tid,vod_content: otid}];
+		return JSON.stringify({ 'list': list });
 	}
 }
 
@@ -465,7 +466,7 @@ function detail(tid) {
 	let isFile = isMedia(tid.split('@@@')[0]);
 	print(`isFile:${tid}?${isFile}`);
 	let { drives, path } = get_drives_path(tid);
-	print(`drives:${drives},path:${path}`);
+	print(`drives:${drives},path:${path},`);
 	if (path.endsWith("/")) { //长按文件夹可以 加载里面全部视频到详情
 		return getAll(otid,tid,drives,path);
 	} else {
