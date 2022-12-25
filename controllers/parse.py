@@ -25,7 +25,7 @@ class R(object):
         header = {
             "user-agent": "Mozilla/5.0"
         }
-        if 'bilivideo.com' in url:
+        if 'bilivideo.c' in url:
             header.update({
                 'referer':'https://www.bilibili.com/'
             })
