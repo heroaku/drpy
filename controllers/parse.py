@@ -22,7 +22,7 @@ class R(object):
     def ok(self, msg='操作成功', url=None, extra=None):
         if extra is None:
             extra = {}
-        result = {"code": 200, "msg": msg, "url":url}
+        result = {"code": 200, "msg": msg, "url":url,"header":{"user-agent":"Mozilla/5.0"}}
         result.update(extra)
         return jsonify(result)
 
