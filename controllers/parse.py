@@ -22,7 +22,15 @@ class R(object):
     def ok(self, msg='操作成功', url=None, extra=None):
         if extra is None:
             extra = {}
+        header = {
+            "user-agent": "Mozilla/5.0"
+        }
+        if 'bilivideo.com' in url:
+            header.update({
+                'referer':'https://www.bilibili.com/'
+            })
         result = {"code": 200, "msg": msg, "url":url}
+        result.update(header)
         result.update(extra)
         return jsonify(result)
 
