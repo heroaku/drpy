@@ -57,29 +57,30 @@ if (/get_playsource/.test(input)) {
     video_lists = json.c.video_ids;
     // print(video_lists);
     let url = 'https://v.qq.com/x/cover/' + sourceId + '.html';
-    if (json.c.type === 10) {//综艺
-        // print('流程2-1');
-        let dataUrl = 'https://s.video.qq.com/get_playsource?id=' + json.c.column_id + '&plat=2&type=2&data_type=3&video_type=8&plname=qq&otype=json';
-        // print(dataUrl);
-        let o_html = fetch(dataUrl, fetch_params);
-        eval(o_html);
-        video_lists = [];
-        let indexList = QZOutputJson.PlaylistItem.indexList;
-        indexList.forEach(function (it){
-            let dataUrl = 'https://s.video.qq.com/get_playsource?id=' + json.c.column_id + '&plat=2&type=4&data_type=3&range=' + it + '&video_type=10&plname=qq&otype=json';
-            eval(fetch(dataUrl, fetch_params));
-            let vdata = QZOutputJson.PlaylistItem.videoPlayList;
-            vdata.forEach(function (item){
-                d.push({
-                title:item.title,
-                pic_url:item.pic,
-                desc:item.episode_number + '\t\t\t播放量：' + item.thirdLine,
-                url:item.playUrl,
-            });
-            });
-            video_lists = video_lists.concat(vdata);
-        });
-    } else if (video_lists.length === 1) {//电影或者电视剧只有1集
+    // if (json.c.type === 10) {//综艺
+    //     // print('流程2-1');
+    //     let dataUrl = 'https://s.video.qq.com/get_playsource?id=' + json.c.column_id + '&plat=2&type=2&data_type=3&video_type=8&plname=qq&otype=json';
+    //     // print(dataUrl);
+    //     let o_html = fetch(dataUrl, fetch_params);
+    //     eval(o_html);
+    //     video_lists = [];
+    //     let indexList = QZOutputJson.PlaylistItem.indexList;
+    //     indexList.forEach(function (it){
+    //         let dataUrl = 'https://s.video.qq.com/get_playsource?id=' + json.c.column_id + '&plat=2&type=4&data_type=3&range=' + it + '&video_type=10&plname=qq&otype=json';
+    //         eval(fetch(dataUrl, fetch_params));
+    //         let vdata = QZOutputJson.PlaylistItem.videoPlayList;
+    //         vdata.forEach(function (item){
+    //             d.push({
+    //             title:item.title,
+    //             pic_url:item.pic,
+    //             desc:item.episode_number + '\t\t\t播放量：' + item.thirdLine,
+    //             url:item.playUrl,
+    //         });
+    //         });
+    //         video_lists = video_lists.concat(vdata);
+    //     });
+    // }
+    if (video_lists.length === 1) {//电影或者电视剧只有1集
         // print('流程2-2');
         d.push({
             title: '在线播放',
