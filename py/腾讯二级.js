@@ -81,6 +81,8 @@ if (/get_playsource/.test(input)) {
     //     });
     // }
     if (video_lists.length === 1) {//电影或者电视剧只有1集
+        let vid = video_lists[0];
+        url = 'https://v.qq.com/x/cover/' + cid + '/' + vid + '.html';
         // print('流程2-2');
         d.push({
             title: '在线播放',
