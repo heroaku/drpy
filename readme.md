@@ -49,6 +49,9 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2022/12/26
+- [X] 3.9.33beta4 修复腾云驾雾搜索
+- [X] 3.9.33beta5 修复腾云驾雾综艺
 ###### 2022/12/25
 - [X] 3.9.33 自建解析返回默认UA,尝试优化哔哩影视.js无果
 ###### 2022/12/19
