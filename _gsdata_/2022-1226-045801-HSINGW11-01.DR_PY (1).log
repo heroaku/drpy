@@ -1,7 +1,0 @@
-2022-12-26 04:58:50: == 同步開始由 User Command
-2022-12-26 04:58:50: 刪除檔 D:/freed2/TVBox2/drpy/base/alist.json
-2022-12-26 04:58:50: 覆蓋複製 'D:/dr_py/controllers/parse.py' -> 'D:/freed2/TVBox2/drpy/controllers/parse.py' (5,378)
-2022-12-26 04:58:50: 覆蓋複製 'D:/dr_py/readme.md' -> 'D:/freed2/TVBox2/drpy/readme.md' (29,815)
-2022-12-26 04:58:50: 覆蓋複製 'D:/dr_py/js/哔哩影视.js' -> 'D:/freed2/TVBox2/drpy/js/哔哩影视.js' (8,992)
-2022-12-26 04:58:50: 覆蓋複製 'D:/dr_py/js/version.txt' -> 'D:/freed2/TVBox2/drpy/js/version.txt' (13)
-2022-12-26 04:58:50: == 同步完成. 歷時: 00:00:00, 速度: 0.00/s, 完成: 604, 錯誤: 0

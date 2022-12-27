@@ -1,8 +1,0 @@
-2022-12-26 04:55:49: -- 分析開始 User Command
-2022-12-26 04:55:49: 左側: State file does not exist: D:/dr_py/_gsdata_/_file_state_v4._gs
-2022-12-26 04:55:49: 右側: State file does not exist: D:/freed2/TVBox2/drpy/_gsdata_/_file_state_v4._gs
-2022-12-26 04:55:49: /base/config.py: 警告：較舊的檔將替換較新的檔
-2022-12-26 04:55:49: /base/custom.conf: 警告：較舊的檔將替換較新的檔
-2022-12-26 04:55:49: 變更：687， 衝突：0， 複製時間：0， 複製狀態：599， 錯誤： 0, All: 1287
-2022-12-26 04:55:49: Left to Right: Copy File: 398 Delete File: 289 
-2022-12-26 04:55:49: -- 分析已結束。歷時 00:00:00, 速度： Many 文件/秒

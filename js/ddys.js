@@ -2,8 +2,8 @@
 var rule={
     title:'ddys',
     // host:'https://ddys.tv',
-    // host:'https://ddys.art',
-    host:'https://ddys.pro',
+    // host:'https://ddys.art', // 推荐使用，尚未被污染，对国内线路优化
+    host:'https://ddys.pro', // 推荐使用，尚未被污染
     // homeUrl:'/',
     url:'/fyclass/page/fypage/',
     searchUrl:'/?s=**&post_type=post',
