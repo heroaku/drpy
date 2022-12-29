@@ -209,6 +209,8 @@ def merged_hide(merged_config):
     def filter_show(x):
         name = x['api'].split('rule=')[1].split('&')[0] if 'rule=' in x['api'] else x['key'].replace('dr_','')
         # print(name)
+        if not str(x['key']).startswith('dr_') and name == 'drpy':
+            name = x['key']
         return name not in hide_rule_names
 
     merged_config['sites'] = list(filter(filter_show, merged_config['sites']))
@@ -264,7 +266,7 @@ def config_render(mode):
     merged_hide(merged_config)
     # response = make_response(html)
     # print(len(merged_config['sites']))
-    # print(merged_config['sites'])
+    print(merged_config['sites'])
     merged_config['sites'] = sort_sites_by_order(merged_config['sites'],js_mode)
     # print(merged_config['parses'])
     parses = sort_parses_by_order(merged_config['parses'],host)
@@ -312,6 +314,9 @@ def sort_sites_by_order(sites,js_mode=0):
         site_name = sites[i]['api'].split('rule=')[1].split('&')[0] if 'rule=' in sites[i]['api'] else sites[i]['key']
         if js_mode and str(site_name).startswith('dr'):
             site_name = site_name.replace('dr_','')
+        if not str(sites[i]['key']).startswith('dr_') and site_name == 'drpy':
+            site_name = sites[i]['key']
+            # print(sites[i])
         # print(site_name)
         if site_name in rule_names:
             site_rule = rule_list[rule_names.index(site_name)]

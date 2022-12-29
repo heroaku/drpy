@@ -134,6 +134,7 @@ def merged_hide(merged_rules):
     hide_rule_names = list(map(lambda x: x['name'], hide_rules))
     # print('隐藏:',hide_rule_names)
     all_cnt = len(merged_rules)
+    # print(merged_rules)
 
     def filter_show(x):
         # name = x['api'].split('rule=')[1].split('&')[0] if 'rule=' in x['api'] else x['key'].replace('dr_','')
@@ -144,6 +145,7 @@ def merged_hide(merged_rules):
     merged_rules = list(filter(filter_show, merged_rules))
     # print('隐藏后:',merged_rules)
     logger.info(f'数据库筛选隐藏规则耗时{get_interval(t1)}毫秒,共计{all_cnt}条规则,隐藏后可渲染{len(merged_rules)}条规则')
+    # merged_rules = []
     return merged_rules
 
 def disable_exit_for_threadpool_executor():

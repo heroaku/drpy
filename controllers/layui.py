@@ -63,6 +63,7 @@ def layui_rule_list():
     host = getHost(2)
     customConfig = getCustonDict(host)
     jxs = []
+    js0_password = lsg.getItem('JS0_PASSWORD')
     lsg = storage_service()
     use_py = lsg.getItem('USE_PY')
     pys = getPys() if use_py else []
@@ -73,18 +74,23 @@ def layui_rule_list():
     # print(local_rules)
     html = render_template('config.txt', pys=pys, rules=local_rules, host=host, mode=2, jxs=jxs, alists=alists,
                            alists_str='[]', live_url=live_url, config=new_conf)
+    # html = render_template('config.txt', js0_password=js0_password, UA=UA, xr_mode=1, ISTVB=1, pys=pys,
+    #                        rules=local_rules, host=host, mode=2, js_mode=1, jxs=jxs, alists=alists,
+    #                        alists_str='[]', live_url=live_url, config=new_conf)
     merged_config = custom_merge(parseText(html), customConfig)
     sites = merged_config['sites']
     rules = rules_service()
     rule_list = rules.query_all()
     rule_names = list(map(lambda x:x['name'],rule_list))
     # print(rule_list)
-    print(rule_names)
+    # print(rule_names)
     # print(sites)
     for i in range(len(sites)):
         sites[i]['id'] = i+1
         site_name = sites[i]['api'].split('rule=')[1].split('&')[0] if 'rule=' in sites[i]['api'] else sites[i]['key']
-        # print(site_name)
+        if not str(sites[i]['key']).startswith('dr_') and site_name == 'drpy':
+            site_name = sites[i]['key']
+            # print(sites[i])
         if site_name in rule_names:
             site_rule = rule_list[rule_names.index(site_name)]
             sites[i]['state'] = 1 if site_rule['state'] is None else site_rule['state']
