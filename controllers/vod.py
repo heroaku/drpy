@@ -3,6 +3,7 @@
 # File  : vod.py
 # Author: DaShenHan&道长-----先苦后甜，任凭晚风拂柳颜------
 # Date  : 2022/9/6
+import functools
 import json
 
 from flask import Blueprint,abort,request,render_template,render_template_string,jsonify,make_response,redirect,current_app
@@ -24,7 +25,6 @@ from concurrent.futures import ThreadPoolExecutor,as_completed,thread  # 引入�
 from quickjs import Function,Context
 import ujson
 vod = Blueprint("vod", __name__)
-
 
 def search_one_py(rule, wd, before: str = ''):
     t1 = time()
@@ -153,6 +153,53 @@ def disable_exit_for_threadpool_executor():
     import concurrent.futures
     atexit.unregister(concurrent.futures.thread._python_exit)
 
+def sort_lsg_rules(sites:list):
+    """
+     查询结果按order和write_date 联合排序
+    :param sites:
+    :return:
+    """
+    def comp(x, y):
+        if x['order'] > y['order']:
+            return 1
+        elif x['order'] < y['order']:
+            return - 1
+        else:
+            if x['write_date'] < y['write_date']:
+                return 1
+            elif x['write_date'] > y['write_date']:
+                return -1
+            else:
+                return 0
+
+    sites.sort(key=functools.cmp_to_key(comp), reverse=False)
+    return sites
+
+def sort_lsg_rules2(sites:list,lsg_rule_names:list):
+    """
+     查询结果按order和write_date 联合排序
+    :param sites:
+    :return:
+    """
+    def comp(x, y):
+        try:
+            x1 = lsg_rule_names.index(x)
+        except:
+            x1 = 999
+
+        try:
+            y1 = lsg_rule_names.index(y)
+        except:
+            y1 = 999
+
+        if x1 >= y1:
+            return 1
+        elif x1 < y1:
+            return - 1
+
+    sites.sort(key=functools.cmp_to_key(comp), reverse=False)
+    return sites
+
 def multi_search(wd):
     lsg = storage_service()
     env = get_env()
@@ -173,7 +220,31 @@ def multi_search(wd):
     logger.info(f'开始聚搜{wd},共计{len(search_sites)}个规则,聚搜超时{timeout}秒')
     logger.info(f'不支持聚搜的规则,共计{len(nosearch_sites)}个规则:{",".join(nosearch_sites)}')
     search_sites = merged_hide(search_sites)
+    # print(len(search_sites))
+    # search_sites = []
+    lsg_rules = rules_service()
+    lsg_rule_list = lsg_rules.query_all()
+    # print(len(lsg_rule_list))
+    # rule_names = list(map(lambda x: x['name'], rule_list))
+    lsg_rule_list = list(filter(lambda x:x['name'] in search_sites,lsg_rule_list))
+    lsg_rule_names = list(map(lambda x: x['name'], lsg_rule_list))
+
+    search_sites = sort_lsg_rules2(search_sites,lsg_rule_names)
+    # print(len(lsg_rule_list))
+    # lsg_rule_list = sort_lsg_rules(lsg_rule_list)
+    # print(len(lsg_rule_list))
     # print(search_sites)
+    SEARCH_LIMIT = lsg.getItem('SEARCH_LIMIT', 24)
+    try:
+        SEARCH_LIMIT = int(SEARCH_LIMIT)
+    except:
+        SEARCH_LIMIT = 0
+    if SEARCH_LIMIT < 1:
+        SEARCH_LIMIT = 0
+    search_sites = search_sites[:SEARCH_LIMIT]
+    msearch_msg = f'搜索限制条数:{SEARCH_LIMIT}/{len(search_sites)} {search_sites}'
+    logger.info(msearch_msg)
+    print(msearch_msg)
     # search_sites = []
     res = []
     if len(search_sites) > 0:

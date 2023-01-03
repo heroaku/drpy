@@ -21,8 +21,9 @@ body{
     height: 40px;
 }
 .mz{
-    text-align: left;
+    text-align: center;
     display: inline-block;
+    width: 40%;
 }
 .mz a{
     border-radius: 50px;
@@ -38,7 +39,7 @@ body{
 
 .sj{
     text-align: center;
-    width: 48%;
+    width: 18%;
     display: inline-block;
 }
 .sj a{
@@ -52,10 +53,28 @@ body{
     background-color: #17af30;
 
 }
+
+.ss{
+    width: 18%;
+    text-align: center;
+    display: inline-block;
+}
+.ss a{
+    border-radius: 50px;
+    border-style: solid;
+    color: #FFFFFF;
+    text-align: center;
+    padding: 1px 3px 1px 3px;
+    border-style: solid;
+    border-color: #1379cb;
+    text-decoration: none;
+    background-color: #1379cb;
+}
+
 .sc{
-    text-align: right;
-    width: 15%;
-    padding-right: 5%;
+    text-align: center;
+    width: 18%;
+    /*padding-right: 5%;*/
     display: inline-block;
 }
 .sc a{

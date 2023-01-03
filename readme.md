@@ -49,6 +49,8 @@
 [dockerfile教程](https://blog.csdn.net/qq_46158060/article/details/125718218)   
 [获取本地设备信息](https://blog.csdn.net/cui_yonghua/article/details/125508991)   
 [获取本地设备信息](https://m.jb51.net/article/140716.htm)
+###### 2023/01/03
+- [X] 3.9.34 聚搜功能优化,设置中心增加搜索条数设置，默认24条。关联未来功能里的排序顺序进行搜索取数
 ###### 2022/12/26
 - [X] 3.9.33beta4 修复腾云驾雾搜索
 - [X] 3.9.33beta5 修复腾云驾雾综艺,电影的二级
