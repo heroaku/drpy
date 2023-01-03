@@ -26,6 +26,11 @@
             location.href = '/vod?{% if js0_password %}pwd={{js0_password}}&{% endif %}rule='+rule;
         });
 
+        $(".view_search").click(function(){
+            let rule = this.getAttribute('value').trim();
+            location.href = '/vod?{% if js0_password %}pwd={{js0_password}}&{% endif %}rule='+rule+'&wd=斗罗大陆';
+        });
+
         $("#checkUpdate").click(function(){
             console.log('开始检查升级...');
             $.get("/admin/get_ver",function(data,status){
@@ -239,7 +244,8 @@ function getFileSize(fileObj) {
 {% for rule in rules.list %}
     <div class="red">
          <div class="mz"><a class="view" href="javascript:void(0);">{{ rule.name }}</a></div>
-        <div class="sj"><a class="view_home" href="javascript:void(0);" value="{{ rule.name }}">主页数据预览</a></div>
+        <div class="sj"><a class="view_home" href="javascript:void(0);" value="{{ rule.name }}">主页</a></div>
+        <div class="ss"><a class="view_search" href="javascript:void(0);" value="{{ rule.name }}">搜索</a></div>
         <div class="sc"><a class="clear" href="javascript:void(0);" value="{{ rule.name }}">删除</a></div>
     </div>
  {% endfor %}

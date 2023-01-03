@@ -24,7 +24,7 @@ from utils.log import logger
 from utils.update import getLocalVer,getHotSuggest
 from js.rules import getJxs
 import random
-from utils.web import getParmas
+from utils.web import getParmas,verfy_token
 import functools
 
 
@@ -381,6 +381,8 @@ def sort_parses_by_order(parses,host):
 
 @home.route('/configs')
 def config_gen():
+    if not verfy_token():
+        return R.failed('请登录后再试')
     # 生成文件
     os.makedirs('txt',exist_ok=True)
     new_conf = cfg
