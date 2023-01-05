@@ -77,7 +77,10 @@ if(!/bilibili/.test(vipUrl)){
                                 print(r);
                                 let purl = r['data']['durl'][0]['url'];
                                 print('purl:' + purl);
-                                realUrl = purl;
+                                // realUrl = purl;
+                                // https://upos-szbyjkm8g1.bilivideo.com
+                                realUrl = purl.replace(/.*bilivideo.*?\/(.*)/,'https://upos-szbyjkm8g1.bilivideo.com/$1');
+
                         } catch (e) {
                                 print(e.message);
                                 realUrl = vipUrl;
