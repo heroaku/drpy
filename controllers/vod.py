@@ -200,49 +200,55 @@ def sort_lsg_rules2(sites:list,lsg_rule_names:list):
     sites.sort(key=functools.cmp_to_key(comp), reverse=False)
     return sites
 
-def multi_search(wd):
+def getSearchSites():
+    val = {}
     lsg = storage_service()
-    env = get_env()
-    t1 = time()
     try:
         timeout = round(int(lsg.getItem('SEARCH_TIMEOUT',5000))/1000,2)
     except:
         timeout = 5
+    val['timeout'] = timeout
     rules = getRules('js')['list']
-    rule_names = list(map(lambda x:x['name'],rules))
+    rule_names = list(map(lambda x: x['name'], rules))
     rules_exclude = ['drpy']
     new_rules = list(filter(lambda x: x.get('searchable', 0) and x.get('name', '') not in rules_exclude, rules))
-    search_sites = [new_rule['name'] for new_rule in new_rules]
-    # print(search_sites)
-    nosearch_sites = set(rule_names) ^ set(search_sites)
+    total_search = [new_rule['name'] for new_rule in new_rules]
+    nosearch_sites = set(rule_names) ^ set(total_search)
     nosearch_sites.remove('drpy')
-    # print(nosearch_sites)
-    logger.info(f'开始聚搜{wd},共计{len(search_sites)}个规则,聚搜超时{timeout}秒')
-    logger.info(f'不支持聚搜的规则,共计{len(nosearch_sites)}个规则:{",".join(nosearch_sites)}')
-    search_sites = merged_hide(search_sites)
-    # print(len(search_sites))
-    # search_sites = []
+    val['total_search'] = total_search
+    val['nosearch_sites'] = list(nosearch_sites)
+    search_sites = merged_hide(total_search)
     lsg_rules = rules_service()
     lsg_rule_list = lsg_rules.query_all()
-    # print(len(lsg_rule_list))
-    # rule_names = list(map(lambda x: x['name'], rule_list))
-    lsg_rule_list = list(filter(lambda x:x['name'] in search_sites,lsg_rule_list))
+    lsg_rule_list = list(filter(lambda x: x['name'] in search_sites, lsg_rule_list))
     lsg_rule_names = list(map(lambda x: x['name'], lsg_rule_list))
 
-    search_sites = sort_lsg_rules2(search_sites,lsg_rule_names)
-    # print(len(lsg_rule_list))
-    # lsg_rule_list = sort_lsg_rules(lsg_rule_list)
-    # print(len(lsg_rule_list))
-    # print(search_sites)
-    SEARCH_LIMIT = lsg.getItem('SEARCH_LIMIT', 24)
+    search_sites = sort_lsg_rules2(search_sites, lsg_rule_names)
+    search_limit = lsg.getItem('SEARCH_LIMIT', 24)
     try:
-        SEARCH_LIMIT = int(SEARCH_LIMIT)
+        search_limit = int(search_limit)
     except:
-        SEARCH_LIMIT = 0
-    if SEARCH_LIMIT < 1:
-        SEARCH_LIMIT = 0
-    search_sites = search_sites[:SEARCH_LIMIT]
-    msearch_msg = f'搜索限制条数:{SEARCH_LIMIT}/{len(search_sites)} {search_sites}'
+        search_limit = 0
+    if search_limit < 1:
+        search_limit = 0
+    search_sites = search_sites[:search_limit]
+    val['search_limit'] = search_limit
+    val['search_sites'] = search_sites
+    return val
+
+def multi_search(wd):
+    t1 = time()
+    val = getSearchSites()
+    timeout = val['timeout']
+    total_search = val['total_search']
+    nosearch_sites = val['nosearch_sites']
+    search_limit = val['search_limit']
+    search_sites = val['search_sites']
+
+    env = get_env()
+    logger.info(f'开始聚搜{wd},共计{len(total_search)}个规则,聚搜超时{timeout}秒')
+    logger.info(f'不支持聚搜的规则,共计{len(nosearch_sites)}个规则:{",".join(nosearch_sites)}')
+    msearch_msg = f'搜索限制条数:{search_limit}/{len(search_sites)} {search_sites}'
     logger.info(msearch_msg)
     print(msearch_msg)
     # search_sites = []
@@ -272,6 +278,14 @@ def multi_search(wd):
     return jsonify({
         "list": res
     })
+
+@vod.route('/vods')
+def vods_search():
+    val = getSearchSites()
+    print(val)
+
+    # return jsonify(val)
+    return render_template('show_search.html',val=val)
 
 @vod.route('/vod')
 def vod_home():
