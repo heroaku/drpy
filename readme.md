@@ -35,13 +35,13 @@
 </div>  
 
 ##### python3.6-3.8完美运行(3.9以上不支持linux进程启动)
-<a href="./安卓本地搭建说明.md" alt="install">
+<a href="./doc/安卓本地搭建说明.md" alt="install">
 <img src="https://img.shields.io/badge/install support-termux|windows|ubuntu|python3.6~python3.8-yellowgreen" />
 </a>
 
-[JS引擎的选择](./python最强js引擎.md)  
+[JS引擎的选择](./doc/python最强js引擎.md)  
 [我的豆瓣](./static/img/豆瓣.png)  
-[搭建教程](./安卓本地搭建说明.md) | [爱看不看](https://jason-ray.notion.site/jason-ray/Pluto-TVB-706da08332804a19ab012b4f8385df64)  |[goorm](./道长乱说.md) |[大佬地盘](./大佬友链.md)   
+[android&linux&macos搭建教程](./doc/安卓本地搭建说明.md) | [windows搭建教程](./doc/windows搭建说明.md) | [爱看不看](https://jason-ray.notion.site/jason-ray/Pluto-TVB-706da08332804a19ab012b4f8385df64)  |[goorm](./doc/道长乱说.md) |[大佬地盘](./doc/大佬友链.md)   
 [dr项目QQ官群](https://qm.qq.com/cgi-bin/qm/qr?k=H2KwcXrMdiR5M2blHR5gjZzPfN_S3N_C&jump_from=webapi)  
 [参考T4](https://github.com/sec-an/TV_Spider/blob/main/spider/sp360.py)  
 [drpy相关视频教程](https://www.youtube.com/watch?v=AK7cN-fcwm4&t=3s)  
@@ -341,7 +341,7 @@
 - [X] 3.优化日志打印wlan信息
 ###### 2022/09/04
 - [X] 1.增加了dockerfile
-- [X] 2.基于dockerfile构建的镜像并上传至dockerhub,小白可以一键运行.参考[搭建教程](./安卓本地搭建说明.md)
+- [X] 2.基于dockerfile构建的镜像并上传至dockerhub,小白可以一键运行.参考[搭建教程](./doc/安卓本地搭建说明.md)
 ###### 2022/09/03
 - [X] 1.增加了json定位支持(需要升级依赖),写法为 字符串以json:开头,二级的话含is_json:true
 - [X] 2.研究正版线路对接解析(摸索出type1与4的区别，但是不知道1怎么走解析)
