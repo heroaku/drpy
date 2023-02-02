@@ -3,7 +3,7 @@ muban.首图.二级.img = '.lazyload&&data-original';
 muban.首图.二级.desc = '.myui-player__data p&&Text;;;.text-collapse p:eq(1)&&Text;.text-collapse p:eq(0)&&Text';
 muban.首图.二级.content = '.data&&Text';
 var rule={
-    title:'fositv',
+    title:'饭团',
     模板:'首图',
     host:'https://fositv.com',
     // url:'/fyclass-fypage.html',
