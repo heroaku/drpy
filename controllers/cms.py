@@ -1312,10 +1312,12 @@ class CMS:
                     headers_cp = self.headers.copy()
                     headers_cp.update({'Content-Type':'application/json'})
                     try:
-                        params = ujson.dumps(params)
+                        params = ujson.dumps(ujson.loads(params))
                     except:
                         params = '{}'
+                    # params = params.encode()
                     logger.info(headers_cp)
+                    logger.info(params)
                     r = requests.post(rurl, headers=headers_cp, data=params, timeout=self.timeout, verify=False)
                 else:
                     r = requests.get(url, headers=self.headers,timeout=self.timeout,verify=False)
