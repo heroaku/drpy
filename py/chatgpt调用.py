@@ -10,7 +10,7 @@ from time import time
 
 import requests
 
-API_KEY = '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'
+API_KEY = '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'
 AUTH = f'Bearer {API_KEY}'
 
 def ask_chatpgt(word):
@@ -34,6 +34,7 @@ def ask_chatpgt(word):
     try:
         r = requests.post('https://api.openai.com/v1/completions',data=json.dumps(pdata),headers=headers)
         ret = r.json()
+        # print(ret)
         answer = ret['choices'][0]['text']
     except Exception as e:
         answer = f'发生了错误:{e}'
@@ -45,7 +46,8 @@ def ask_chatpgt(word):
     return [answer,sec]
 
 if __name__ == '__main__':
-    # print(ask_chatpgt('1+1等于几'))
+    print(ask_chatpgt('1+1等于几'))
     # http://fastapi.frp.mudery.com/other_request/chatgpt
     # http://spider.scwinbao.com:8274/other_request/chatgpt
-    print(ask_chatpgt('假如我处于一个荒岛，现在我来扮演玩家，你来扮演电脑，你给我选项，我们玩一个荒岛求生的游戏'))
+    # print(ask_chatpgt('假如我处于一个荒岛，现在我来扮演玩家，你来扮演电脑，你给我选项，我们玩一个荒岛求生的游戏'))
+    # print(ask_chatpgt('以 背影为题，写一篇400字的作文'))
