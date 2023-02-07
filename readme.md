@@ -61,4 +61,5 @@
 [远程网站](http://cms.nokia.press/index)  
 [本地网站](http://192.168.10.99:5705/index)  
 [gevent下载地址](https://pypi.org/project/gevent/#files)
-[aarch64的cp310](http://pan.nokia.press/d/hiker/whl/gevent-21.12.0-cp310-cp310-linux_aarch64.whl)
+[aarch64的cp310](http://pan.nokia.press/d/hiker/whl/gevent-21.12.0-cp310-cp310-linux_aarch64.whl)  
+[chatgpt](./doc/chatgpt搭建教程.md)
