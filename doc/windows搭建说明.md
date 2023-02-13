@@ -46,7 +46,7 @@ git clone https://gitcode.net/qq_32394351/dr_py.git
 cd dr_py
 
 #安装所需依赖
-pip install -r requirement.txt
+pip install -r requirements.txt
 
 #运行主程序
 python app.py
