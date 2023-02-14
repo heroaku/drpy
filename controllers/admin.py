@@ -385,7 +385,8 @@ def admin_lives():
         # print(live_path)
         files = os.listdir(live_path)
         # print(files)
-        files = list(filter(lambda x: str(x).endswith('.txt') and str(x).find('模板') < 0, files))
+        # files = list(filter(lambda x: str(x).endswith('.txt') and str(x).find('模板') < 0, files))
+        files = list(filter(lambda x: str(x).split('.')[-1] in ['txt','json','m3u'] and str(x).find('模板') < 0, files))
         files = [f'{host_url}lives?path=txt/lives/{file}' for file in files]
         return files
 
