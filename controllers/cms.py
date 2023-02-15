@@ -206,6 +206,7 @@ class CMS:
         self.double = rule.get('double',False)
         self.一级 = rule.get('一级','')
         self.二级 = rule.get('二级','')
+        self.二级访问前 = rule.get('二级访问前','')
         self.搜索 = rule.get('搜索','')
         self.推荐 = rule.get('推荐','')
         self.图片来源 = rule.get('图片来源','')
@@ -1144,6 +1145,27 @@ class CMS:
             url = urljoin(self.homeUrl,detailUrl)
         else:
             url = detailUrl
+        if self.二级访问前:
+            logger.info(f'尝试在二级访问前执行代码: {self.二级访问前}')
+            py_ctx.update({
+                'MY_URL': url,
+                'oheaders': self.d.oheaders,
+                'fetch_params': {'headers': self.headers, 'timeout': self.d.timeout, 'encoding': self.d.encoding},
+                'd': self.d,
+            })
+            ctx = py_ctx
+            jscode = getPreJs() + self.二级访问前.replace('js:', '', 1)
+            # print(jscode)
+            loader, _ = runJScode(jscode, ctx=ctx)
+            try:
+                MY_URL = loader.eval('MY_URL')
+                if isinstance(MY_URL, JsObjectWrapper):
+                    MY_URL = str(MY_URL)
+                if MY_URL:
+                    url = MY_URL
+            except Exception as e:
+                logger.info(f'执行二级访问前发生错误: {e}')
+
         logger.info(f'进入详情页: {url}')
         try:
             p = self.二级  # 解析

@@ -35,7 +35,7 @@ function pre(){
 
 let rule = {};
 let vercode = typeof(pdfl) ==='function'?'drpy2.1':'drpy2';
-const VERSION = vercode+' 3.9.32 20221219';
+const VERSION = vercode+' 3.9.35 20230215';
 /** 已知问题记录
  * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)[影魔牛逼，最新的文件发现这问题已经解决了]
  * Array.prototype.append = Array.prototype.push; 这种js执行后有毛病,for in 循环列表会把属性给打印出来 (这个大毛病需要重点排除一下)
@@ -1614,6 +1614,14 @@ function detailParse(detailObj){
     let tab_exclude = detailObj.tab_exclude;
     let html = detailObj.html||'';
     MY_URL = url;
+    if(detailObj.二级访问前){
+        try {
+            print(`尝试在二级访问前执行代码:${detailObj.二级访问前}`);
+            eval(detailObj.二级访问前.trim().replace('js:',''));
+        }catch (e) {
+            print(`二级访问前执行代码出现错误:${e.message}`)
+        }
+    }
     // console.log(MY_URL);
     // setItem('MY_URL',MY_URL);
     if(p==='*'){
@@ -1959,6 +1967,7 @@ function init(ext) {
         rule.searchUrl = rule.searchUrl||'';
         rule.homeUrl = rule.host&&rule.homeUrl?urljoin(rule.host,rule.homeUrl):(rule.homeUrl||rule.host);
         rule.detailUrl = rule.host&&rule.detailUrl?urljoin(rule.host,rule.detailUrl):rule.detailUrl;
+        rule.二级访问前 = rule.二级访问前||'';
         if(rule.url.includes('[')&&rule.url.includes(']')){
             let u1 = rule.url.split('[')[0]
             let u2 = rule.url.split('[')[1].split(']')[0]
@@ -2084,6 +2093,7 @@ function detail(vod_url) {
         orId: orId,
         url:url,
         二级:rule.二级,
+        二级访问前:rule.二级访问前,
         detailUrl:detailUrl,
         fyclass:fyclass,
         tab_exclude:rule.tab_exclude,

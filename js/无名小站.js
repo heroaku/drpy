@@ -1,0 +1,30 @@
+var rule={
+    title:'无名小站',
+    host:'https://blssv.com',
+    // homeUrl:'/',
+    url:'/vodshow-fyclass/page/fypage/',
+    searchUrl:'/vodsearch/**----------fypage---/',
+    searchable:2,//是否启用全局搜索,
+    quickSearch:0,//是否启用快速搜索,
+    headers:{//网站的请求头,完整支持所有的,常带ua和cookies
+        'User-Agent':'UC_UA',
+    },
+    class_name:'电影&剧集&综艺&动漫&记录',
+    class_url:'1&2&3&4&5',
+    play_parse:true,
+    detailUrl:'',
+    lazy:"",
+    limit:6,
+    推荐:'.index_vod;.vod_item;.vod_title&&Text;.lazyload&&data-src;.vod_remarks&&Text;a&&href',
+    double:true, // 推荐内容是否双层定位
+    一级:'.mdui-m-t-2&&li;.star-up-name&&Text;.lazy&&data-original;.vod_remarks&&Text;a&&href',
+    二级访问前:'log(MY_URL);let jump=request(MY_URL).match(/href="(.*?)"/)[1];log(jump);MY_URL=urljoin2(MY_URL,jump)',
+    二级:{
+        "title":".video-titlewraper&&h1&&Text;.inline_item:eq(1)&&Text",
+        "img":".lazyload&&data-original",
+        "desc":";;;.inline_item:eq(2)&&Text;.inline_item:eq()&&Text",
+        "content":".module-info-introduction&&Text",
+        "tabs":".vod_play_list&&.mdui-panel-item-title",
+        "lists":".mdui-panel-item-body:eq(#id)&&.mdui-btn-raised"},
+    搜索:'body li.vod_item;*;*;*;*',
+}
