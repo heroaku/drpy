@@ -1,5 +1,5 @@
 // 一级筛选功能关闭中 20230214
-muban.mxpro.二级.desc = '.module-info-item:eq(4)&Text;;;.module-info-item-content:eq(2)&&Text;.module-info-item-content:eq(0)&&Text';
+muban.mxpro.二级.desc = '.module-info-item:eq(3)&&Text;;;.module-info-item-content:eq(1)&&Text;.module-info-item-content:eq(0)&&Text';
 muban.mxpro.二级.tabs = '#y-playList .tab-item';
 var rule = {
     title:'利丽娅电影',
