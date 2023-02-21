@@ -42,7 +42,8 @@
 
 [更新日志](./doc/更新日志.md)  
 [android&linux&macos搭建教程](./doc/安卓本地搭建说明.md) | [windows搭建教程](./doc/windows搭建说明.md)  
-[写源教程](./doc/写源教程.md)
+[写源教程](./doc/写源教程.md)  
+[十分钟学会python](https://www.w3cschool.cn/iqmrhf/wngzuozt.html)
 
 ---
 [JS引擎的选择](./doc/python最强js引擎.md)  
