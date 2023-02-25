@@ -4,7 +4,8 @@ muban.mxpro.二级.desc = '.module-info-item:eq(-1)&&Text;;;.module-info-item-co
 var rule = {
     title:'555影视[飞]',
     模板:'mxpro',
-    host:'https://www.555dy.vip',
+    host:'https://zhenfanjixie.com',
+    // host:'https://www.555dy.vip',
     // host:'https://www.555yy7.com',
     // host:'https://www.555yy8.com',
     // host:'https://www.555yy9.com',
