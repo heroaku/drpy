@@ -137,6 +137,12 @@ def custom_static_libs(filename):
     # print(filename)
     return send_from_directory('libs', filename)
 
+@home.route('/js/<path:filename>')
+def custom_static_js(filename):
+    # 自定义静态目录 {{ url_for('custom_static',filename='help.txt')}}
+    # print(filename)
+    return send_from_directory('js', filename)
+
 # @home.route('/txt/<name>')
 # def get_txt_files(name):
 #     base_path = 'txt'
