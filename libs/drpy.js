@@ -54,7 +54,7 @@ function pre(){
 }
 
 let rule = {};
-const VERSION = 'drpy1 3.9.35 20230215';
+const VERSION = 'drpy1 3.9.37beta1 20230306';
 /** 已知问题记录
  * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)[影魔牛逼，最新的文件发现这问题已经解决了]
  * Array.prototype.append = Array.prototype.push; 这种js执行后有毛病,for in 循环列表会把属性给打印出来 (这个大毛病需要重点排除一下)
@@ -392,6 +392,30 @@ function base64Decode(text){
 
 function md5(text) {
     return CryptoJS.MD5(text).toString();
+}
+
+/**
+ * 字符串按指定编码
+ * @param input
+ * @param encoding
+ * @returns {*}
+ */
+function encodeStr(input,encoding){
+    encoding = encoding||'gbk';
+
+    return input
+}
+
+/**
+ * 字符串指定解码
+ * @param input
+ * @param encoding
+ * @returns {*}
+ */
+function decodeStr(input,encoding){
+    encoding = encoding||'gbk';
+
+    return input
 }
 
 function getCryptoJS(){
@@ -2120,6 +2144,7 @@ function playParse(playObj){
 
         rule.timeout = rule.timeout||5000;
         rule.encoding = rule.编码||rule.encoding||'utf-8';
+        rule.search_encoding = rule.搜索编码||rule.search_encoding||'';
         rule.图片来源 = rule.图片来源||'';
         rule.play_json = rule.hasOwnProperty('play_json')?rule.play_json:[];
         rule.pagecount = rule.hasOwnProperty('pagecount')?rule.pagecount:{};
@@ -2265,6 +2290,15 @@ function play(flag, id, flags) {
  * @returns {string}
  */
 function search(wd, quick) {
+    if(rule.search_encoding){
+        if(rule.search_encoding.toLowerCase()!=='utf-8'){
+            // 按搜索编码进行编码
+            wd = encodeStr(wd,rule.search_encoding);
+        }
+    }else if(rule.encoding && rule.encoding.toLowerCase()!=='utf-8'){
+        // 按全局编码进行编码
+        wd = encodeStr(wd,rule.encoding);
+    }
     let searchObj = {
         searchUrl: rule.searchUrl,
         搜索: rule.搜索,
