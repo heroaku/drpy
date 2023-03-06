@@ -6,6 +6,7 @@ import cheerio from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/che
 import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/crypto-js.js';
 import 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/drT.js';
 import 模板 from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js';
+import {gbkTool} from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/gbk.js'
 // import 'http://192.168.10.103:5705/libs/drT.js';
 // import muban from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js';
 // import muban from 'http://192.168.10.103:5705/admin/view/模板.js';
@@ -402,7 +403,10 @@ function md5(text) {
  */
 function encodeStr(input,encoding){
     encoding = encoding||'gbk';
-
+    if(encoding.startsWith('gb')){
+        const strTool = gbkTool();
+        input = strTool.encode(input);
+    }
     return input
 }
 
@@ -414,7 +418,10 @@ function encodeStr(input,encoding){
  */
 function decodeStr(input,encoding){
     encoding = encoding||'gbk';
-
+    if(encoding.startsWith('gb')){
+        const strTool = gbkTool();
+        input = strTool.decode(input);
+    }
     return input
 }
 
