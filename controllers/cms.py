@@ -14,8 +14,8 @@ from utils.web import *
 from utils.system import getHost
 from utils.config import playerConfig
 from utils.log import logger
-from utils.encode import base64Encode,base64Decode,fetch,post,request,getCryptoJS,getPreJs,buildUrl,getHome
-from utils.encode import verifyCode,setDetail,join,urljoin2,parseText,requireCache,forceOrder
+from utils.encode import base64Encode,base64Decode,fetch,post,request,getCryptoJS,getPreJs,buildUrl,getHome,atob,btoa
+from utils.encode import verifyCode,setDetail,join,urljoin2,parseText,requireCache,forceOrder,base64ToImage,encodeStr, decodeStr
 from utils.encode import md5 as mmd5
 from utils.safePython import safePython
 from utils.parser import runPy,runJScode,JsObjectWrapper,PyJsObject,PyJsString
@@ -79,7 +79,8 @@ py_ctx = {
 'buildUrl':buildUrl,'getHome':getHome,'setDetail':setDetail,'join':join,'urljoin2':urljoin2,
 'PC_UA':PC_UA,'MOBILE_UA':MOBILE_UA,'UC_UA':UC_UA,'UA':UA,'IOS_UA':IOS_UA,
 'setItem':setItem,'getItem':getItem,'clearItem':clearItem,'stringify':stringify,'encodeUrl':encodeUrl,
-'requireObj':requireObj,'md5':md5
+'requireObj':requireObj,'md5':md5,'atob': atob, 'btoa':btoa,'base64ToImage': base64ToImage, 'encodeStr': encodeStr,
+    'decodeStr': decodeStr
 }
 # print(getCryptoJS())
 
@@ -166,6 +167,7 @@ class CMS:
             self.oheaders['cookie'] = cookie
         limit = rule.get('limit',6)
         encoding = rule.get('编码', 'utf-8')
+        search_encoding = rule.get('搜索编码', '')
         self.limit = min(limit,30)
         keys = headers.keys()
         for k in headers.keys():
@@ -211,6 +213,7 @@ class CMS:
         self.推荐 = rule.get('推荐','')
         self.图片来源 = rule.get('图片来源','')
         self.encoding = encoding
+        self.search_encoding = search_encoding
         self.timeout = round(int(timeout)/1000,2)
         self.filter = rule.get('filter',[])
         self.filter_def = rule.get('filter_def',{})
@@ -1250,8 +1253,12 @@ class CMS:
         return result
 
     def searchContent(self, key, fypage=1,show_name=False):
-        if self.encoding and str(self.encoding).startswith('gb'):
-            key = quote(key.encode('utf-8').decode('utf-8').encode(self.encoding,'ignore'))
+        if self.search_encoding:
+            if str(self.search_encoding).lower() != 'utf-8':
+                key = encodeStr(key,self.search_encoding)
+        elif self.encoding and str(self.encoding).startswith('gb'):
+            # key = quote(key.encode('utf-8').decode('utf-8').encode(self.encoding,'ignore'))
+            key = encodeStr(key,self.encoding)
             # print(key)
         pg = str(fypage)
         if not self.searchUrl:

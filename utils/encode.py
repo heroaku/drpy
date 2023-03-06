@@ -176,6 +176,33 @@ def base64Decode(text):
     # print(text)
     return base64.b64decode(text).decode("utf-8") #base64解码
 
+def encodeStr(input, encoding='GBK'):
+    """
+    指定字符串编码
+    :param input:
+    :param encoding:
+    :return:
+    """
+    if isinstance(input,PyJsString):
+        input = parseText(str(input))
+    if isinstance(encoding,PyJsString):
+        encoding = parseText(str(input))
+    return quote(input.encode(encoding, 'ignore'))
+
+def decodeStr(input, encoding='GBK'):
+    """
+    指定字符串解码
+    :param input:
+    :param encoding:
+    :return:
+    """
+    if isinstance(input,PyJsString):
+        input = parseText(str(input))
+    if isinstance(encoding,PyJsString):
+        encoding = parseText(str(input))
+    return unquote(input,encoding)
+
+
 def parseText(text:str):
     text = text.replace('false','False').replace('true','True').replace('null','None')
     # print(text)
