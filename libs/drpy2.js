@@ -1,10 +1,12 @@
 import cheerio from 'assets://js/lib/cheerio.min.js';
 import 'assets://js/lib/crypto-js.js';
 import 模板 from"../js/模板.js"
+import {gbkTool} from './gbk.js'
 
 // import cheerio from "https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/cheerio.min.js";
 // import "https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/crypto-js.js";
 // import 模板 from"https://gitcode.net/qq_32394351/dr_py/-/raw/master/js/模板.js";
+// import {gbkTool} from 'https://gitcode.net/qq_32394351/dr_py/-/raw/master/libs/gbk.js'
 
 function init_test(){
     // console.log(typeof(CryptoJS));
@@ -389,7 +391,10 @@ function md5(text) {
  */
 function encodeStr(input,encoding){
     encoding = encoding||'gbk';
-
+    if(encoding.startsWith('gb')){
+        const strTool = gbkTool();
+        input = strTool.encode(input);
+    }
     return input
 }
 
@@ -401,7 +406,10 @@ function encodeStr(input,encoding){
  */
 function decodeStr(input,encoding){
     encoding = encoding||'gbk';
-
+    if(encoding.startsWith('gb')){
+        const strTool = gbkTool();
+        input = strTool.decode(input);
+    }
     return input
 }
 
