@@ -45,6 +45,9 @@ git clone https://gitcode.net/qq_32394351/dr_py.git
 #进入目录
 cd dr_py
 
+#换源
+pip config set global.index-url https://mirrors.cloud.tencent.com/pypi/simple
+
 #安装所需依赖
 pip install -r requirements.txt
 
