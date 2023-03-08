@@ -8,7 +8,7 @@
 // Pluto Player官方TG https://t.me/PlutoPlayer
 // Pluto Player官方TG https://t.me/PlutoPlayerChannel
 
-
+// 20230308 登录会员后 才能观看视频！
 var rule = {
     title:'爱车MV',
     host:'https://www.ichemv.com',
