@@ -2,7 +2,8 @@ muban.mxone5.二级.desc = '.video-info-items:eq(3)&&Text;;;.video-info-actor:eq
 var rule={
     title:'吼吼[飞]',
     模板:'mxone5',
-    host:'https://www.hoho.tv',
+    // host:'https://www.hoho.tv',
+    host:'https://hoho.tv',
     // url:'/vod/show/fyclass/page/fypage.html',
     url:'/vod/show/fyfilter.html',
     filterable:1,//是否启用分类筛选,
