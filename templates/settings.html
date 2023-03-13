@@ -15,7 +15,8 @@
   <link rel="stylesheet" href="/static/plugin/layui/css/layui.css">
   <script src="/static/plugin/layui/layui.js"></script>
 </head>
-<body>
+<body style="margin:0 auto">
+  <center>
 <script>
   function saveConf(key,value){
     // let thisObj=$(obj);//js对象转jquery对象
@@ -105,28 +106,45 @@
       });
     });
 </script>
-<h2 class="title">欢迎使用DR-PY配置界面<div><span class="ver_title">当前版本: {{ ver }}</span><span
-                class="ver_title">框架开发：道长</span><span class="ver_title">框架美化：蓝莓</span></div>
-</h2>
-<h4>
-    <button type="button" class="yongyin"><a href="/admin">返回管理页</a></button>
-<!--    <button type="button" class="yongyin"><a href="/index">返回首页</a></button>-->
-  <button type="button" class="yongyin3"><a href="javascript:void(0);"
-            class="funcbtn" id="update_db">升级数据库</a></button>
-  <button type="button" class="yongyin2"><a href="javascript:copy('cp ./tmp/dr_py-master/app.py ./app.py');"
-            class="funcbtn" id="update_by_self">升级指令</a></button>
-    <button type="button" class="yongyin2"><a href="javascript:copy('cp ./tmp/dr_py-master/base/custom.conf base');"
-            class="funcbtn" id="user_custom">用户配置</a></button>
-</h4>
-<form action="#">
+<div class="title">欢迎使用DR-PY配置界面<div><span class="ver_title">当前版本: {{ ver }}</span><span
+                class="ver_title">框架开发：道长</span><span class="ver_title">框架美化：蓝莓</span></div></div>
+  <div class="nav">
+    <!-- 列表 -->
+    <ul>
+        <!-- 一级菜单 -->
+        <li class="nav-litem">
+           <a href="/admin">返回前页</a>
+        </li>
+
+        <li class="nav-litem">
+          <a href="javascript:void(0);" class="funcbtn" id="update_db">升级数据库</a>
+        </li>
+
+        <li class="nav-litem">
+          <a href="javascript:copy('cp ./tmp/dr_py-master/app.py ./app.py');" class="funcbtn" id="update_by_self">升级指令</a>
+        </li>
+
+        <li class="nav-litem">
+          <a href="javascript:copy('cp ./tmp/dr_py-master/base/custom.conf base');" class="funcbtn" id="user_custom">用户配置</a>
+        </li>
+
+       
+    </ul>
+</div>
+
+<div class="w">
+<form action="#" class="m">
 {% for conf in conf_lists %}
-  <span class="label">
-      {{ conf.name }}:
+
+  <span class="label{{conf.name|length}}">
+    {{ conf.name }}:
   </span>
   <input class="conf" type="text" name="{{ conf.key }}"  placeholder="请输入{{ conf.key }}..." value="{{ conf.value }}"/>
-  <a class="save_conf btn_option" href="javascript:void(0);" value="{{ conf.key }}">保存</a>
   <a class="edit_conf btn_option" href="javascript:void(0);" value="{{ conf.key }}">编辑</a>
+  <a class="save_conf btn_option" href="javascript:void(0);" value="{{ conf.key }}">保存</a>
 {% if loop.last==False %}</br>{% endif %}{% endfor %}
 </form>
+</div>
+</center>
 </body>
 </html>
