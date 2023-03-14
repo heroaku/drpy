@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title>dr_py首页</title>
     <script src="/static/js/jquery.min.js"></script>
-    <link rel="stylesheet" media="screen" href="/static//css/home.css">
+    <link rel="stylesheet" media="screen" href="/static/css/home.css">
     <script src="/static/js/grey.js"></script>
 <!--    <link rel="stylesheet" media="screen" href="/static/css/grey.css">-->
 
@@ -16,6 +16,7 @@
 <!--<body style="opacity: 0.5;background: #FFFFFF url(https://tuapi.eees.cc/api.php?category=dongman&type=302&px=m) no-repeat fixed center;">-->
 <body>
 <div class="image">
+
 <script>
     $(document).ready(function () {
         $("#gen_config").click(function () {
@@ -48,25 +49,37 @@
             <a href="/rules/clear">缓存文件列表-清除</a>
         </div>
         <div class="btn">
-            <a href="http://localhost:5705/config/0?ver=0">本地配置地址</a>
+            <a href="{{ getHost(0) }}/config/0?ver=0">本地配置地址</a>
         </div>
-        
+        {% if is_linux %}
         <div class="btn">
-            <a href="http://localhost:9001" target="_blank">本地在线进程管理[linux]</a>
+            <a href="{{ manager0 }}" target="_blank">本地在线进程管理[linux]</a>
         </div>
-        
+        {% endif %}
         <div class="btn1">
-            <a class="jyw" href="https://picsum.photos/1280/720/?blur=10">局域网:http://172.17.0.5:5705</a>
+            <a class="jyw" href="https://picsum.photos/1280/720/?blur=10">局域网:{{ getHost(1) }}</a>
         </div>
-        
+        {% if '192.168' in getHost(1) %}
         <div class="btn">
-            <a href="http://docker.mudery.com:5705/config/2?ver=0">远程配置地址</a>
+            <a href="{{ getHost(1) }}/config/1?ver=0">局域网配置地址</a>
         </div>
-        
+        {% if is_linux %}
         <div class="btn">
-            <a href="http://docker.mudery.com:9001" target="_blank">远程在线进程管理[linux]</a>
+            <a href="{{ manager1 }}" target="_blank">局域网在线进程管理[linux]</a>
         </div>
-        
+        {% endif %}
+        <div class="btn">
+            <a href="{{ getHost(1) }}/pics" target="_blank">局域网随机图片</a>
+        </div>
+        {% endif %}
+        <div class="btn">
+            <a href="{{ getHost(2) }}/config/2?ver=0">远程配置地址</a>
+        </div>
+        {% if is_linux %}
+        <div class="btn">
+            <a href="{{ manager2 }}" target="_blank">远程在线进程管理[linux]</a>
+        </div>
+        {% endif %}
 
         <div class="btn">
             <a href="javascript:void(0);" id="gen_config">生成配置文件</a>
@@ -77,5 +90,5 @@
     </div>
 </center>
 </div>
-
-</body></html>
+</body>
+</html>
