@@ -1139,6 +1139,9 @@ class CMS:
     def detailOneVod(self,id,fyclass='',show_name=False):
         vod = self.blank_vod()
         orId = str(id)
+        orUrl = orId
+        if fyclass:
+            orUrl = f'{fyclass}${orId}'
         detailUrl = orId.split('@@')[0]
         # print(detailUrl)
         if not detailUrl.startswith('http') and not '/' in detailUrl:
@@ -1206,14 +1209,14 @@ class CMS:
                 else:
                     vod = self.blank_vod()
             else:
-                vod = self.二级渲染(p,detailUrl=detailUrl,orId=orId,url=url,vod=vod,show_name=show_name,jsp=jsp,fyclass=fyclass)
+                vod = self.二级渲染(p,detailUrl=detailUrl,orId=orUrl,url=url,vod=vod,show_name=show_name,jsp=jsp,fyclass=fyclass)
         except Exception as e:
             logger.info(f'{self.getName()}获取单个详情页{detailUrl}出错{e}')
         if self.图片来源:
             if vod.get('vod_pic','') and str(vod['vod_pic']).startswith('http'):
                 vod['vod_pic'] = f"{vod['vod_pic']}{self.图片来源}"
-        if not vod.get('vod_id'):
-            vod['vod_id'] = orId
+        if not vod.get('vod_id') or ('$' in orUrl and vod['vod_id']!=orUrl):
+            vod['vod_id'] = orUrl
         # print(vod)
         return vod
 
@@ -1230,7 +1233,7 @@ class CMS:
         obj_list = []
         try:
             for vod_url in array:
-                # print(vod_url)
+                print(vod_url)
                 vod_class = ''
                 if vod_url.find('$') > -1:
                     tmp = vod_url.split('$')

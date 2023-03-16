@@ -55,7 +55,7 @@ function pre(){
 }
 
 let rule = {};
-const VERSION = 'drpy1 3.9.37beta1 20230306';
+const VERSION = 'drpy1 3.9.39beta1 20230316';
 /** 已知问题记录
  * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)[影魔牛逼，最新的文件发现这问题已经解决了]
  * Array.prototype.append = Array.prototype.push; 这种js执行后有毛病,for in 循环列表会把属性给打印出来 (这个大毛病需要重点排除一下)
@@ -1994,7 +1994,7 @@ function detailParse(detailObj){
     if(rule.图片来源 && vod.vod_pic && vod.vod_pic.startsWith('http')){
         vod.vod_pic = vod.vod_pic + rule.图片来源;
     }
-    if(!vod.vod_id){
+    if(!vod.vod_id||(vod_id.includes('$')&&vod.vod_id!==vod_id)){
         vod.vod_id = vod_id;
     }
     let t2 = (new Date()).getTime();
