@@ -32,6 +32,7 @@ var detail_order = 'name';
 var playRaw = 1; // 播放直链获取,默认0直接拼接/d 填1可以获取阿里oss链接。注意，有时效性
 const request_timeout = 5000;
 const VERSION = 'alist v2/v3 20221223';
+const UA = 'Mozilla/5.0'; //默认请求ua
 /**
  * 打印日志
  * @param any 任意变量
@@ -85,6 +86,11 @@ const http = function (url, options = {}) {
 	if(!keys.includes('referer')){
 		options.headers['Referer'] = getHome(url);
 	}
+	if(!keys.includes('user-agent')){
+		options.headers['User-Agent'] = UA;
+	}
+
+	'Mozilla/5.0';
 	try {
 		const res = req(url, options);
 		res.json = () => res&&res.content ? JSON.parse(res.content) : null;
