@@ -89,8 +89,6 @@ const http = function (url, options = {}) {
 	if(!keys.includes('user-agent')){
 		options.headers['User-Agent'] = UA;
 	}
-
-	'Mozilla/5.0';
 	try {
 		const res = req(url, options);
 		res.json = () => res&&res.content ? JSON.parse(res.content) : null;
