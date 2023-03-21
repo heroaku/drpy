@@ -25,7 +25,7 @@
     "searchable": {{ rule.searchable }},
     "quickSearch": {{ rule.quickSearch }},
     "filterable": {{ rule.filterable }},
-    "ext":"{{ host }}/admin/view/{{ rule.name }}.js"
+    "ext":"{{ host }}/js/{{ rule.name }}.js"
 }{% endif %}{% if loop.last==False %},{% endif %}{% endfor %}
 {% if pys %}
 ,{% for py in pys %}{
