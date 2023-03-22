@@ -25,6 +25,7 @@ from utils.update import getLocalVer,getHotSuggest
 from js.rules import getJxs
 import random
 from utils.web import getParmas,verfy_token
+from utils.common_api import js_render
 import functools
 
 
@@ -137,11 +138,17 @@ def custom_static_libs(filename):
     # print(filename)
     return send_from_directory('libs', filename)
 
-@home.route('/js/<path:filename>')
-def custom_static_js(filename):
+# @home.route('/js/<path:filename>')
+# def custom_static_js(filename):
+#     # 自定义静态目录 {{ url_for('custom_static',filename='help.txt')}}
+#     # print(filename)
+#     return send_from_directory('js', filename)
+
+@home.route('/js/<path:name>',methods=['GET'])
+def custom_static_js(name):
     # 自定义静态目录 {{ url_for('custom_static',filename='help.txt')}}
-    # print(filename)
-    return send_from_directory('js', filename)
+    # print(name)
+    return js_render(name)
 
 # @home.route('/txt/<name>')
 # def get_txt_files(name):
