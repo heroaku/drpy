@@ -41,7 +41,7 @@ function pre(){
 
 let rule = {};
 let vercode = typeof(pdfl) ==='function'?'drpy2.1':'drpy2';
-const VERSION = vercode+' 3.9.39beta1 20230316';
+const VERSION = vercode+' 3.9.41beta1 20230328';
 /** 已知问题记录
  * 1.影魔的jinjia2引擎不支持 {{fl}}对象直接渲染 (有能力解决的话尽量解决下，支持对象直接渲染字符串转义,如果加了|safe就不转义)[影魔牛逼，最新的文件发现这问题已经解决了]
  * Array.prototype.append = Array.prototype.push; 这种js执行后有毛病,for in 循环列表会把属性给打印出来 (这个大毛病需要重点排除一下)
@@ -1024,10 +1024,19 @@ function getHtml(url){
     }
     let cookie = getItem(RULE_CK,'');
     if(cookie){
+        // log('有cookie:'+cookie);
         if(obj.headers && ! Object.keys(obj.headers).map(it=>it.toLowerCase()).includes('cookie')){
+            log('历史无cookie,新增过验证后的cookie');
             obj.headers['Cookie'] = cookie;
+        }else if(obj.headers && obj.headers.cookie && obj.headers.cookie!==cookie){
+            obj.headers['Cookie'] = cookie;
+            log('历史有小写过期的cookie,更新过验证后的cookie');
+        }else if(obj.headers && obj.headers.Cookie && obj.headers.Cookie!==cookie){
+            obj.headers['Cookie'] = cookie;
+            log('历史有大写过期的cookie,更新过验证后的cookie');
         }else if(!obj.headers){
             obj.headers = {Cookie:cookie};
+            log('历史无headers,更新过验证后的含cookie的headers');
         }
     }
     let html = getCode(url,obj);

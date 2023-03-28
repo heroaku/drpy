@@ -25,7 +25,8 @@ def test():
         # code = requests.post(api, data=base64.b64encode(img).decode(), headers={'user-agent': PC_UA}, verify=False).text
         # code = requests.post(api, data=base64.b64encode(img).decode(), headers={'user-agent': PC_UA}, verify=False).text
         # code = requests.post(api3, data={"img":base64.b64encode(img).decode()}, headers={'user-agent': PC_UA}, verify=False).text
-        code = requests.post(api4, data={"img":base64.b64encode(img).decode()}, headers={'user-agent': PC_UA}, verify=False).text
+        # code = requests.post(api4, data={"img":base64.b64encode(img).decode()}, headers={'user-agent': PC_UA}, verify=False).text
+        code = requests.post(api3, data={"img":base64.b64encode(img).decode()}, headers={'user-agent': PC_UA}, verify=False).text
     except Exception as e:
         print(f'ocr识别发生错误:{e}')
         code = ''
