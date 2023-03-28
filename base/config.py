@@ -32,7 +32,8 @@ WALL_PAPER = "https://tuapi.eees.cc/api.php?category=fengjing&type=302"  # 自�
 SUP_PORT = 9001  # supervisord 服务端口
 RETRY_CNT = 3 # 验证码重试次数
 # OCR_API = 'http://192.168.3.224:9000/api/ocr_img' # 验证码识别接口,传参数data
-OCR_API = 'http://dm.mudery.com:10000' # 验证码识别接口,传参数data
+# OCR_API = 'http://dm.mudery.com:10000' # 验证码识别接口,传参数data
+OCR_API = 'https://api.nn.ci/ocr/b64/text' # 验证码识别接口,传参数data
 UNAME = 'admin'  # 管理员账号
 PWD = 'drpy' # 管理员密码
 USE_PY = 0  # 开启py源

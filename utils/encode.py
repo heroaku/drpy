@@ -12,8 +12,7 @@ from js2py.base import PyJsString
 import requests,warnings
 # 关闭警告
 warnings.filterwarnings("ignore")
-from requests.packages import urllib3
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 import requests.utils
 import hashlib
@@ -127,7 +126,8 @@ class OcrApi:
 
     def classification(self,img):
         try:
-            code = requests.post(self.api,data=img,headers={'user-agent':PC_UA},verify=False).text
+            # code = requests.post(self.api,data=img,headers={'user-agent':PC_UA},verify=False).text
+            code = requests.post(self.api,data=base64.b64encode(img).decode(),headers={'user-agent':PC_UA},verify=False).text
         except Exception as e:
             print(f'ocr识别发生错误:{e}')
             code = ''
@@ -136,7 +136,7 @@ class OcrApi:
 def verifyCode(url,headers,timeout=5,total_cnt=3,api=None):
     if not api:
         # api = 'http://192.168.3.224:9000/api/ocr_img'
-        api = 'http://dm.mudery.com:10000'
+        api = 'https://api.nn.ci/ocr/b64/text'
     lower_keys = list(map(lambda x: x.lower(), headers.keys()))
     host = getHome(url)
     if not 'referer' in lower_keys:
