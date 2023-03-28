@@ -18,6 +18,7 @@ def test():
     with open('yzm1.png',mode='rb') as f:
         img = f.read()
     try:
+        print(base64.b64encode(img).decode())
         # code = requests.post(api, data=base64.b64encode(img).decode(), headers={'user-agent': PC_UA}, verify=False).text
         # code = requests.post(api, data=base64.b64encode(img).decode(), headers={'user-agent': PC_UA}, verify=False).text
         code = requests.post(api3, data={"img":base64.b64encode(img).decode()}, headers={'user-agent': PC_UA}, verify=False).text
