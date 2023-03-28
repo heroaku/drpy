@@ -735,7 +735,12 @@ var OcrApi={
             let html = request(this.api,{data:{img:img},headers:{'User-Agent':PC_UA},'method':'POST'},true);
             html = JSON.parse(html);
             code = html.url||'';
-        }catch (e) {}
+            // log('通过alist验证码接口过验证...');
+            // let html = request('https://api.nn.ci/ocr/b64/text',{data:img,headers:{'User-Agent':PC_UA},'method':'POST'},true);
+            // code = html||'';
+        }catch (e) {
+            log(`OCR识别验证码发生错误:${e.message}`)
+        }
         return code
     }
 };
