@@ -66,12 +66,11 @@ function play(flag, id, flags) {
 
 function search(wd, quick) {
     console.log("search");
-    let yzm_url = 'http://192.168.10.99:57051/static/img/yzm.png';
+    let yzm_url = 'http://192.168.10.99:5705/static/img/yzm.png';
     console.log('测试验证码地址:',yzm_url);
     let img_base64 = req(yzm_url,{buffer:2}).content;
     console.log(img_base64);
-    // const res = req('https://api.nn.ci/ocr/b64/text', {body:img_base64,method:'POST'});
-    const res = req('https://api.nn.ci/ocr/b64/text', {data:img_base64,method:'POST',headers:{'content-type':'text/plain'}});
+    const res = req('http://drpy.nokia.press:8028/ocr/drpy/text', {data:{img:img_base64},method:'POST'});
     console.log('验证码识别结果:',res.content);
     let d = [];
     d.push({

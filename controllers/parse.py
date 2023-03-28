@@ -149,6 +149,7 @@ def base64_ocr():
         f.write(img_bytes)
     ocr = OcrApi(ocr_api)
     code = ocr.classification(img_bytes)
-    resp = R.success('识别成功',code)
-    print(resp.json)
+    # resp = R.success('识别成功',code)
+    # print(resp.json)
+    resp = code
     return resp
