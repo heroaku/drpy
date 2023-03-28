@@ -79,7 +79,8 @@ const OCR_RETRY = 3;//ocr验证重试次数
 // const OCR_API = 'http://dm.mudery.com:10000';//ocr在线识别接口
 // const OCR_API = 'http://192.168.3.239:5705/parse/ocr';//ocr在线识别接口
 // const OCR_API = 'http://cms.nokia.press/parse/ocr';//ocr在线识别接口
-const OCR_API = 'http://cms.nokia.press:5707/parse/ocr';//ocr在线识别接口
+// const OCR_API = 'http://cms.nokia.press:5707/parse/ocr';//ocr在线识别接口
+const OCR_API = 'http://drpy.nokia.press:8028/ocr/drpy/text';//ocr在线识别接口
 if(typeof(MY_URL)==='undefined'){
     var MY_URL; // 全局注入变量,pd函数需要
 }
@@ -733,12 +734,12 @@ var OcrApi={
     classification:function (img){ // img是byte类型,这里不方便搞啊
         let code = '';
         try {
-            let html = request(this.api,{data:{img:img},headers:{'User-Agent':PC_UA},'method':'POST'},true);
-            html = JSON.parse(html);
-            code = html.url||'';
-            // log('通过alist验证码接口过验证...');
-            // let html = request('https://api.nn.ci/ocr/b64/text',{data:img,headers:{'User-Agent':PC_UA},'method':'POST'},true);
-            // code = html||'';
+            // let html = request(this.api,{data:{img:img},headers:{'User-Agent':PC_UA},'method':'POST'},true);
+            // html = JSON.parse(html);
+            // code = html.url||'';
+            log('通过drpy_ocr验证码接口过验证...');
+            let html = request(OCR_API,{data:{img:img},headers:{'User-Agent':PC_UA},'method':'POST'},true);
+            code = html||'';
         }catch (e) {
             log(`OCR识别验证码发生错误:${e.message}`)
         }
