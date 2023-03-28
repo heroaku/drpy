@@ -12,7 +12,8 @@ PC_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, li
 UA = 'Mozilla/5.0'
 api = 'https://api.nn.ci/ocr/b64/text'
 api2 = 'http://dm.mudery.com:10000'
-api3 = 'http://localhost:5705/parse/ocr'
+# api3 = 'http://localhost:5705/parse/ocr'
+api3 = 'http://cms.nokia.press:5707/parse/ocr'
 def test():
     with open('yzm1.png',mode='rb') as f:
         img = f.read()
