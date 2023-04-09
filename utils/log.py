@@ -72,4 +72,4 @@ def get_logger(log_filename, level=logging.DEBUG, when='D', back_count=0):
 
     return logger
 
-logger = get_logger('dr.log')
+logger = get_logger('dr.log',back_count=3)
